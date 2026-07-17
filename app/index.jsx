@@ -1,19 +1,20 @@
-import { StyleSheet, Text, useColorScheme } from 'react-native'
+import { StyleSheet } from 'react-native'
 import { Link } from 'expo-router'
-
-import Logo from '../assets/img/gpLogo-black.png'
 
 // themed components
 import ThemedView from '../components/ThemedView'
 import ThemedText from '../components/ThemedText'
 import Spacer from '../components/Spacer'
 import ThemedLogo from '../components/ThemedLogo'
+import { useAuth } from '../contexts/AuthContext'
 
 
 const HomeScreen = () => {
+  const { user, profile, signOut } = useAuth()
+
   return (
     <ThemedView style={styles.container}>
-      
+
       <ThemedLogo style={styles.img} />
       <Spacer height={20} />
 
@@ -25,12 +26,22 @@ const HomeScreen = () => {
       <ThemedText>Client Trainer Portal</ThemedText>
       <Spacer height={20}/>
 
-      <Link href="/login" style={styles.link}>
-        <ThemedText>Login Page</ThemedText>
-      </Link>
-      <Link href="/register" style={styles.link}>
-        <ThemedText>Register Page</ThemedText>
-      </Link>
+      {user ? (
+        <>
+          <ThemedText>Signed in as {profile?.name ?? user.email} ({profile?.role ?? '...'})</ThemedText>
+          <Spacer height={20} />
+          <ThemedText onPress={signOut} style={styles.link}>Sign Out</ThemedText>
+        </>
+      ) : (
+        <>
+          <Link href="/login" style={styles.link}>
+            <ThemedText>Login Page</ThemedText>
+          </Link>
+          <Link href="/register" style={styles.link}>
+            <ThemedText>Register Page</ThemedText>
+          </Link>
+        </>
+      )}
     </ThemedView>
   )
 }
