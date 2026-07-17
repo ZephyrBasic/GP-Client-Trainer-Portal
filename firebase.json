@@ -1,0 +1,10 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "bucket": "gp-client-trainer-portal.firebasestorage.app",
+    "rules": "storage.rules"
+  }
+}

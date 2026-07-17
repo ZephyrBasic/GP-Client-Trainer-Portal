@@ -1,0 +1,40 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    match /users/{uid} {
+      // Any signed-in user can read profiles: trainers need to see their
+      // clients, clients need to look up their trainer, and invite-code
+      // lookup during registration queries this collection right after the
+      // new auth account is created.
+      allow read: if isSignedIn();
+
+      allow create: if isOwner(uid)
+        && request.resource.data.role in ['client', 'trainer'];
+
+      // Role and trainerId are set once at registration and are not
+      // user-editable afterwards, to prevent self-promotion to trainer or
+      // re-linking to a different trainer.
+      allow update: if isOwner(uid)
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.trainerId == resource.data.trainerId;
+
+      allow delete: if false;
+    }
+
+    // Default deny for everything else until each phase defines its own
+    // rules (workouts, chats, progressVideos).
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
