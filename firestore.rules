@@ -44,8 +44,48 @@ service cloud.firestore {
       allow update, delete: if isOwner(resource.data.clientId);
     }
 
+    match /chats/{chatId} {
+      // chatId is always the deterministic pair "clientId_trainerId" - a
+      // client only ever has one trainer, so both sides can derive it
+      // locally without a lookup, and rules can verify it without a
+      // separate participants array.
+      function isLinkedPair(clientId, trainerId) {
+        return get(/databases/$(database)/documents/users/$(clientId)).data.trainerId == trainerId;
+      }
+      function isParticipant() {
+        return isOwner(resource.data.clientId) || isOwner(resource.data.trainerId);
+      }
+
+      allow read: if isParticipant();
+
+      allow create: if (isOwner(request.resource.data.clientId) || isOwner(request.resource.data.trainerId))
+        && chatId == request.resource.data.clientId + '_' + request.resource.data.trainerId
+        && isLinkedPair(request.resource.data.clientId, request.resource.data.trainerId);
+
+      // clientId/trainerId are fixed at creation; only lastMessage-style
+      // metadata may change afterwards.
+      allow update: if isParticipant()
+        && request.resource.data.clientId == resource.data.clientId
+        && request.resource.data.trainerId == resource.data.trainerId;
+
+      allow delete: if false;
+
+      match /messages/{messageId} {
+        function isChatParticipant() {
+          return isSignedIn()
+            && (get(/databases/$(database)/documents/chats/$(chatId)).data.clientId == request.auth.uid
+                || get(/databases/$(database)/documents/chats/$(chatId)).data.trainerId == request.auth.uid);
+        }
+
+        // Messages are immutable once sent - no update/delete for v1.
+        allow read: if isChatParticipant();
+        allow create: if isChatParticipant() && request.resource.data.senderId == request.auth.uid;
+        allow update, delete: if false;
+      }
+    }
+
     // Default deny for everything else until each phase defines its own
-    // rules (chats, progressVideos).
+    // rules (progressVideos).
     match /{document=**} {
       allow read, write: if false;
     }
