@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router'
+import { Redirect, Stack } from 'expo-router'
 import { StyleSheet, useColorScheme } from 'react-native'
 import { Colors } from '../constants/Colors'
 import { AuthProvider, useAuth } from '../contexts/AuthContext'
@@ -10,10 +10,14 @@ const RootLayoutNav = () => {
     const theme = Colors[colorScheme] ?? Colors.light
     const { loading } = useAuth()
 
-    useProtectedRoute()
+    const redirectTo = useProtectedRoute()
 
     if (loading) {
         return <ThemedView style={styles.loading} />
+    }
+
+    if (redirectTo) {
+        return <Redirect href={redirectTo} />
     }
 
     return (
