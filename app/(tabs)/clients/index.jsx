@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react'
-import { FlatList, StyleSheet } from 'react-native'
-import { Redirect } from 'expo-router'
+import { FlatList, Pressable, StyleSheet } from 'react-native'
+import { Redirect, useRouter } from 'expo-router'
 import { collection, onSnapshot, query, where } from 'firebase/firestore'
 
-import ThemedView from '../../components/ThemedView'
-import ThemedText from '../../components/ThemedText'
-import ThemedCard from '../../components/ThemedCard'
-import Spacer from '../../components/Spacer'
-import { db } from '../../firebase/config'
-import { useAuth } from '../../contexts/AuthContext'
+import ThemedView from '../../../components/ThemedView'
+import ThemedText from '../../../components/ThemedText'
+import ThemedCard from '../../../components/ThemedCard'
+import Spacer from '../../../components/Spacer'
+import { db } from '../../../firebase/config'
+import { useAuth } from '../../../contexts/AuthContext'
 
 const ClientsRoster = () => {
     const { profile } = useAuth()
+    const router = useRouter()
     const [clients, setClients] = useState([])
     const [loading, setLoading] = useState(true)
 
@@ -54,12 +55,14 @@ const ClientsRoster = () => {
                     keyExtractor={(item) => item.uid}
                     ItemSeparatorComponent={() => <Spacer height={10} />}
                     renderItem={({ item }) => (
-                        <ThemedCard>
-                            <ThemedText title={true} style={styles.clientName}>
-                                {item.name}
-                            </ThemedText>
-                            <ThemedText>{item.email}</ThemedText>
-                        </ThemedCard>
+                        <Pressable onPress={() => router.push(`/clients/${item.uid}`)}>
+                            <ThemedCard>
+                                <ThemedText title={true} style={styles.clientName}>
+                                    {item.name}
+                                </ThemedText>
+                                <ThemedText>{item.email}</ThemedText>
+                            </ThemedCard>
+                        </Pressable>
                     )}
                 />
             )}
