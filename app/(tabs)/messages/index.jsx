@@ -20,11 +20,13 @@ const TrainerChatList = ({ trainerId, router }) => {
                 keyExtractor={(item) => item.chatId}
                 contentContainerStyle={styles.listContent}
                 ListEmptyComponent={
-                    !loading ? (
+                    loading ? (
+                        <ThemedText style={styles.empty}>Loading...</ThemedText>
+                    ) : (
                         <ThemedText style={styles.empty}>
                             No clients yet. Once clients link to you, they'll show up here.
                         </ThemedText>
-                    ) : null
+                    )
                 }
                 ItemSeparatorComponent={() => <Spacer height={10} />}
                 renderItem={({ item }) => (

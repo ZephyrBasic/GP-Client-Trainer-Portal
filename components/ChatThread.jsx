@@ -16,6 +16,7 @@ const ChatThread = ({ chatId, clientId, trainerId }) => {
     const { messages, loading } = useMessages(chatReady ? chatId : null)
     const [text, setText] = useState('')
     const [sending, setSending] = useState(false)
+    const [error, setError] = useState('')
     const listRef = useRef(null)
 
     useEffect(() => {
@@ -40,6 +41,7 @@ const ChatThread = ({ chatId, clientId, trainerId }) => {
         if (!trimmed || sending) return
 
         setSending(true)
+        setError('')
         setText('')
         try {
             const batch = writeBatch(db)
@@ -53,6 +55,7 @@ const ChatThread = ({ chatId, clientId, trainerId }) => {
             await batch.commit()
         } catch (err) {
             setText(trimmed)
+            setError('Message failed to send. Please try again.')
         } finally {
             setSending(false)
         }
@@ -69,10 +72,15 @@ const ChatThread = ({ chatId, clientId, trainerId }) => {
                 contentContainerStyle={styles.listContent}
                 onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: false })}
                 ListEmptyComponent={
-                    !loading ? <ThemedText style={styles.empty}>No messages yet. Say hello!</ThemedText> : null
+                    loading ? (
+                        <ThemedText style={styles.empty}>Loading...</ThemedText>
+                    ) : (
+                        <ThemedText style={styles.empty}>No messages yet. Say hello!</ThemedText>
+                    )
                 }
                 renderItem={({ item }) => <ChatBubble text={item.text} isOwn={item.senderId === profile.uid} />}
             />
+            {error ? <ThemedText style={styles.error}>{error}</ThemedText> : null}
             <View style={styles.inputRow}>
                 <ThemedTextInput
                     style={styles.input}
@@ -111,6 +119,11 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 20,
         opacity: 0.7,
+    },
+    error: {
+        color: Colors.warning,
+        paddingHorizontal: 16,
+        paddingBottom: 4,
     },
     inputRow: {
         flexDirection: 'row',

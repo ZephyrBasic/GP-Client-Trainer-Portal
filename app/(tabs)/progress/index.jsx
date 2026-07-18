@@ -145,11 +145,13 @@ const ProgressFeed = () => {
                     </View>
                 }
                 ListEmptyComponent={
-                    !loading ? (
+                    loading ? (
+                        <ThemedText style={styles.empty}>Loading...</ThemedText>
+                    ) : (
                         <ThemedText style={styles.empty}>
                             No progress photos or videos yet. Add your first one above.
                         </ThemedText>
-                    ) : null
+                    )
                 }
                 renderItem={({ item }) => (
                     <ProgressMediaTile item={item} onPress={() => router.push(`/progress/${item.id}`)} />

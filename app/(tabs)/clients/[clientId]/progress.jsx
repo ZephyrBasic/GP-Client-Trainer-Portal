@@ -19,9 +19,11 @@ const ClientProgress = () => {
                 numColumns={3}
                 contentContainerStyle={styles.listContent}
                 ListEmptyComponent={
-                    !loading ? (
+                    loading ? (
+                        <ThemedText style={styles.empty}>Loading...</ThemedText>
+                    ) : (
                         <ThemedText style={styles.empty}>This client hasn't uploaded any progress photos or videos yet.</ThemedText>
-                    ) : null
+                    )
                 }
                 renderItem={({ item }) => (
                     <ProgressMediaTile item={item} onPress={() => router.push(`/progress/${item.id}`)} />

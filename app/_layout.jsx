@@ -1,5 +1,5 @@
 import { Redirect, Stack } from 'expo-router'
-import { StyleSheet, useColorScheme } from 'react-native'
+import { ActivityIndicator, StyleSheet, useColorScheme } from 'react-native'
 import { Colors } from '../constants/Colors'
 import { AuthProvider, useAuth } from '../contexts/AuthContext'
 import { useProtectedRoute } from '../hooks/useProtectedRoute'
@@ -13,7 +13,11 @@ const RootLayoutNav = () => {
     const redirectTo = useProtectedRoute()
 
     if (loading) {
-        return <ThemedView style={styles.loading} />
+        return (
+            <ThemedView style={styles.loading}>
+                <ActivityIndicator size="large" color={Colors.primary} />
+            </ThemedView>
+        )
     }
 
     if (redirectTo) {
@@ -44,5 +48,7 @@ export default RootLayout
 const styles = StyleSheet.create({
     loading: {
         flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
     }
 })

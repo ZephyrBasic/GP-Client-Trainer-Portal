@@ -38,7 +38,9 @@ const WorkoutsHistory = () => {
                 }
                 ItemSeparatorComponent={() => <Spacer height={10} />}
                 ListEmptyComponent={
-                    !loading && (
+                    loading ? (
+                        <ThemedText style={styles.empty}>Loading...</ThemedText>
+                    ) : (
                         <ThemedText style={styles.empty}>
                             No workouts logged yet. Tap "Log Workout" to add your first session.
                         </ThemedText>
