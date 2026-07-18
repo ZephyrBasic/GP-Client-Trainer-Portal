@@ -84,8 +84,38 @@ service cloud.firestore {
       }
     }
 
+    match /progressMedia/{mediaId} {
+      function isLinkedTrainer(clientId) {
+        return isSignedIn()
+          && get(/databases/$(database)/documents/users/$(clientId)).data.trainerId == request.auth.uid;
+      }
+
+      // Owning client has full control (photo/video is theirs to manage);
+      // their linked trainer gets read-only access plus the ability to
+      // comment (handled in the comments subcollection below).
+      allow read: if isOwner(resource.data.clientId) || isLinkedTrainer(resource.data.clientId);
+      allow create: if isOwner(request.resource.data.clientId)
+        && request.resource.data.type in ['photo', 'video'];
+      allow update: if false;
+      allow delete: if isOwner(resource.data.clientId);
+
+      match /comments/{commentId} {
+        function parentClientId() {
+          return get(/databases/$(database)/documents/progressMedia/$(mediaId)).data.clientId;
+        }
+        function isCommentParticipant() {
+          return isOwner(parentClientId()) || isLinkedTrainer(parentClientId());
+        }
+
+        // Comments are immutable once posted - no update/delete for v1.
+        allow read: if isCommentParticipant();
+        allow create: if isCommentParticipant() && request.resource.data.authorId == request.auth.uid;
+        allow update, delete: if false;
+      }
+    }
+
     // Default deny for everything else until each phase defines its own
-    // rules (progressVideos).
+    // rules.
     match /{document=**} {
       allow read, write: if false;
     }

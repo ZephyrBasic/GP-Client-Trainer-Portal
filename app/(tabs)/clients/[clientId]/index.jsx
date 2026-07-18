@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react'
 import { FlatList, Pressable, StyleSheet, View } from 'react-native'
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { doc, onSnapshot } from 'firebase/firestore'
 
-import ThemedView from '../../../components/ThemedView'
-import ThemedText from '../../../components/ThemedText'
-import ThemedCard from '../../../components/ThemedCard'
-import WorkoutSummaryCard from '../../../components/WorkoutSummaryCard'
-import Spacer from '../../../components/Spacer'
-import { db } from '../../../firebase/config'
-import { useWorkouts } from '../../../hooks/useWorkouts'
-import { computeWorkoutStats, volumeForWorkout } from '../../../utils/workoutStats'
+import ThemedView from '../../../../components/ThemedView'
+import ThemedText from '../../../../components/ThemedText'
+import ThemedCard from '../../../../components/ThemedCard'
+import ThemedButton from '../../../../components/ThemedButton'
+import WorkoutSummaryCard from '../../../../components/WorkoutSummaryCard'
+import Spacer from '../../../../components/Spacer'
+import { db } from '../../../../firebase/config'
+import { useWorkouts } from '../../../../hooks/useWorkouts'
+import { computeWorkoutStats, volumeForWorkout } from '../../../../utils/workoutStats'
 
 const ClientDetail = () => {
     const { clientId } = useLocalSearchParams()
+    const router = useRouter()
     const [clientProfile, setClientProfile] = useState(null)
     const { workouts, loading } = useWorkouts(clientId)
     const stats = computeWorkoutStats(workouts)
@@ -38,6 +40,10 @@ const ClientDetail = () => {
                         <ThemedText title={true} style={styles.title}>
                             {clientProfile?.name ?? 'Client'}
                         </ThemedText>
+                        <Spacer height={16} />
+                        <ThemedButton onPress={() => router.push(`/clients/${clientId}/progress`)}>
+                            <ThemedText style={styles.progressBtnText}>View Progress Photos/Videos</ThemedText>
+                        </ThemedButton>
                         <Spacer height={16} />
                         <WorkoutSummaryCard stats={stats} />
                         <Spacer height={16} />
@@ -106,6 +112,11 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         fontWeight: 'bold',
+    },
+    progressBtnText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
     historyLabel: {
         fontSize: 13,
