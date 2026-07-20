@@ -5,7 +5,11 @@ import Spacer from './Spacer'
 import { Colors } from '../constants/Colors'
 
 const WorkoutSummaryCard = ({ stats }) => {
-    const { totalWorkouts, totalVolume, thisWeekVolume, recent, maxRecentVolume } = stats
+    const { totalWorkouts, totalVolume, thisWeekVolume, totalReps, totalWorkSeconds, recent, maxRecentVolume } = stats
+
+    // Volume counts loaded work only, so bodyweight and timed work are shown
+    // alongside it rather than disappearing into a zero.
+    const workMinutes = Math.round((totalWorkSeconds ?? 0) / 60)
 
     return (
         <ThemedCard>
@@ -31,6 +35,22 @@ const WorkoutSummaryCard = ({ stats }) => {
                         {Math.round(totalVolume).toLocaleString()}
                     </ThemedText>
                     <ThemedText style={styles.statLabel}>All-time volume</ThemedText>
+                </View>
+            </View>
+
+            <Spacer height={12} />
+            <View style={styles.statsRow}>
+                <View style={styles.stat}>
+                    <ThemedText title={true} style={styles.statNumber}>
+                        {(totalReps ?? 0).toLocaleString()}
+                    </ThemedText>
+                    <ThemedText style={styles.statLabel}>Total reps</ThemedText>
+                </View>
+                <View style={styles.stat}>
+                    <ThemedText title={true} style={styles.statNumber}>
+                        {workMinutes.toLocaleString()}
+                    </ThemedText>
+                    <ThemedText style={styles.statLabel}>Timed work (min)</ThemedText>
                 </View>
             </View>
 

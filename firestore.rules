@@ -84,6 +84,29 @@ service cloud.firestore {
       }
     }
 
+    match /customExercises/{exerciseId} {
+      function myProfile() {
+        return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      }
+
+      // The library a client sees is their own trainer's, so exercise names
+      // don't leak between unrelated trainers.
+      allow read: if isOwner(resource.data.createdBy)
+        || (isSignedIn() && myProfile().trainerId == resource.data.createdBy);
+
+      // Clients can never extend the library - that's the whole point of
+      // select-only logging, so the rule enforces it server-side rather than
+      // relying on the picker hiding the button.
+      allow create: if isSignedIn()
+        && myProfile().role == 'trainer'
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.type in ['weight_reps', 'bodyweight_reps', 'duration', 'distance_duration'];
+
+      allow update: if isOwner(resource.data.createdBy)
+        && request.resource.data.createdBy == resource.data.createdBy;
+      allow delete: if isOwner(resource.data.createdBy);
+    }
+
     match /progressMedia/{mediaId} {
       function isLinkedTrainer(clientId) {
         return isSignedIn()

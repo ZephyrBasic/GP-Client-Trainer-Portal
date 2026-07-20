@@ -12,6 +12,7 @@ import Spacer from '../../../../components/Spacer'
 import { db } from '../../../../firebase/config'
 import { useWorkouts } from '../../../../hooks/useWorkouts'
 import { computeWorkoutStats, volumeForWorkout } from '../../../../utils/workoutStats'
+import { formatSet } from '../../../../utils/formatSet'
 
 const ClientDetail = () => {
     const { clientId } = useLocalSearchParams()
@@ -80,7 +81,7 @@ const ClientDetail = () => {
                                                 <ThemedText style={styles.exerciseName}>{exercise.name}</ThemedText>
                                                 {(exercise.sets ?? []).map((set, j) => (
                                                     <ThemedText key={j}>
-                                                        Set {j + 1}: {set.reps} reps × {set.weight}
+                                                        Set {j + 1}: {formatSet(set)}
                                                     </ThemedText>
                                                 ))}
                                             </View>

@@ -11,6 +11,7 @@ import Spacer from '../../../components/Spacer'
 import { Colors } from '../../../constants/Colors'
 import { db } from '../../../firebase/config'
 import { volumeForWorkout } from '../../../utils/workoutStats'
+import { formatSet } from '../../../utils/formatSet'
 
 const WorkoutDetail = () => {
     const { id } = useLocalSearchParams()
@@ -90,7 +91,7 @@ const WorkoutDetail = () => {
                             <Spacer height={8} />
                             {(exercise.sets ?? []).map((set, setIndex) => (
                                 <ThemedText key={setIndex} style={styles.setLine}>
-                                    Set {setIndex + 1}: {set.reps} reps × {set.weight}
+                                    Set {setIndex + 1}: {formatSet(set)}
                                 </ThemedText>
                             ))}
                         </ThemedCard>
