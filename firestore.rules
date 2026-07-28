@@ -1,0 +1,146 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    match /users/{uid} {
+      // Any signed-in user can read profiles: trainers need to see their
+      // clients, clients need to look up their trainer, and invite-code
+      // lookup during registration queries this collection right after the
+      // new auth account is created.
+      allow read: if isSignedIn();
+
+      allow create: if isOwner(uid)
+        && request.resource.data.role in ['client', 'trainer'];
+
+      // Role and trainerId are set once at registration and are not
+      // user-editable afterwards, to prevent self-promotion to trainer or
+      // re-linking to a different trainer.
+      allow update: if isOwner(uid)
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.trainerId == resource.data.trainerId;
+
+      allow delete: if false;
+    }
+
+    match /workouts/{workoutId} {
+      function isLinkedTrainer(clientId) {
+        return isSignedIn()
+          && get(/databases/$(database)/documents/users/$(clientId)).data.trainerId == request.auth.uid;
+      }
+
+      // Owning client has full control; their linked trainer gets read-only
+      // access (workouts are logged by clients, viewed by trainers).
+      allow read: if isOwner(resource.data.clientId) || isLinkedTrainer(resource.data.clientId);
+      allow create: if isOwner(request.resource.data.clientId);
+      allow update, delete: if isOwner(resource.data.clientId);
+    }
+
+    match /chats/{chatId} {
+      // chatId is always the deterministic pair "clientId_trainerId" - a
+      // client only ever has one trainer, so both sides can derive it
+      // locally without a lookup, and rules can verify it without a
+      // separate participants array.
+      function isLinkedPair(clientId, trainerId) {
+        return get(/databases/$(database)/documents/users/$(clientId)).data.trainerId == trainerId;
+      }
+      function isParticipant() {
+        return isOwner(resource.data.clientId) || isOwner(resource.data.trainerId);
+      }
+
+      allow read: if isParticipant();
+
+      allow create: if (isOwner(request.resource.data.clientId) || isOwner(request.resource.data.trainerId))
+        && chatId == request.resource.data.clientId + '_' + request.resource.data.trainerId
+        && isLinkedPair(request.resource.data.clientId, request.resource.data.trainerId);
+
+      // clientId/trainerId are fixed at creation; only lastMessage-style
+      // metadata may change afterwards.
+      allow update: if isParticipant()
+        && request.resource.data.clientId == resource.data.clientId
+        && request.resource.data.trainerId == resource.data.trainerId;
+
+      allow delete: if false;
+
+      match /messages/{messageId} {
+        function isChatParticipant() {
+          return isSignedIn()
+            && (get(/databases/$(database)/documents/chats/$(chatId)).data.clientId == request.auth.uid
+                || get(/databases/$(database)/documents/chats/$(chatId)).data.trainerId == request.auth.uid);
+        }
+
+        // Messages are immutable once sent - no update/delete for v1.
+        allow read: if isChatParticipant();
+        allow create: if isChatParticipant() && request.resource.data.senderId == request.auth.uid;
+        allow update, delete: if false;
+      }
+    }
+
+    match /customExercises/{exerciseId} {
+      function myProfile() {
+        return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      }
+
+      // The library a client sees is their own trainer's, so exercise names
+      // don't leak between unrelated trainers.
+      allow read: if isOwner(resource.data.createdBy)
+        || (isSignedIn() && myProfile().trainerId == resource.data.createdBy);
+
+      // Clients can never extend the library - that's the whole point of
+      // select-only logging, so the rule enforces it server-side rather than
+      // relying on the picker hiding the button.
+      allow create: if isSignedIn()
+        && myProfile().role == 'trainer'
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.type in ['weight_reps', 'bodyweight_reps', 'duration', 'distance_duration'];
+
+      allow update: if isOwner(resource.data.createdBy)
+        && request.resource.data.createdBy == resource.data.createdBy;
+      allow delete: if isOwner(resource.data.createdBy);
+    }
+
+    match /progressMedia/{mediaId} {
+      function isLinkedTrainer(clientId) {
+        return isSignedIn()
+          && get(/databases/$(database)/documents/users/$(clientId)).data.trainerId == request.auth.uid;
+      }
+
+      // Owning client has full control (photo/video is theirs to manage);
+      // their linked trainer gets read-only access plus the ability to
+      // comment (handled in the comments subcollection below).
+      allow read: if isOwner(resource.data.clientId) || isLinkedTrainer(resource.data.clientId);
+      allow create: if isOwner(request.resource.data.clientId)
+        && request.resource.data.type in ['photo', 'video'];
+      allow update: if false;
+      allow delete: if isOwner(resource.data.clientId);
+
+      match /comments/{commentId} {
+        function parentClientId() {
+          return get(/databases/$(database)/documents/progressMedia/$(mediaId)).data.clientId;
+        }
+        function isCommentParticipant() {
+          return isOwner(parentClientId()) || isLinkedTrainer(parentClientId());
+        }
+
+        // Comments are immutable once posted - no update/delete for v1.
+        allow read: if isCommentParticipant();
+        allow create: if isCommentParticipant() && request.resource.data.authorId == request.auth.uid;
+        allow update, delete: if false;
+      }
+    }
+
+    // Default deny for everything else until each phase defines its own
+    // rules.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

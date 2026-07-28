@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import {
     createUserWithEmailAndPassword,
+    deleteUser,
     onAuthStateChanged,
     signInWithEmailAndPassword,
     signOut as firebaseSignOut,
@@ -61,34 +62,44 @@ export const AuthProvider = ({ children }) => {
     }, [user])
 
     const signUp = async (email, password, { name, role, inviteCode }) => {
-        let trainerId = null
-        let ownInviteCode = null
-
-        if (role === 'client') {
-            if (!inviteCode) {
-                throw new Error('An invite code from your trainer is required to register as a client.')
-            }
-            const trainerMatches = await getDocs(
-                query(collection(db, 'users'), where('inviteCode', '==', inviteCode.trim().toUpperCase()))
-            )
-            if (trainerMatches.empty) {
-                throw new Error("That invite code doesn't match any trainer. Double-check it and try again.")
-            }
-            trainerId = trainerMatches.docs[0].id
-        } else if (role === 'trainer') {
-            ownInviteCode = generateInviteCode()
-        }
-
+        // Firestore security rules only allow reading `users` docs to signed-in
+        // accounts, so the auth account must exist before we can look up a
+        // trainer's invite code. If that lookup fails, roll back the auth
+        // account we just created rather than leaving an orphaned login with
+        // no profile doc.
         const credential = await createUserWithEmailAndPassword(auth, email, password)
 
-        await setDoc(doc(db, 'users', credential.user.uid), {
-            name,
-            email,
-            role,
-            trainerId: role === 'client' ? trainerId : null,
-            inviteCode: role === 'trainer' ? ownInviteCode : null,
-            createdAt: serverTimestamp(),
-        })
+        try {
+            let trainerId = null
+            let ownInviteCode = null
+
+            if (role === 'client') {
+                if (!inviteCode) {
+                    throw new Error('An invite code from your trainer is required to register as a client.')
+                }
+                const trainerMatches = await getDocs(
+                    query(collection(db, 'users'), where('inviteCode', '==', inviteCode.trim().toUpperCase()))
+                )
+                if (trainerMatches.empty) {
+                    throw new Error("That invite code doesn't match any trainer. Double-check it and try again.")
+                }
+                trainerId = trainerMatches.docs[0].id
+            } else if (role === 'trainer') {
+                ownInviteCode = generateInviteCode()
+            }
+
+            await setDoc(doc(db, 'users', credential.user.uid), {
+                name,
+                email,
+                role,
+                trainerId: role === 'client' ? trainerId : null,
+                inviteCode: role === 'trainer' ? ownInviteCode : null,
+                createdAt: serverTimestamp(),
+            })
+        } catch (error) {
+            await deleteUser(credential.user).catch(() => {})
+            throw error
+        }
     }
 
     const signIn = (email, password) => signInWithEmailAndPassword(auth, email, password)

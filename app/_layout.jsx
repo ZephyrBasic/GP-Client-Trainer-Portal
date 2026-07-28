@@ -1,5 +1,5 @@
-import { Stack } from 'expo-router'
-import { StyleSheet, useColorScheme } from 'react-native'
+import { Redirect, Stack } from 'expo-router'
+import { ActivityIndicator, StyleSheet, useColorScheme } from 'react-native'
 import { Colors } from '../constants/Colors'
 import { AuthProvider, useAuth } from '../contexts/AuthContext'
 import { useProtectedRoute } from '../hooks/useProtectedRoute'
@@ -10,10 +10,18 @@ const RootLayoutNav = () => {
     const theme = Colors[colorScheme] ?? Colors.light
     const { loading } = useAuth()
 
-    useProtectedRoute()
+    const redirectTo = useProtectedRoute()
 
     if (loading) {
-        return <ThemedView style={styles.loading} />
+        return (
+            <ThemedView style={styles.loading}>
+                <ActivityIndicator size="large" color={Colors.primary} />
+            </ThemedView>
+        )
+    }
+
+    if (redirectTo) {
+        return <Redirect href={redirectTo} />
     }
 
     return (
@@ -22,7 +30,7 @@ const RootLayoutNav = () => {
             headerTintColor: theme.title,
         }}>
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="index" options={{ title: 'Home' }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>
     )
 }
@@ -40,5 +48,7 @@ export default RootLayout
 const styles = StyleSheet.create({
     loading: {
         flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
     }
 })

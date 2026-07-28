@@ -1,0 +1,20 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Progress photos/videos: the owning client can upload; readable by the
+    // client themselves or by the trainer that client is linked to.
+    match /progressMedia/{clientId}/{mediaId} {
+      allow read: if request.auth != null
+        && (request.auth.uid == clientId
+            || firestore.get(/databases/(default)/documents/users/$(clientId)).data.trainerId == request.auth.uid);
+
+      allow write: if request.auth != null && request.auth.uid == clientId;
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
