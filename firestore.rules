@@ -97,10 +97,14 @@ service cloud.firestore {
       // Clients can never extend the library - that's the whole point of
       // select-only logging, so the rule enforces it server-side rather than
       // relying on the picker hiding the button.
+      // `fields` decides which set inputs a client is shown and what gets stored,
+      // so it is constrained here rather than trusted from the picker.
       allow create: if isSignedIn()
         && myProfile().role == 'trainer'
         && request.resource.data.createdBy == request.auth.uid
-        && request.resource.data.type in ['weight_reps', 'bodyweight_reps', 'duration', 'distance_duration'];
+        && request.resource.data.fields is list
+        && request.resource.data.fields.size() > 0
+        && request.resource.data.fields.hasOnly(['weightKg', 'reps', 'distanceMeters', 'durationSeconds']);
 
       allow update: if isOwner(resource.data.createdBy)
         && request.resource.data.createdBy == resource.data.createdBy;

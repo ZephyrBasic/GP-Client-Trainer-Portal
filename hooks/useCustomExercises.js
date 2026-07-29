@@ -41,14 +41,16 @@ export const useCustomExercises = (profile) => {
         return unsubscribe
     }, [ownerId])
 
-    const addCustomExercise = async ({ name, type, category }) => {
+    // Shaped like a bundled catalog record (see constants/exercises.json) so the
+    // picker, search index and log form treat custom and bundled the same.
+    const addCustomExercise = async ({ name, fields, tags }) => {
         if (profile?.role !== 'trainer') {
             throw new Error('Only trainers can add exercises to the library.')
         }
         await addDoc(collection(db, 'customExercises'), {
             name: name.trim(),
-            type,
-            category,
+            fields,
+            tags,
             createdBy: profile.uid,
             createdAt: serverTimestamp(),
         })

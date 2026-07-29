@@ -1,38 +1,46 @@
 import { useMemo, useState } from 'react'
 import { FlatList, Modal, Pressable, StyleSheet, useColorScheme, View } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
 
 import ThemedText from './ThemedText'
 import ThemedTextInput from './ThemedTextInput'
 import ThemedButton from './ThemedButton'
+import ExerciseInfoModal from './ExerciseInfoModal'
 import Spacer from './Spacer'
 import { Colors } from '../constants/Colors'
-import { buildIndex, searchExercises } from '../utils/exerciseSearch'
+import { buildIndex, roleOf, searchExercises } from '../utils/exerciseSearch'
 import { useAuth } from '../contexts/AuthContext'
 import { useCustomExercises } from '../hooks/useCustomExercises'
 
-const CATEGORY_LABELS = {
+// The `role:` facet - what job a movement does in a session. Kept in sync with
+// ROLES in scripts/exerciseVocab.js.
+const ROLE_LABELS = {
     compound: 'Compound',
     accessory: 'Accessory',
     isolation: 'Isolation',
-    mobility: 'Mobility',
-    cardio: 'Cardio',
-    core: 'Core',
     power: 'Power',
-    other: 'Other',
+    potentiation: 'Potentiation',
+    core: 'Core',
+    prehab: 'Prehab',
+    warmup: 'Warmup',
+    cooldown: 'Cooldown',
+    conditioning: 'Conditioning',
 }
 
-const FILTERS = ['all', 'compound', 'accessory', 'mobility', 'cardio']
+const FILTERS = ['all', 'compound', 'accessory', 'core', 'prehab', 'warmup', 'conditioning']
 
-// Mirrors fieldsForType - the trainer picks how the exercise is measured, which
-// decides which inputs a client sees when logging it.
-const TYPE_OPTIONS = [
-    { value: 'weight_reps', label: 'Weight + reps' },
-    { value: 'bodyweight_reps', label: 'Reps only' },
-    { value: 'duration', label: 'Time' },
-    { value: 'distance_duration', label: 'Distance + time' },
+// The trainer picks how the exercise is measured, which decides both the `fields`
+// stored on the doc and which inputs a client sees when logging it.
+const MEASUREMENT_OPTIONS = [
+    { label: 'Weight + reps', fields: ['weightKg', 'reps'] },
+    { label: 'Reps only', fields: ['reps'] },
+    { label: 'Time', fields: ['durationSeconds'] },
+    { label: 'Distance + time', fields: ['distanceMeters', 'durationSeconds'] },
+    { label: 'Weight + distance', fields: ['weightKg', 'distanceMeters'] },
+    { label: 'Weight + time', fields: ['weightKg', 'durationSeconds'] },
 ]
 
-const NEW_CATEGORY_OPTIONS = ['compound', 'accessory', 'isolation', 'mobility', 'cardio', 'core', 'power']
+const NEW_ROLE_OPTIONS = ['compound', 'accessory', 'isolation', 'core', 'prehab', 'warmup', 'conditioning']
 
 /**
  * Select-only exercise chooser. Clients pick from the repository rather than
@@ -49,27 +57,30 @@ const ExercisePicker = ({ visible, onSelect, onClose }) => {
     const isTrainer = profile?.role === 'trainer'
 
     const [query, setQuery] = useState('')
-    const [category, setCategory] = useState('all')
+    const [role, setRole] = useState('all')
     const [adding, setAdding] = useState(false)
-    const [newType, setNewType] = useState('weight_reps')
-    const [newCategory, setNewCategory] = useState('accessory')
+    const [newMeasurement, setNewMeasurement] = useState(MEASUREMENT_OPTIONS[0].label)
+    const [newRole, setNewRole] = useState('accessory')
     const [saving, setSaving] = useState(false)
     const [error, setError] = useState('')
+    // The exercise whose how-to page is open, layered over this picker.
+    const [infoExercise, setInfoExercise] = useState(null)
 
     const customIndex = useMemo(() => buildIndex(customExercises), [customExercises])
 
     const results = useMemo(() => {
         const found = searchExercises(query, 200, customIndex)
-        return category === 'all' ? found : found.filter((e) => e.category === category)
-    }, [query, category, customIndex])
+        return role === 'all' ? found : found.filter((e) => roleOf(e) === role)
+    }, [query, role, customIndex])
 
     const reset = () => {
         setQuery('')
-        setCategory('all')
+        setRole('all')
         setAdding(false)
         setError('')
-        setNewType('weight_reps')
-        setNewCategory('accessory')
+        setNewMeasurement(MEASUREMENT_OPTIONS[0].label)
+        setNewRole('accessory')
+        setInfoExercise(null)
     }
 
     const handleSelect = (exercise) => {
@@ -101,7 +112,8 @@ const ExercisePicker = ({ visible, onSelect, onClose }) => {
 
         setSaving(true)
         try {
-            await addCustomExercise({ name, type: newType, category: newCategory })
+            const measurement = MEASUREMENT_OPTIONS.find((o) => o.label === newMeasurement)
+            await addCustomExercise({ name, fields: measurement.fields, tags: [`role:${newRole}`] })
             setAdding(false)
             setSaving(false)
         } catch (err) {
@@ -152,17 +164,19 @@ const ExercisePicker = ({ visible, onSelect, onClose }) => {
                         <ThemedText style={styles.label}>How is it measured?</ThemedText>
                         <Spacer height={8} />
                         <View style={styles.filterRow}>
-                            {TYPE_OPTIONS.map((option) =>
-                                renderChip(option.label, newType === option.value, () => setNewType(option.value))
+                            {MEASUREMENT_OPTIONS.map((option) =>
+                                renderChip(option.label, newMeasurement === option.label, () =>
+                                    setNewMeasurement(option.label)
+                                )
                             )}
                         </View>
 
                         <Spacer height={16} />
-                        <ThemedText style={styles.label}>Category</ThemedText>
+                        <ThemedText style={styles.label}>Role</ThemedText>
                         <Spacer height={8} />
                         <View style={styles.filterRow}>
-                            {NEW_CATEGORY_OPTIONS.map((value) =>
-                                renderChip(CATEGORY_LABELS[value], newCategory === value, () => setNewCategory(value))
+                            {NEW_ROLE_OPTIONS.map((value) =>
+                                renderChip(ROLE_LABELS[value], newRole === value, () => setNewRole(value))
                             )}
                         </View>
 
@@ -185,8 +199,8 @@ const ExercisePicker = ({ visible, onSelect, onClose }) => {
                         <Spacer height={10} />
                         <View style={styles.filterRow}>
                             {FILTERS.map((key) =>
-                                renderChip(key === 'all' ? 'All' : CATEGORY_LABELS[key], category === key, () =>
-                                    setCategory(key)
+                                renderChip(key === 'all' ? 'All' : ROLE_LABELS[key], role === key, () =>
+                                    setRole(key)
                                 )
                             )}
                         </View>
@@ -235,15 +249,21 @@ const ExercisePicker = ({ visible, onSelect, onClose }) => {
                                                 </ThemedText>
                                             ) : null}
                                         </ThemedText>
-                                        {item.aliases?.length ? (
-                                            <ThemedText style={styles.rowAlias}>
-                                                aka {item.aliases.join(', ')}
-                                            </ThemedText>
-                                        ) : null}
+                                        <ThemedText style={[styles.rowRole, { color: theme.iconColor }]}>
+                                            {ROLE_LABELS[roleOf(item)] ?? ''}
+                                        </ThemedText>
                                     </View>
-                                    <ThemedText style={[styles.rowCategory, { color: theme.iconColor }]}>
-                                        {CATEGORY_LABELS[item.category] ?? item.category}
-                                    </ThemedText>
+                                    {/* Its own Pressable, so opening the how-to does not also
+                                        select the exercise and dismiss the picker. */}
+                                    <Pressable
+                                        onPress={() => setInfoExercise(item)}
+                                        hitSlop={8}
+                                        style={[styles.infoBtn, { borderColor: Colors.primary }]}
+                                        accessibilityRole="button"
+                                        accessibilityLabel={`How to do ${item.name}`}
+                                    >
+                                        <Ionicons name="information" size={16} color={Colors.primary} />
+                                    </Pressable>
                                 </Pressable>
                             )}
                         />
@@ -256,6 +276,8 @@ const ExercisePicker = ({ visible, onSelect, onClose }) => {
                     </>
                 )}
             </View>
+
+            <ExerciseInfoModal exercise={infoExercise} onClose={() => setInfoExercise(null)} />
         </Modal>
     )
 }
@@ -312,13 +334,17 @@ const styles = StyleSheet.create({
         fontSize: 11,
         fontWeight: 'bold',
     },
-    rowAlias: {
+    rowRole: {
         fontSize: 12,
-        opacity: 0.6,
         marginTop: 2,
     },
-    rowCategory: {
-        fontSize: 12,
+    infoBtn: {
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        borderWidth: 1.5,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     empty: {
         paddingVertical: 40,

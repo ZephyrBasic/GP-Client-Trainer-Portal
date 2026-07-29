@@ -14,7 +14,7 @@ import { Colors } from '../../../constants/Colors'
 import { db } from '../../../firebase/config'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useWorkouts } from '../../../hooks/useWorkouts'
-import { fieldsForType } from '../../../utils/exerciseSearch'
+import { fieldsFor } from '../../../utils/exerciseSearch'
 import { buildExerciseHistory, prefillSetsFor, previousSetSummary } from '../../../utils/exerciseHistory'
 
 // Each set carries only the fields its exercise uses; the rest stay null so
@@ -26,8 +26,7 @@ const FIELD_LABELS = {
     distanceMeters: 'Metres',
 }
 
-const emptySetFor = (type) =>
-    fieldsForType(type).reduce((acc, field) => ({ ...acc, [field]: '' }), {})
+const emptySetFor = (fields) => fields.reduce((acc, field) => ({ ...acc, [field]: '' }), {})
 
 const LogWorkout = () => {
     const { profile } = useAuth()
@@ -48,8 +47,10 @@ const LogWorkout = () => {
 
     const handlePickExercise = (exercise) => {
         setPickerOpen(false)
+        const fields = fieldsFor(exercise)
+        // Empty on a first attempt, otherwise seeded with what they did last time.
         const prefilled = prefillSetsFor(exercise, history).map((set) =>
-            fieldsForType(exercise.type).reduce(
+            fields.reduce(
                 (acc, field) => ({ ...acc, [field]: set[field] != null ? String(set[field]) : '' }),
                 {}
             )
@@ -59,8 +60,8 @@ const LogWorkout = () => {
             {
                 exerciseId: exercise.id,
                 name: exercise.name,
-                type: exercise.type,
-                sets: prefilled.length ? prefilled : [emptySetFor(exercise.type)],
+                fields,
+                sets: prefilled.length ? prefilled : [emptySetFor(fields)],
                 previous: previousSetSummary(exercise, history),
             },
         ])
@@ -79,7 +80,7 @@ const LogWorkout = () => {
     const removeExercise = (exIndex) => setExercises((prev) => prev.filter((_, i) => i !== exIndex))
     const addSet = (exIndex) =>
         setExercises((prev) =>
-            prev.map((ex, i) => (i === exIndex ? { ...ex, sets: [...ex.sets, emptySetFor(ex.type)] } : ex))
+            prev.map((ex, i) => (i === exIndex ? { ...ex, sets: [...ex.sets, emptySetFor(ex.fields)] } : ex))
         )
     const removeSet = (exIndex, setIndex) =>
         setExercises((prev) =>
@@ -93,12 +94,12 @@ const LogWorkout = () => {
             .map((ex) => ({
                 exerciseId: ex.exerciseId,
                 name: ex.name,
-                type: ex.type,
+                fields: ex.fields,
                 sets: ex.sets
                     // A set counts as logged if any of its fields has a value - a 45s
                     // plank and a bodyweight pushup are both valid without a weight.
                     .map((set) =>
-                        fieldsForType(ex.type).reduce((acc, field) => {
+                        ex.fields.reduce((acc, field) => {
                             const raw = String(set[field] ?? '').trim()
                             const parsed = Number(raw)
                             acc[field] = raw !== '' && Number.isFinite(parsed) ? parsed : null
@@ -165,7 +166,7 @@ const LogWorkout = () => {
                 ) : null}
 
                 {exercises.map((exercise, exIndex) => {
-                    const fields = fieldsForType(exercise.type)
+                    const fields = exercise.fields
                     return (
                         <View key={`${exercise.exerciseId}-${exIndex}`}>
                             <Spacer height={12} />

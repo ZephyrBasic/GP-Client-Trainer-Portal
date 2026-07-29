@@ -10,6 +10,9 @@ const TabsLayout = () => {
     const { profile } = useAuth()
     const isTrainer = profile?.role === 'trainer'
 
+    // Tabs whose route is a folder render their own Stack header (with the back
+    // button and per-screen title), so the Tabs header is switched off for those
+    // four - otherwise the title shows up twice, stacked.
     return (
         <Tabs
             screenOptions={{
@@ -31,6 +34,7 @@ const TabsLayout = () => {
             <Tabs.Screen
                 name="clients"
                 options={{
+                    headerShown: false,
                     title: 'Clients',
                     href: isTrainer ? undefined : null,
                     tabBarIcon: ({ color, size }) => <Ionicons name="people" size={size} color={color} />,
@@ -39,6 +43,7 @@ const TabsLayout = () => {
             <Tabs.Screen
                 name="workouts"
                 options={{
+                    headerShown: false,
                     title: 'Workouts',
                     href: isTrainer ? null : undefined,
                     tabBarIcon: ({ color, size }) => <Ionicons name="barbell" size={size} color={color} />,
@@ -47,6 +52,7 @@ const TabsLayout = () => {
             <Tabs.Screen
                 name="messages"
                 options={{
+                    headerShown: false,
                     title: 'Messages',
                     tabBarIcon: ({ color, size }) => <Ionicons name="chatbubbles" size={size} color={color} />,
                 }}
@@ -54,6 +60,7 @@ const TabsLayout = () => {
             <Tabs.Screen
                 name="progress"
                 options={{
+                    headerShown: false,
                     title: 'Progress',
                     href: isTrainer ? null : undefined,
                     tabBarIcon: ({ color, size }) => <Ionicons name="videocam" size={size} color={color} />,

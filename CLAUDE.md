@@ -17,16 +17,16 @@ firebase deploy --only firestore:rules      # after editing firestore.rules
 firebase deploy --only storage              # after editing storage.rules
 ```
 
-There is no test runner, linter, or build step configured. Firebase project id: `gp-client-trainer-portal`.
+```bash
+node scripts/validate-exercises.js          # after editing constants/exercises.json
+node scripts/validate-exercises.js --stats  # ... plus facet coverage
+```
+
+There is no test runner, linter, or build step configured — `validate-exercises.js` is the only automated check. Firebase project id: `gp-client-trainer-portal`.
 
 Config comes from `.env` (`EXPO_PUBLIC_FIREBASE_*`, see `.env.example`) and is read in `firebase/config.js`. `.env` is gitignored.
 
-Data migrations are one-off Node scripts in `scripts/`, run with the Admin SDK against a service account, and are idempotent + `--dry`-capable:
-
-```bash
-GOOGLE_APPLICATION_CREDENTIALS=<sa.json> node scripts/migrate-workouts-v2.js --project gp-client-trainer-portal --dry
-node scripts/migrate-exercises-v2.js --dry --report      # rewrites constants/exercises.json in place
-```
+Any future data migration should be a one-off Node script in `scripts/`, run with the Admin SDK against a service account, idempotent and `--dry`-capable.
 
 ## Architecture
 
@@ -43,26 +43,52 @@ Routing is expo-router file-based with typed routes. One tab navigator serves bo
 ### Data model (Firestore)
 
 - `users/{uid}` — name, email, role, trainerId, inviteCode. `role` and `trainerId` are immutable after creation (enforced in rules) so nobody self-promotes to trainer.
-- `workouts/{id}` — owned by a client, read-only for their trainer. `trainerId` is **denormalized onto the doc** at write time so reads cost no `get()`; rules verify it against the client's real trainer on write instead.
+- `workouts/{id}` — owned by a client, read-only for their trainer. The doc carries `clientId` only; the trainer's read permission is resolved by a `get()` on the client's user doc (`isLinkedTrainer` in `firestore.rules`), not by a denormalized `trainerId`.
 - `chats/{clientId}_{trainerId}` + `messages` subcollection. The chat id is derived, not looked up — see `utils/chatId.js`. Messages are immutable.
 - `customExercises/{id}` — trainer-owned additions to the exercise library, readable by that trainer's clients. Clients can never create them; that's enforced server-side, not just by hiding the button.
 - `progressMedia/{id}` + `comments` subcollection; the file itself lives at Storage path `progressMedia/{clientId}/{mediaId}`. Comments are immutable.
 
 `firestore.rules` and `storage.rules` are the real authorization layer and carry the reasoning in comments. Anything not explicitly matched is denied. When adding a collection, add its rules in the same change.
 
-### Workout schema and the v1/v2 split
+### Workout document shape
 
-`utils/workoutSchema.js` is **the only file that knows about workout document shapes**. v2 is `workout.entries[] -> entry.sets[]` with `set.type`/`rpe`/`tempo` and `set.weightKg`; v1 was `exercises[]` and `set.weight`. Every read path goes through `entriesOf` / `setsOf` / `weightOf` / `setTypeOf` so legacy tolerance can be deleted in one edit once `scripts/migrate-workouts-v2.js` has run everywhere. Do not reach into `workout.entries` directly from a screen.
+```js
+workouts/{id} = {
+  clientId, date: Timestamp, durationMinutes, notes, createdAt,
+  exercises: [
+    { exerciseId,          // catalog id, or `custom:{docId}`
+      name,                // denormalised so history renders without a catalog lookup
+      fields,              // copied from the catalog record at log time
+      sets: [{ weightKg, reps, distanceMeters, durationSeconds }] }  // absent measures are null
+  ]
+}
+```
 
-Volume rules live here too: drop sets and failure sets count as working sets; only warm-ups are excluded (`workingSets`, `isWarmup`).
+A set only carries the keys its exercise's `fields` declares, and every absent measurement is `null` rather than `0`. `fields` is denormalised onto the logged entry so a workout still renders correctly if the catalog record is later retagged or renamed.
 
-Comparable legacy fallbacks marked `LEGACY:` also exist in `firestore.rules` (the `isLinkedTrainer` read branch) and `exerciseSearch.js` (`LEGACY_FIELDS_BY_TYPE`). They are all deletable together after migration.
+Reading helpers live in `utils/formatSet.js` (display) and `utils/workoutStats.js` (volume/totals). Volume is loaded work only — `reps × weightKg`; bodyweight and timed work score 0 there and are surfaced as separate totals, because summing them would mix units.
 
 ### Exercise repository
 
-`constants/exercises.json` is a bundled catalog; each record has `fields` (which measurements a set takes — `weightKg`/`reps`/`distanceMeters`/`durationSeconds`), faceted `tags` (`muscle:`, `pattern:`, `modality:`, `role:`, `equipment:`), `aliases`, and optional `typicalSets`/`typicalReps`. Logging is **select-only**: clients pick from the catalog + their trainer's custom exercises, they cannot type a free-text exercise name.
+`constants/exercises.json` is a bundled catalog of ~317 records. Each has `fields` (which measurements a set takes — `weightKg`/`reps`/`distanceMeters`/`durationSeconds`), faceted `tags`, and an optional `videoUrl` (an https link to a how-to demo, surfaced as "Watch how-to" in the picker; absent on most records and that's fine). Nothing else: there are deliberately **no** `typicalSets`/`typicalReps`, because a set starts empty and is prefilled from that client's own last performance (`utils/exerciseHistory.js`) rather than from a generic prescription, and no `aliases` — the spelling variants earned their keep while importing the spreadsheets and nothing after it.
 
-`utils/exerciseSearch.js` builds its index once at module load and ranks exact > prefix > word-prefix > substring, expanding coaching shorthand (`db`, `rdl`, `sa`, …). Custom exercises are indexed separately by the caller and passed in as `extra`; their ids are namespaced `custom:{docId}` so they can't collide.
+Logging is **select-only**: clients pick from the catalog + their trainer's custom exercises, they cannot type a free-text exercise name.
+
+The five tag facets are closed vocabularies defined in `scripts/exerciseVocab.js`:
+
+| Facet | Meaning |
+|---|---|
+| `muscle:` | what it trains |
+| `pattern:` | movement pattern (`squat`, `hinge`, `horizontal-pull`, `anti-rotation`, …) |
+| `modality:` | how it's trained (`resistance`, `cardio`, `mobility`, `stretch`, `yoga`, `plyometric`, `isometric`, `balance`) |
+| `role:` | job in a session (`compound`, `accessory`, `isolation`, `power`, `potentiation`, `core`, `prehab`, `warmup`, `cooldown`, `conditioning`) |
+| `equipment:` | what it needs |
+
+`role:` and `modality:` are separate on purpose — the old single `category` field conflated "compound vs isolation" with "cardio vs mobility", which made both unfilterable. They map onto the `Type` column in the trainer's program spreadsheets.
+
+Run `node scripts/validate-exercises.js [--stats]` after editing the catalog. It enforces the schema and the closed vocabularies, and lints the naming rules: no superset prefixes (`A1.`), no durations/distances/rep counts baked into a name, no `/` either-ors or `+` combos, no abbreviations in `name`. Names are spelled out (`Single-Arm Dumbbell Row`) while ids stay abbreviated (`sa-db-row`), and the search indexes both, so either form finds the record. It exits non-zero, so it can gate a commit.
+
+`utils/exerciseSearch.js` builds its index once at module load. A record is indexed under two labels — its name and its de-slugged id — ranked **separately** (exact > prefix > word-prefix > substring); a name match outranks an id match at equal rank, and ties break toward the shorter name so "curl" resolves to `Bicep Curl` rather than `Barbell Bicep Curl`. Coaching shorthand (`db`, `rdl`, `sa`, `wgs`, `rower`, …) is expanded and trailing plurals are stripped on **both** sides of the comparison, which is what lets "bicep curls" find `Bicep Curl` now that plural aliases are gone. Custom exercises are indexed separately by the caller and passed in as `extra`; their ids are namespaced `custom:{docId}` so they can't collide.
 
 Unused measurement fields are stored as `null`, never `0` — "no weight" must stay distinguishable from "lifted 0 kg".
 
@@ -75,6 +101,10 @@ Every collection read is a hook in `hooks/` that owns one `onSnapshot` subscript
 Components are default-export function components in `components/`, styled with `StyleSheet.create` and no styling library. Themed primitives (`ThemedView`, `ThemedText`, `ThemedButton`, `ThemedCard`, `ThemedTextInput`, `ThemedLogo`) each call `useColorScheme()` and index `Colors[colorScheme] ?? Colors.light` from `constants/Colors.js` — use them instead of raw RN primitives so light/dark keeps working. `Colors.primary` is intentionally dark enough for white button text; the brighter accent greens are icon/highlight-only.
 
 Auth errors are mapped to human copy through `utils/firebaseErrors.js` — route new auth failures through it rather than surfacing raw Firebase codes.
+
+Tabs whose route is a folder (`clients`, `workouts`, `messages`, `progress`) set `headerShown: false` on their `Tabs.Screen`, because the nested `Stack` renders its own header — leaving both on shows the title twice.
+
+How-to demos are YouTube links, which `expo-video` can't play (it wants a direct media file), so `components/VideoEmbed.jsx` embeds YouTube's own iframe player: a `WebView` on native, a real `<iframe>` on web, since `react-native-webview` has no web build. URL parsing lives separately in `utils/videoUrl.js` so it's testable without a React Native runtime. `ExerciseInfoModal` is a stacked `Modal` rather than a pushed route on purpose — `ExercisePicker` is itself a `Modal`, and on native a pushed screen would open *behind* it.
 
 ## Working style in this repo
 

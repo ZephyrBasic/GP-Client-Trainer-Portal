@@ -1,7 +1,7 @@
-// Renders a logged set from whichever fields it actually carries. Sets predating
-// the exercise repository only have `reps`/`weight`, so those are read too.
+// Renders a logged set from whichever fields it actually carries, which is the
+// `fields` array its exercise declares in the repository.
 export const formatSet = (set) => {
-    const weight = set.weightKg ?? set.weight ?? null
+    const weight = set.weightKg ?? null
     const parts = []
 
     if (set.reps != null) parts.push(`${set.reps} reps`)

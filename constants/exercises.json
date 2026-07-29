@@ -1,2919 +1,5007 @@
 [
- {
-  "id": "chest-fly",
-  "name": ". Chest Flys",
-  "type": "weight_reps",
-  "category": "accessory",
-  "aliases": [
-   "Chest Flys"
-  ],
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "13-exercise",
-  "name": "13 Exercises",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "15m-elliptical",
-  "name": "15m Elliptical",
-  "type": "duration",
-  "category": "cardio"
- },
- {
-  "id": "15m-resistance-bike",
-  "name": "15m Resistance Bike",
-  "type": "duration",
-  "category": "cardio"
- },
- {
-  "id": "15m-rower",
-  "name": "15m Rower",
-  "type": "distance_duration",
-  "category": "cardio"
- },
- {
-  "id": "18-elevated-split-squat",
-  "name": "18\" Elevated Split Squat",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "2-light-banded-dip-set",
-  "name": "2 light (banded) dip sets",
-  "type": "duration",
-  "category": "mobility"
- },
- {
-  "id": "20k-step",
-  "name": "20k Steps",
-  "type": "duration",
-  "category": "cardio"
- },
- {
-  "id": "24-elevated-pushup",
-  "name": "24\" Elevated Pushups",
-  "type": "bodyweight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 46246
- },
- {
-  "id": "25-8-25",
-  "name": "25/8/25",
-  "type": "duration",
-  "category": "cardio"
- },
- {
-  "id": "2km-walk-jog-run",
-  "name": "2km Walk - Jog - Run",
-  "type": "distance_duration",
-  "category": "cardio"
- },
- {
-  "id": "3-way-calf-raise",
-  "name": "3-Way Calf Raise",
-  "type": "duration",
-  "category": "isolation",
-  "typicalSets": 2
- },
- {
-  "id": "45deg-dorsiflexion-raise",
-  "name": "45deg Dorsiflexion Raises",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 2,
-  "typicalReps": 6
- },
- {
-  "id": "5k-jog",
-  "name": "5k Jog",
-  "type": "distance_duration",
-  "category": "cardio"
- },
- {
-  "id": "5k-row",
-  "name": "5k Row",
-  "type": "distance_duration",
-  "category": "accessory"
- },
- {
-  "id": "5k-run",
-  "name": "5k Run",
-  "type": "distance_duration",
-  "category": "cardio"
- },
- {
-  "id": "5km-distance-to-15k-step",
-  "name": "5km Distance to 15k Steps",
-  "type": "duration",
-  "category": "cardio"
- },
- {
-  "id": "5s-pause-goblet-squat",
-  "name": "5s Pause Goblet Squat",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 1,
-  "typicalReps": 5
- },
- {
-  "id": "8deg-incline-treadmill",
-  "name": "8deg Incline Treadmill",
-  "type": "duration",
-  "category": "cardio",
-  "typicalSets": 1
- },
- {
-  "id": "8k-run",
-  "name": "8k Run",
-  "type": "distance_duration",
-  "category": "cardio"
- },
- {
-  "id": "abduction",
-  "name": "Abduction",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "abduction-machine",
-  "name": "Abduction Machine",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 4,
-  "typicalReps": 12
- },
- {
-  "id": "acceleration-crossover",
-  "name": "Acceleration Crossover",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "active-passive-hang",
-  "name": "Active Passive Hang",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "aliases": [
-   "Active / Passive Hangs",
-   "Active/Passive Hang",
-   "Active Passive Hangs"
-  ],
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "adduction-machine",
-  "name": "Adduction Machine",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 2,
-  "typicalReps": 11
- },
- {
-  "id": "and-twist",
-  "name": "and Twists",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 1,
-  "typicalReps": 20
- },
- {
-  "id": "ankle-mobility",
-  "name": "Ankle Mobility",
-  "type": "duration",
-  "category": "power"
- },
- {
-  "id": "assault-bike",
-  "name": "Assault Bike",
-  "type": "duration",
-  "category": "cardio",
-  "typicalSets": 3
- },
- {
-  "id": "assisted-pullup-machine",
-  "name": "Assisted Pullup Machine",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 15
- },
- {
-  "id": "atg-split-squat-elevated",
-  "name": "ATG Split Squat - Elevated",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 5,
-  "typicalReps": 8
- },
- {
-  "id": "back-bend",
-  "name": "Back Bend",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 3,
-  "typicalReps": 45
- },
- {
-  "id": "back-bridge-knee-lift",
-  "name": "Back Bridge Knee Lift",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 20
- },
- {
-  "id": "back-extension",
-  "name": "Back Extension",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 15
- },
- {
-  "id": "back-squat",
-  "name": "Back Squat",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "band-chest-stretch-pulse",
-  "name": "Band chest stretch pulses",
-  "type": "bodyweight_reps",
-  "category": "cardio",
-  "typicalReps": 15
- },
- {
-  "id": "band-pull-apart",
-  "name": "Band Pull-Aparts",
-  "type": "duration",
-  "category": "mobility"
- },
- {
-  "id": "band-row",
-  "name": "Band Rows",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 1,
-  "typicalReps": 20
- },
- {
-  "id": "banded-abduction",
-  "name": "Banded Abduction",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "banded-complex",
-  "name": "Banded Complex",
-  "type": "duration",
-  "category": "power"
- },
- {
-  "id": "banded-hamstring-stretch",
-  "name": "Banded Hamstring Stretch",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 3
- },
- {
-  "id": "banded-lat-prayer-stretch",
-  "name": "Banded Lat Prayer Stretch",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 1
- },
- {
-  "id": "banded-overhead-touche",
-  "name": "Banded Overhead Touches",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 1,
-  "typicalReps": 6
- },
- {
-  "id": "banded-parallel-bar-dip",
-  "name": "Banded Parallel Bar Dips",
-  "type": "bodyweight_reps",
-  "category": "compound",
-  "typicalSets": 5,
-  "typicalReps": 46085
- },
- {
-  "id": "banded-pissing-goat",
-  "name": "Banded Pissing Goat",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "banded-pull-apart",
-  "name": "Banded Pull Aparts",
-  "type": "duration",
-  "category": "accessory"
- },
- {
-  "id": "banded-pull",
-  "name": "Banded Pulls",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 1,
-  "typicalReps": 20
- },
- {
-  "id": "banded-punche",
-  "name": "Banded Punches",
-  "type": "duration",
-  "category": "accessory",
-  "typicalSets": 2
- },
- {
-  "id": "banded-row",
-  "name": "Banded Row",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalReps": 10
- },
- {
-  "id": "banded-shoulder-mob",
-  "name": "Banded Shoulder Mob",
-  "type": "duration",
-  "category": "mobility"
- },
- {
-  "id": "banded-shoulder-opener",
-  "name": "Banded Shoulder Openers",
-  "type": "duration",
-  "category": "mobility"
- },
- {
-  "id": "barbell-bench-press",
-  "name": "Barbell Bench Press",
-  "type": "weight_reps",
-  "category": "compound",
-  "aliases": [
-   "BB Bench Press"
-  ],
-  "typicalSets": 2,
-  "typicalReps": 8
- },
- {
-  "id": "barbell-squat",
-  "name": "Barbell Squats",
-  "type": "weight_reps",
-  "category": "compound",
-  "aliases": [
-   "BB Squat"
-  ],
-  "typicalSets": 4,
-  "typicalReps": 8
- },
- {
-  "id": "basic-strike",
-  "name": "Basic Strikes",
-  "type": "distance_duration",
-  "category": "cardio",
-  "typicalSets": 4
- },
- {
-  "id": "basic-strike-cross-cutting",
-  "name": "Basic Strikes (Cross Cutting)",
-  "type": "distance_duration",
-  "category": "cardio",
-  "typicalSets": 4
- },
- {
-  "id": "basic-strike-pak-pai-dao",
-  "name": "Basic Strikes (Pak Pai Dao)",
-  "type": "distance_duration",
-  "category": "cardio",
-  "typicalSets": 4
- },
- {
-  "id": "barbell-bicep-curl",
-  "name": "BB Bicep Curls",
-  "type": "weight_reps",
-  "category": "isolation",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "barbell-front-squat",
-  "name": "BB Front Squat",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 8
- },
- {
-  "id": "barbell-hip-thrust",
-  "name": "BB Hip Thrust",
-  "type": "bodyweight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 46185
- },
- {
-  "id": "behind-head-strict-press",
-  "name": "Behind Head Strict Press",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "bench-dip-very-shallow",
-  "name": "Bench dips (very shallow)",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalReps": 10
- },
- {
-  "id": "bench-press",
-  "name": "Bench Press",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 3
- },
- {
-  "id": "bench-press-light",
-  "name": "Bench Press - light",
-  "type": "duration",
-  "category": "compound"
- },
- {
-  "id": "bicep-curl",
-  "name": "Bicep Curls",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "biep-curl",
-  "name": "Biep Curls",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "bike",
-  "name": "Bike",
-  "type": "duration",
-  "category": "cardio",
-  "typicalSets": 5
- },
- {
-  "id": "bodyweight-squat",
-  "name": "Bodyweight Squat",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalReps": 10
- },
- {
-  "id": "bottom-pushup-hold",
-  "name": "Bottom Pushup Hold",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 2
- },
- {
-  "id": "box-squat",
-  "name": "Box Squats",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 8
- },
- {
-  "id": "boxing-cardio",
-  "name": "Boxing Cardio",
-  "type": "duration",
-  "category": "mobility"
- },
- {
-  "id": "building-the-ball",
-  "name": "Building the Ball",
-  "type": "duration",
-  "category": "mobility"
- },
- {
-  "id": "bulgarian-split-squat",
-  "name": "Bulgarian Split Squat",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 15
- },
- {
-  "id": "cable-row",
-  "name": "Cable Row",
-  "type": "weight_reps",
-  "category": "compound",
-  "aliases": [
-   "Cable Rows"
-  ],
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "calf-raise",
-  "name": "Calf Raises",
-  "type": "bodyweight_reps",
-  "category": "isolation",
-  "typicalSets": 2,
-  "typicalReps": 46246
- },
- {
-  "id": "calf-stretch-w-belt",
-  "name": "Calf Stretch w/ Belt",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "cat-cow",
-  "name": "Cat Cow",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "aliases": [
-   "Cat-Cow"
-  ],
-  "typicalSets": 1,
-  "typicalReps": 12
- },
- {
-  "id": "cb-clean-and-press",
-  "name": "CB Clean and Press",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 6
- },
- {
-  "id": "chao-loaded-carrie",
-  "name": "Chaos Loaded Carries",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 1
- },
- {
-  "id": "chest-fly-cable",
-  "name": "Chest Fly (Cable",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 46371
- },
- {
-  "id": "chest-press",
-  "name": "Chest Press",
-  "type": "duration",
-  "category": "accessory"
- },
- {
-  "id": "chest-press-machine",
-  "name": "Chest Press Machine",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 12
- },
- {
-  "id": "chest-to-wall",
-  "name": "Chest to Wall",
-  "type": "duration",
-  "category": "accessory",
-  "typicalSets": 3
- },
- {
-  "id": "child-pose",
-  "name": "Childs Pose",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 1
- },
- {
-  "id": "chin-up",
-  "name": "Chin Up",
-  "type": "bodyweight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 5
- },
- {
-  "id": "chin-ups",
-  "name": "Chin Ups",
-  "type": "bodyweight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 5
- },
- {
-  "id": "chin-ups-assisted",
-  "name": "Chin Ups (assisted)",
-  "type": "bodyweight_reps",
-  "category": "compound",
-  "typicalSets": 5,
-  "typicalReps": 5
- },
- {
-  "id": "clamshell",
-  "name": "Clamshells",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "close-grip-bench",
-  "name": "Close Grip Bench",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "close-grip-bench-press",
-  "name": "Close Grip Bench Press",
-  "type": "bodyweight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 46150
- },
- {
-  "id": "close-grip-pullup",
-  "name": "Close Grip Pullups",
-  "type": "duration",
-  "category": "compound",
-  "typicalSets": 4
- },
- {
-  "id": "copenhagen-plank",
-  "name": "Copenhagen Plank",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalSets": 4,
-  "typicalReps": 10
- },
- {
-  "id": "core",
-  "name": "Core",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "cossack-squat",
-  "name": "Cossack Squat",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 5
- },
- {
-  "id": "couch-stretch",
-  "name": "Couch Stretch",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 2,
-  "typicalReps": 4
- },
- {
-  "id": "crawl",
-  "name": "Crawls",
-  "type": "distance_duration",
-  "category": "cardio",
-  "typicalSets": 1
- },
- {
-  "id": "cuban-rotation",
-  "name": "Cuban Rotations",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalSets": 2,
-  "typicalReps": 6
- },
- {
-  "id": "cycling",
-  "name": "Cycling",
-  "type": "duration",
-  "category": "cardio",
-  "typicalSets": 3
- },
- {
-  "id": "dumbbell-bench-press",
-  "name": "DB Bench Press",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 9
- },
- {
-  "id": "dumbbell-butterfly-stretch",
-  "name": "DB Butterfly Stretch",
-  "type": "weight_reps",
-  "category": "mobility",
-  "typicalSets": 2,
-  "typicalReps": 10
- },
- {
-  "id": "dumbbell-chest-press",
-  "name": "DB Chest Press",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 12
- },
- {
-  "id": "dumbbell-clean",
-  "name": "DB Clean",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 2,
-  "typicalReps": 8
- },
- {
-  "id": "dumbbell-clean-press",
-  "name": "DB Clean + Press",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "dumbbell-inc-press",
-  "name": "DB Inc Press",
-  "type": "bodyweight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 46246
- },
- {
-  "id": "dumbbell-low-incline-bench",
-  "name": "DB Low Incline Bench",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 46185
- },
- {
-  "id": "dumbbell-overhead-press",
-  "name": "DB Overhead Press",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "dumbbell-press",
-  "name": "DB Press",
-  "type": "duration",
-  "category": "compound"
- },
- {
-  "id": "dumbbell-pullover",
-  "name": "DB Pullovers",
-  "type": "weight_reps",
-  "category": "accessory",
-  "aliases": [
-   "DB Pullover"
-  ],
-  "typicalSets": 3,
-  "typicalReps": 15
- },
- {
-  "id": "dumbbell-push-press",
-  "name": "DB Push Press",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "dumbbell-rear-delt-fly",
-  "name": "DB Rear Delt Flys",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "dumbbell-renegade-row",
-  "name": "DB Renegade Row",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 6
- },
- {
-  "id": "dumbbell-shoulder-over",
-  "name": "DB Shoulder Overs",
-  "type": "weight_reps",
-  "category": "cardio",
-  "typicalSets": 2,
-  "typicalReps": 15
- },
- {
-  "id": "dumbbell-shoulder-press",
-  "name": "DB Shoulder Press",
-  "type": "duration",
-  "category": "accessory",
-  "typicalSets": 46115
- },
- {
-  "id": "dead-hang",
-  "name": "Dead Hangs",
-  "type": "duration",
-  "category": "mobility",
-  "aliases": [
-   "Dead Hang"
-  ],
-  "typicalSets": 2
- },
- {
-  "id": "deadball-shoulder-over",
-  "name": "Deadball Shoulder Overs",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "deadbug",
-  "name": "Deadbug",
-  "type": "duration",
-  "category": "mobility"
- },
- {
-  "id": "deadlift",
-  "name": "Deadlift",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 6
- },
- {
-  "id": "deep-squat-hold",
-  "name": "Deep Squat Hold",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 2
- },
- {
-  "id": "deep-squat-w-pause",
-  "name": "Deep Squat w Pause",
-  "type": "bodyweight_reps",
-  "category": "power",
-  "typicalSets": 2,
-  "typicalReps": 8
- },
- {
-  "id": "deficit-calf-raise",
-  "name": "Deficit Calf Raise",
-  "type": "weight_reps",
-  "category": "isolation",
-  "typicalSets": 2,
-  "typicalReps": 12
- },
- {
-  "id": "deficit-drop",
-  "name": "Deficit Drops",
-  "type": "duration",
-  "category": "power"
- },
- {
-  "id": "deficit-hbh-pushup",
-  "name": "Deficit HBH Pushups",
-  "type": "bodyweight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 46117
- },
- {
-  "id": "deficit-protracted-pushup",
-  "name": "Deficit Protracted Pushups",
-  "type": "bodyweight_reps",
-  "category": "compound",
-  "typicalSets": 5,
-  "typicalReps": 12
- },
- {
-  "id": "deficit-tib-raise",
-  "name": "Deficit Tib Raises",
-  "type": "bodyweight_reps",
-  "category": "isolation",
-  "typicalSets": 46024,
-  "typicalReps": 46376
- },
- {
-  "id": "diagonal-stretch",
-  "name": "Diagonal Stretch",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 3,
-  "typicalReps": 6
- },
- {
-  "id": "diamond-pushup",
-  "name": "Diamond Pushups",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 5
- },
- {
-  "id": "dip",
-  "name": "Dips",
-  "type": "duration",
-  "category": "accessory",
-  "typicalSets": 3
- },
- {
-  "id": "donkey-kick",
-  "name": "Donkey Kicks",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "doorway-chest-stretch",
-  "name": "Doorway Chest Stretch",
-  "type": "duration",
-  "category": "mobility"
- },
- {
-  "id": "dowel-dislocated",
-  "name": "Dowel Dislocated",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 2,
-  "typicalReps": 6
- },
- {
-  "id": "dumbell-pullover",
-  "name": "Dumbell Pullover",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 9
- },
- {
-  "id": "dumbell-row",
-  "name": "Dumbell Rows",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "dynamic-leg-swing",
-  "name": "Dynamic Leg Swings",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 2
- },
- {
-  "id": "elbow-in-chest-press",
-  "name": "Elbows in Chest Press",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 6
- },
- {
-  "id": "elephant-walk",
-  "name": "Elephant Walks",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 2,
-  "typicalReps": 13
- },
- {
-  "id": "elevated-deadlift",
-  "name": "Elevated Deadlift",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 8
- },
- {
-  "id": "elevated-push-ups",
-  "name": "Elevated Push Ups",
-  "type": "bodyweight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 10
- },
- {
-  "id": "elevated-pushup",
-  "name": "Elevated Pushups",
-  "type": "bodyweight_reps",
-  "category": "compound",
-  "typicalSets": 1,
-  "typicalReps": 6
- },
- {
-  "id": "elevated-split-squat",
-  "name": "Elevated Split Squat",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "eliptical-machine",
-  "name": "Eliptical Machine",
-  "type": "duration",
-  "category": "cardio",
-  "typicalSets": 1
- },
- {
-  "id": "emom-kettlebell-clean-and-press",
-  "name": "EMOM KB Clean and Press",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalSets": 46089,
-  "typicalReps": 30
- },
- {
-  "id": "eo-bench-press",
-  "name": "EO Bench Press",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 6,
-  "typicalReps": 3
- },
- {
-  "id": "eo-overhead-press",
-  "name": "EO Overhead Press",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 7
- },
- {
-  "id": "external-rotation",
-  "name": "External Rotation",
-  "type": "weight_reps",
-  "category": "mobility",
-  "typicalSets": 2,
-  "typicalReps": 12
- },
- {
-  "id": "face-pull",
-  "name": "Face Pull",
-  "type": "weight_reps",
-  "category": "accessory",
-  "aliases": [
-   "Face Pulls"
-  ],
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "farmer-s-carry",
-  "name": "Farmer's Carry",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3
- },
- {
-  "id": "fdr",
-  "name": "FDRS",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 1,
-  "typicalReps": 12
- },
- {
-  "id": "fdr-hold",
-  "name": "FDRS Holds",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 3
- },
- {
-  "id": "feet-elevated-hip-thrust",
-  "name": "Feet Elevated Hip Thrust",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalReps": 15
- },
- {
-  "id": "feet-elevated-scap-pushup",
-  "name": "Feet Elevated Scap Pushups",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 2,
-  "typicalReps": 8
- },
- {
-  "id": "foam-roller-core-stretch",
-  "name": "Foam Roller Core Stretch",
-  "type": "duration",
-  "category": "accessory"
- },
- {
-  "id": "foot-knee",
-  "name": "foot knee",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "footwork",
-  "name": "Footwork",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "front-row",
-  "name": "Front Rows",
-  "type": "weight_reps",
-  "category": "accessory",
-  "aliases": [
-   "Front Row"
-  ],
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "full-depth-resting-squat",
-  "name": "Full Depth Resting Squat",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 3
- },
- {
-  "id": "glute-bridge",
-  "name": "Glute Bridge",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 2,
-  "typicalReps": 12
- },
- {
-  "id": "glute-bridge-hamstring-walkout",
-  "name": "Glute Bridge + Hamstring Walkouts",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 2,
-  "typicalReps": 10
- },
- {
-  "id": "goblet-box-squat",
-  "name": "Goblet Box Squat",
-  "type": "duration",
-  "category": "compound"
- },
- {
-  "id": "goblet-squat",
-  "name": "Goblet Squat",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "goblet-squat-box-squat",
-  "name": "Goblet Squat / Box Squat",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "hack-squat",
-  "name": "Hack Squat",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 6
- },
- {
-  "id": "half-pushup-hold",
-  "name": "Half Pushup Hold",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 2
- },
- {
-  "id": "hamstring-marche",
-  "name": "Hamstring Marches",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalReps": 20
- },
- {
-  "id": "hamstring-walkout",
-  "name": "Hamstring Walkout",
-  "type": "duration",
-  "category": "mobility"
- },
- {
-  "id": "hand-to-wall-stretch-sequence",
-  "name": "Hand to Wall Stretch Sequence",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "hanging",
-  "name": "Hanging",
-  "type": "duration",
-  "category": "compound"
- },
- {
-  "id": "hanging-knee-raise",
-  "name": "Hanging Knee Raises",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "hanging-leg-tuck",
-  "name": "Hanging Leg Tucks",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalSets": 6,
-  "typicalReps": 5
- },
- {
-  "id": "hill-sprint",
-  "name": "Hill Sprints",
-  "type": "duration",
-  "category": "cardio"
- },
- {
-  "id": "hip-flexor",
-  "name": "Hip Flexors",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 2,
-  "typicalReps": 18
- },
- {
-  "id": "hip-thrust",
-  "name": "Hip Thrust",
-  "type": "weight_reps",
-  "category": "compound",
-  "aliases": [
-   "Hip Thrusts"
-  ],
-  "typicalSets": 4,
-  "typicalReps": 8
- },
- {
-  "id": "hollow-body-hold",
-  "name": "Hollow Body Hold",
-  "type": "duration",
-  "category": "core",
-  "aliases": [
-   "Hollow Body Holds"
-  ],
-  "typicalSets": 3
- },
- {
-  "id": "horizontal-row",
-  "name": "Horizontal Row",
-  "type": "duration",
-  "category": "compound"
- },
- {
-  "id": "incline-bench-machine",
-  "name": "Incline Bench Machine",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "incline-dumbbell-bench-press",
-  "name": "Incline DB Bench Press",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "incline-dumbell-press",
-  "name": "Incline Dumbell Press",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 2,
-  "typicalReps": 10
- },
- {
-  "id": "incline-walk",
-  "name": "Incline Walk",
-  "type": "duration",
-  "category": "cardio",
-  "typicalSets": 5
- },
- {
-  "id": "isometric-heel-floating-split-squat",
-  "name": "Isometric Heel Floating Split Squat",
-  "type": "duration",
-  "category": "core",
-  "typicalSets": 3
- },
- {
-  "id": "jefferson-curl",
-  "name": "Jefferson Curl",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 6
- },
- {
-  "id": "jump-rope",
-  "name": "Jump Rope",
-  "type": "bodyweight_reps",
-  "category": "cardio",
-  "typicalSets": 3,
-  "typicalReps": 50
- },
- {
-  "id": "kettlebell-clean",
-  "name": "KB Clean",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 6
- },
- {
-  "id": "kettlebell-clean-press",
-  "name": "KB Clean + Press",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3
- },
- {
-  "id": "kettlebell-clean-and-press",
-  "name": "KB Clean and Press",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "kettlebell-deadlift",
-  "name": "KB Deadlift",
-  "type": "weight_reps",
-  "category": "mobility",
-  "typicalSets": 2,
-  "typicalReps": 6
- },
- {
-  "id": "kettlebell-foot-lift",
-  "name": "KB Foot Lift",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "kettlebell-foot-raise",
-  "name": "KB Foot Raises",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 6
- },
- {
-  "id": "kettlebell-front-row",
-  "name": "KB Front Row",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "kettlebell-halo",
-  "name": "KB Halos",
-  "type": "weight_reps",
-  "category": "mobility",
-  "aliases": [
-   "Kettlebell Halos"
-  ],
-  "typicalSets": 2,
-  "typicalReps": 10
- },
- {
-  "id": "kettlebell-lateral-run",
-  "name": "KB Lateral Runs",
-  "type": "distance_duration",
-  "category": "compound",
-  "typicalSets": 2
- },
- {
-  "id": "kettlebell-romanian-deadlift",
-  "name": "KB RDL",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "kettlebell-swing",
-  "name": "KB Swings",
-  "type": "weight_reps",
-  "category": "compound",
-  "aliases": [
-   "KB Swing"
-  ],
-  "typicalSets": 4,
-  "typicalReps": 15
- },
- {
-  "id": "kettlebell-push-press",
-  "name": "Kettlebell Push Press",
-  "type": "weight_reps",
-  "category": "accessory",
-  "aliases": [
-   "KB Push Press"
-  ],
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "knee-knee",
-  "name": "knee knee",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "landmine",
-  "name": "Landmine",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 8,
-  "typicalReps": 4
- },
- {
-  "id": "landmine-clean-press",
-  "name": "Landmine Clean + Press",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 3
- },
- {
-  "id": "landmine-press",
-  "name": "Landmine Press",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 5
- },
- {
-  "id": "landmine-row",
-  "name": "Landmine Rows",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "lat-pulldown",
-  "name": "Lat Pulldown",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 12
- },
- {
-  "id": "lat-stretch",
-  "name": "Lat Stretch",
-  "type": "duration",
-  "category": "mobility"
- },
- {
-  "id": "lateral-band-walk",
-  "name": "Lateral Band Walks",
-  "type": "duration",
-  "category": "accessory",
-  "typicalSets": 3
- },
- {
-  "id": "lateral-raise",
-  "name": "Lateral Raise",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 15
- },
- {
-  "id": "lateral-run",
-  "name": "Lateral Runs",
-  "type": "distance_duration",
-  "category": "cardio",
-  "typicalSets": 1
- },
- {
-  "id": "laying-knee-side-to-side",
-  "name": "Laying Knees Side to Side",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "laying-overhead-mobility-shoulder-dislocate",
-  "name": "Laying Overhead Mobility + Shoulder Dislocates",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 5
- },
- {
-  "id": "leg-curl",
-  "name": "Leg Curl",
-  "type": "weight_reps",
-  "category": "accessory",
-  "aliases": [
-   "Leg Curls"
-  ],
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "leg-extension",
-  "name": "Leg Extensions",
-  "type": "weight_reps",
-  "category": "accessory",
-  "aliases": [
-   "Leg Extension"
-  ],
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "leg-press",
-  "name": "Leg Press",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 6
- },
- {
-  "id": "leg-raise",
-  "name": "Leg Raises",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "light-chest-press-machine",
-  "name": "Light Chest Press Machine",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 2,
-  "typicalReps": 10
- },
- {
-  "id": "loaded-butterfly-stretch",
-  "name": "Loaded Butterfly Stretch",
-  "type": "weight_reps",
-  "category": "mobility",
-  "typicalSets": 2,
-  "typicalReps": 10
- },
- {
-  "id": "loaded-carrie",
-  "name": "Loaded Carries",
-  "type": "distance_duration",
-  "category": "accessory",
-  "typicalSets": 3
- },
- {
-  "id": "loaded-carry",
-  "name": "Loaded Carry",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 2,
-  "typicalReps": 1
- },
- {
-  "id": "lunge-into-leg-thru",
-  "name": "Lunge into Leg-Thru",
-  "type": "duration",
-  "category": "mobility"
- },
- {
-  "id": "lunge-walking",
-  "name": "Lunge Walking",
-  "type": "distance_duration",
-  "category": "accessory",
-  "typicalSets": 3
- },
- {
-  "id": "lunge",
-  "name": "Lunges",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "lunging-complex",
-  "name": "Lunging Complex",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 2,
-  "typicalReps": 6
- },
- {
-  "id": "lunging-mob",
-  "name": "Lunging Mob",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 1
- },
- {
-  "id": "lunging-mob-into-side-lunge",
-  "name": "Lunging Mob into Side Lunge",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 1
- },
- {
-  "id": "lunging-mobilisation",
-  "name": "Lunging Mobilisation",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 1,
-  "typicalReps": 6
- },
- {
-  "id": "machine-row",
-  "name": "Machine Row",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 15
- },
- {
-  "id": "machine",
-  "name": "Machine)",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 46371
- },
- {
-  "id": "max-glute-squeeze",
-  "name": "Max Glute Squeeze",
-  "type": "duration",
-  "category": "mobility"
- },
- {
-  "id": "nordic-eccentric",
-  "name": "Nordic Eccentrics",
-  "type": "bodyweight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 6
- },
- {
-  "id": "one-arm-stand",
-  "name": "One Arm Stands",
-  "type": "duration",
-  "category": "accessory",
-  "typicalSets": 2
- },
- {
-  "id": "overcoming-isometric-pull",
-  "name": "Overcoming Isometric Pulls",
-  "type": "duration",
-  "category": "power",
-  "typicalSets": 5
- },
- {
-  "id": "overhead-dumbbell-tricep-extension",
-  "name": "Overhead DB Tricep Extension",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 46307
- },
- {
-  "id": "overhead-press",
-  "name": "Overhead Press",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 7
- },
- {
-  "id": "overhead-press-in-lunge",
-  "name": "Overhead Press in Lunge",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 2,
-  "typicalReps": 10
- },
- {
-  "id": "overhead-superman-isohold",
-  "name": "Overhead Superman Isoholds",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 3
- },
- {
-  "id": "overhead-superman-iso",
-  "name": "Overhead Superman Isos",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 2
- },
- {
-  "id": "overhead-tricep-ext",
-  "name": "Overhead Tricep Ext",
-  "type": "bodyweight_reps",
-  "category": "isolation",
-  "typicalSets": 3,
-  "typicalReps": 46307
- },
- {
-  "id": "overhead-tricep-stretch",
-  "name": "Overhead Tricep Stretch",
-  "type": "duration",
-  "category": "mobility"
- },
- {
-  "id": "pad-sparring",
-  "name": "Pad Sparring",
-  "type": "bodyweight_reps",
-  "category": "other",
-  "typicalSets": 1,
-  "typicalReps": 4
- },
- {
-  "id": "padwork-technique-and-combination",
-  "name": "Padwork Technique and Combinations",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "pallof-press",
-  "name": "Pallof Press",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3
- },
- {
-  "id": "palloff-press-in-lunge",
-  "name": "Palloff Press in Lunge",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "palm-heel",
-  "name": "Palm Heels",
-  "type": "distance_duration",
-  "category": "cardio",
-  "typicalSets": 1
- },
- {
-  "id": "palm-heel-tea-potting",
-  "name": "Palm Heels & Tea Potting",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "parallette-hbh",
-  "name": "Parallette HBH",
-  "type": "duration",
-  "category": "accessory",
-  "typicalSets": 3
- },
- {
-  "id": "parallette-hold",
-  "name": "Parallette Holds",
-  "type": "duration",
-  "category": "accessory",
-  "typicalSets": 3
- },
- {
-  "id": "passive-hang",
-  "name": "Passive Hang",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 5
- },
- {
-  "id": "pec-fly-crossover",
-  "name": "Pec Fly Crossovers",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "pec-fly",
-  "name": "Pec Flys",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "pec-stretch",
-  "name": "Pec Stretch",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 2
- },
- {
-  "id": "pelvic-tilt",
-  "name": "Pelvic Tilts",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "aliases": [
-   "Pelvic Tilt"
-  ],
-  "typicalSets": 2,
-  "typicalReps": 6
- },
- {
-  "id": "pike-pushup",
-  "name": "Pike Pushups",
-  "type": "bodyweight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 6
- },
- {
-  "id": "piriformi-stretch",
-  "name": "Piriformis Stretch",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "plance-lean",
-  "name": "Plance Lean",
-  "type": "duration",
-  "category": "accessory"
- },
- {
-  "id": "planche-lean-pushup",
-  "name": "Planche Lean Pushups",
-  "type": "duration",
-  "category": "compound",
-  "typicalSets": 3
- },
- {
-  "id": "plank-hold",
-  "name": "Plank Holds",
-  "type": "duration",
-  "category": "accessory",
-  "typicalSets": 4
- },
- {
-  "id": "pogo-jump",
-  "name": "Pogo Jumps",
-  "type": "duration",
-  "category": "power"
- },
- {
-  "id": "preacher-curl",
-  "name": "Preacher Curls",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 16
- },
- {
-  "id": "prone-leg-curl",
-  "name": "Prone Leg Curl",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "prone-leg-curl-machine",
-  "name": "Prone Leg Curl Machine",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 1,
-  "typicalReps": 10
- },
- {
-  "id": "pull-machine",
-  "name": "Pull Machine",
-  "type": "bodyweight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 46246
- },
- {
-  "id": "pulldown-machine",
-  "name": "Pulldown Machine",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 12
- },
- {
-  "id": "pullup-isometric-eccentric",
-  "name": "Pullup Iso-Eccentrics",
-  "type": "bodyweight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "pullup",
-  "name": "Pullups",
-  "type": "duration",
-  "category": "compound",
-  "typicalSets": 5
- },
- {
-  "id": "punche",
-  "name": "Punches",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 1,
-  "typicalReps": 20
- },
- {
-  "id": "push-press",
-  "name": "Push Press",
-  "type": "duration",
-  "category": "accessory"
- },
- {
-  "id": "pushup",
-  "name": "Pushup",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "aliases": [
-   "Pushups"
-  ],
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "pushup-eccentric",
-  "name": "Pushup Ecc",
-  "type": "duration",
-  "category": "compound",
-  "typicalSets": 2
- },
- {
-  "id": "rdf",
-  "name": "RDF",
-  "type": "duration",
-  "category": "accessory"
- },
- {
-  "id": "romanian-deadlift",
-  "name": "RDL",
-  "type": "weight_reps",
-  "category": "compound",
-  "aliases": [
-   "rdl"
-  ],
-  "typicalSets": 4,
-  "typicalReps": 8
- },
- {
-  "id": "rear-delt-fly",
-  "name": "Rear Delt Flys",
-  "type": "weight_reps",
-  "category": "accessory",
-  "aliases": [
-   "Rear Delt Fly"
-  ],
-  "typicalSets": 3,
-  "typicalReps": 15
- },
- {
-  "id": "recline-cycle",
-  "name": "Recline Cycle",
-  "type": "duration",
-  "category": "cardio"
- },
- {
-  "id": "reduced-cobra-pose",
-  "name": "Reduced Cobra Pose",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "renegade-row",
-  "name": "Renegade Row",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 6
- },
- {
-  "id": "resistance-bike",
-  "name": "Resistance Bike",
-  "type": "duration",
-  "category": "cardio",
-  "typicalSets": 1
- },
- {
-  "id": "ring-pushup",
-  "name": "Ring Pushups",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "aliases": [
-   "Ring Pushup"
-  ],
-  "typicalSets": 2,
-  "typicalReps": 10
- },
- {
-  "id": "ring-row",
-  "name": "Ring Rows",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "rope-tricep-pushdown",
-  "name": "Rope Tricep Pushdowns",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 46371
- },
- {
-  "id": "rotation",
-  "name": "Rotations",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "row-erg",
-  "name": "Row Erg",
-  "type": "duration",
-  "category": "cardio",
-  "typicalSets": 1
- },
- {
-  "id": "rower",
-  "name": "Rower",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "rowing-machine",
-  "name": "Rowing Machine",
-  "type": "duration",
-  "category": "cardio",
-  "typicalSets": 3
- },
- {
-  "id": "russian-twist",
-  "name": "Russian Twists",
-  "type": "weight_reps",
-  "category": "cardio",
-  "typicalSets": 3,
-  "typicalReps": 15
- },
- {
-  "id": "single-arm-bicep-curl-in-ext",
-  "name": "SA Bicep Curls in Ext",
-  "type": "duration",
-  "category": "compound",
-  "typicalSets": 4
- },
- {
-  "id": "single-arm-cross-body-lat-pull",
-  "name": "SA Cross Body Lat Pulls",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "single-arm-cross-body-pulldown",
-  "name": "SA Cross Body Pulldown",
-  "type": "duration",
-  "category": "accessory"
- },
- {
-  "id": "single-arm-horizontal-row",
-  "name": "SA Horizontal Row",
-  "type": "duration",
-  "category": "accessory"
- },
- {
-  "id": "single-arm-kettlebell-split-stance-deadlift",
-  "name": "SA KB Split Stance Deadlifts",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 3
- },
- {
-  "id": "single-arm-kettlebell-supported-row",
-  "name": "SA KB Supported Row",
-  "type": "duration",
-  "category": "accessory"
- },
- {
-  "id": "single-arm-lat-pulldown",
-  "name": "SA Lat Pulldown",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "single-arm-lat-pulldown-in-lunge",
-  "name": "SA Lat Pulldown in Lunge",
-  "type": "duration",
-  "category": "accessory",
-  "typicalSets": 3
- },
- {
-  "id": "single-arm-nat-lat-pulldown",
-  "name": "SA Nat Lat Pulldown",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 2,
-  "typicalReps": 12
- },
- {
-  "id": "single-arm-nat-pull",
-  "name": "SA Nat Pull",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "single-arm-nat-row",
-  "name": "SA Nat Row",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 2,
-  "typicalReps": 12
- },
- {
-  "id": "single-arm-natural-pull",
-  "name": "SA Natural Pull",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 2,
-  "typicalReps": 11
- },
- {
-  "id": "single-arm-overhead-press",
-  "name": "SA Overhead Press",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 2,
-  "typicalReps": 5
- },
- {
-  "id": "single-arm-push-press",
-  "name": "SA Push Press",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 6
- },
- {
-  "id": "single-arm-row",
-  "name": "SA Row",
-  "type": "weight_reps",
-  "category": "accessory",
-  "aliases": [
-   "Single Arm Row"
-  ],
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "single-arm-shoulder-press-machine",
-  "name": "SA Shoulder Press Machine",
-  "type": "duration",
-  "category": "accessory"
- },
- {
-  "id": "single-arm-smith-machine-push-away",
-  "name": "SA SM Push Aways",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 5,
-  "typicalReps": 5
- },
- {
-  "id": "single-arm-supported-dumbbell-row",
-  "name": "SA Supported DB Row",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "salutation-to-the-sun",
-  "name": "Salutation to the Sun",
-  "type": "duration",
-  "category": "mobility"
- },
- {
-  "id": "salutation-to-the-sun-w-world's-greatest-stretch",
-  "name": "Salutation to the Sun w/ WGS",
-  "type": "bodyweight_reps",
-  "category": "cardio",
-  "typicalSets": 1,
-  "typicalReps": 2
- },
- {
-  "id": "scap-pushup",
-  "name": "Scap Pushups",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 2,
-  "typicalReps": 10
- },
- {
-  "id": "scapula-pullup",
-  "name": "Scapula Pullups",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 4,
-  "typicalReps": 3
- },
- {
-  "id": "scapula-pushup",
-  "name": "Scapula Pushups",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 1,
-  "typicalReps": 12
- },
- {
-  "id": "scapular-pushup",
-  "name": "Scapular pushups",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalReps": 12
- },
- {
-  "id": "seated-cable-row",
-  "name": "Seated Cable Row",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 2,
-  "typicalReps": 10
- },
- {
-  "id": "seated-dumbbell-shoulder-press",
-  "name": "Seated Dumbbell Shoulder Press",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "seated-leg-curl",
-  "name": "Seated Leg Curl",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "seated-leg-curl-27kg",
-  "name": "seated leg curl 27kg",
-  "type": "duration",
-  "category": "accessory"
- },
- {
-  "id": "seated-leg-extension",
-  "name": "Seated Leg Extensions",
-  "type": "weight_reps",
-  "category": "accessory",
-  "aliases": [
-   "Seated Leg Extension"
-  ],
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "seated-row",
-  "name": "Seated Row",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 10
- },
- {
-  "id": "seated-row-machine",
-  "name": "Seated Row Machine",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "seated-shoulder-press",
-  "name": "Seated Shoulder Press",
-  "type": "duration",
-  "category": "compound"
- },
- {
-  "id": "see-the-spine-crossover",
-  "name": "See the Spine Crossover",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "shivasana",
-  "name": "Shivasana",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 1
- },
- {
-  "id": "shoulder-blade-crunche",
-  "name": "Shoulder Blade Crunches",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "shoulder-opener",
-  "name": "Shoulder Opener",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 1,
-  "typicalReps": 1
- },
- {
-  "id": "shoulder-press",
-  "name": "Shoulder Press",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 6
- },
- {
-  "id": "shoulder-press-machine",
-  "name": "Shoulder Press Machine",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 2,
-  "typicalReps": 10
- },
- {
-  "id": "side-delt-fly",
-  "name": "Side Delt Flys",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 12
- },
- {
-  "id": "side-delt-raise",
-  "name": "Side Delt Raises",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "side-glute-leg-raise",
-  "name": "Side Glute Leg Raise",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "side-glute-abduction",
-  "name": "Side Glutes - Abduction",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "side-plank",
-  "name": "Side Plank",
-  "type": "duration",
-  "category": "accessory",
-  "typicalSets": 3
- },
- {
-  "id": "side-plank-band-row",
-  "name": "Side Plank Band Row",
-  "type": "duration",
-  "category": "accessory"
- },
- {
-  "id": "single-leg-romanian-deadlift-to-knee-drive",
-  "name": "Single Leg RDL to Knee Drive",
-  "type": "duration",
-  "category": "accessory",
-  "typicalSets": 3
- },
- {
-  "id": "ski-erg",
-  "name": "Ski Erg",
-  "type": "duration",
-  "category": "cardio",
-  "typicalSets": 1
- },
- {
-  "id": "single-leg-deadlift",
-  "name": "SL Deadlift",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 6
- },
- {
-  "id": "single-leg-glute-bridge",
-  "name": "SL Glute Bridge",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "single-leg-leg-curl",
-  "name": "SL Leg Curl",
-  "type": "bodyweight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 45759
- },
- {
-  "id": "single-leg-romanian-deadlift",
-  "name": "SL RDL",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "smith-machine-side-bend",
-  "name": "SM Side Bends",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 4,
-  "typicalReps": 12
- },
- {
-  "id": "snap-down",
-  "name": "Snap Downs",
-  "type": "duration",
-  "category": "power"
- },
- {
-  "id": "spanish-squat",
-  "name": "Spanish Squats",
-  "type": "weight_reps",
-  "category": "compound",
-  "aliases": [
-   "Spanish Squat"
-  ],
-  "typicalSets": 4,
-  "typicalReps": 9
- },
- {
-  "id": "split-stance-dumbbell-romanian-deadlift",
-  "name": "Split Stance DB RDL",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "squat",
-  "name": "Squat",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 46185
- },
- {
-  "id": "squat-hack-squat",
-  "name": "Squat / Hack Squat",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 8
- },
- {
-  "id": "squat-isometric-hold",
-  "name": "Squat Iso Holds",
-  "type": "weight_reps",
-  "category": "mobility",
-  "aliases": [
-   "Squat Iso Hold"
-  ],
-  "typicalSets": 2
- },
- {
-  "id": "squat-mobility-routine",
-  "name": "Squat Mobility Routine",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 1,
-  "typicalReps": 1
- },
- {
-  "id": "stairmaster",
-  "name": "Stairmaster",
-  "type": "duration",
-  "category": "cardio",
-  "typicalSets": 1
- },
- {
-  "id": "stance-work",
-  "name": "Stance Work",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "step-up",
-  "name": "Step Up",
-  "type": "duration",
-  "category": "compound"
- },
- {
-  "id": "step-up-complex",
-  "name": "Step Up Complex",
-  "type": "weight_reps",
-  "category": "compound",
-  "aliases": [
-   "Step-Up Complex"
-  ],
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "step-ups",
-  "name": "Step Ups",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 5,
-  "typicalReps": 8
- },
- {
-  "id": "step-up-complex-12",
-  "name": "Step-Up Complex 12\"",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 8
- },
- {
-  "id": "stepback-lunge",
-  "name": "Stepback Lunges",
-  "type": "duration",
-  "category": "compound"
- },
- {
-  "id": "stilletto-squat",
-  "name": "Stilletto Squat",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 8
- },
- {
-  "id": "straight-arm-row",
-  "name": "Straight Arm Row",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "suitcase-carrie",
-  "name": "Suitcase Carries",
-  "type": "distance_duration",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 15
- },
- {
-  "id": "sumo-squat",
-  "name": "Sumo Squat",
-  "type": "duration",
-  "category": "compound",
-  "typicalSets": 3
- },
- {
-  "id": "sun-salutaion-w-goat",
-  "name": "Sun Salutaion w/ GOAT",
-  "type": "weight_reps",
-  "category": "mobility",
-  "typicalSets": 1,
-  "typicalReps": 9
- },
- {
-  "id": "sun-salutaion-w-world's-greatest-stretch",
-  "name": "Sun Salutaion w/ WGS",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 1,
-  "typicalReps": 9
- },
- {
-  "id": "sun-salutation-w-goat-stretch",
-  "name": "Sun Salutation w/ GOAT stretch",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 1,
-  "typicalReps": 6
- },
- {
-  "id": "sun-salutation-w-twist-stretch",
-  "name": "Sun Salutation w/ twist stretch",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 1,
-  "typicalReps": 12
- },
- {
-  "id": "superman-isometric-hold",
-  "name": "Superman Iso Holds",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 2
- },
- {
-  "id": "supine-overhead-mobility-shoulder-dislocate",
-  "name": "Supine Overhead Mobility + Shoulder Dislocates",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 5
- },
- {
-  "id": "supine-twist",
-  "name": "Supine Twist",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 2,
-  "typicalReps": 4
- },
- {
-  "id": "surrender",
-  "name": "Surrenders",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 10
- },
- {
-  "id": "t-bar-row",
-  "name": "T Bar Rows",
-  "type": "duration",
-  "category": "accessory",
-  "typicalSets": 3
- },
- {
-  "id": "t-bar-shrug",
-  "name": "T Bar Shrugs",
-  "type": "duration",
-  "category": "accessory",
-  "typicalSets": 3
- },
- {
-  "id": "t-spine-rotation",
-  "name": "T-Spine Rotations",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 1
- },
- {
-  "id": "ta-raise",
-  "name": "TA Raises",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 15
- },
- {
-  "id": "thread-the-needle",
-  "name": "Thread the Needle",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 2,
-  "typicalReps": 8
- },
- {
-  "id": "thumb-pull",
-  "name": "Thumb Pull",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "tib-raise",
-  "name": "Tib Raises",
-  "type": "bodyweight_reps",
-  "category": "isolation",
-  "aliases": [
-   "Tib Raise"
-  ],
-  "typicalSets": 2,
-  "typicalReps": 15
- },
- {
-  "id": "tibiali-raise",
-  "name": "Tibialis Raise",
-  "type": "bodyweight_reps",
-  "category": "isolation",
-  "aliases": [
-   "Tibialis Raises"
-  ],
-  "typicalSets": 2,
-  "typicalReps": 20
- },
- {
-  "id": "trapping",
-  "name": "Trapping",
-  "type": "bodyweight_reps",
-  "category": "other",
-  "typicalSets": 1,
-  "typicalReps": 4
- },
- {
-  "id": "treadmill",
-  "name": "Treadmill",
-  "type": "duration",
-  "category": "cardio",
-  "typicalSets": 3
- },
- {
-  "id": "treadmill-assault-bike",
-  "name": "Treadmill / Assault Bike",
-  "type": "duration",
-  "category": "cardio"
- },
- {
-  "id": "treadmill-attack-bike",
-  "name": "Treadmill / Attack Bike",
-  "type": "duration",
-  "category": "cardio",
-  "aliases": [
-   "Treadmill/Attack Bike"
-  ]
- },
- {
-  "id": "treadmill-rowing-machine",
-  "name": "Treadmill / Rowing Machine",
-  "type": "duration",
-  "category": "cardio",
-  "aliases": [
-   "Treadmill/ROwing Machine"
-  ]
- },
- {
-  "id": "tricep-extension",
-  "name": "Tricep Extensions",
-  "type": "weight_reps",
-  "category": "accessory",
-  "aliases": [
-   "Tricep Extension"
-  ],
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "twisting-lunge",
-  "name": "Twisting Lunges",
-  "type": "distance_duration",
-  "category": "accessory",
-  "typicalSets": 2
- },
- {
-  "id": "two-leg-slider-curl",
-  "name": "Two Leg Slider Curl",
-  "type": "bodyweight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 15
- },
- {
-  "id": "unilaterally-loaded-squat",
-  "name": "Unilaterally Loaded Squats",
-  "type": "weight_reps",
-  "category": "accessory",
-  "typicalSets": 3,
-  "typicalReps": 12
- },
- {
-  "id": "vinyasa-flow",
-  "name": "Vinyasa Flow",
-  "type": "duration",
-  "category": "mobility"
- },
- {
-  "id": "walking-group-zombie",
-  "name": "Walking Group - Zombies",
-  "type": "bodyweight_reps",
-  "category": "other",
-  "typicalSets": 1,
-  "typicalReps": 4
- },
- {
-  "id": "walking-lunge",
-  "name": "Walking Lunges",
-  "type": "distance_duration",
-  "category": "accessory",
-  "typicalSets": 2
- },
- {
-  "id": "walking-with-strike",
-  "name": "Walking with Strikes",
-  "type": "duration",
-  "category": "other"
- },
- {
-  "id": "wall-slide",
-  "name": "Wall Slides",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 2,
-  "typicalReps": 10
- },
- {
-  "id": "warrior-pose",
-  "name": "Warrior Pose",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 2
- },
- {
-  "id": "warrior-s-pose",
-  "name": "Warrior's Pose",
-  "type": "duration",
-  "category": "power"
- },
- {
-  "id": "world's-greatest-stretch",
-  "name": "WGS",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 2,
-  "typicalReps": 8
- },
- {
-  "id": "wide-grip-lat-pulldown",
-  "name": "Wide Grip Lat Pulldown",
-  "type": "weight_reps",
-  "category": "compound",
-  "typicalSets": 4,
-  "typicalReps": 15
- },
- {
-  "id": "wrist-routine",
-  "name": "Wrist Routine",
-  "type": "bodyweight_reps",
-  "category": "mobility",
-  "typicalSets": 1,
-  "typicalReps": 1
- },
- {
-  "id": "wrist-warmup",
-  "name": "Wrist Warmup",
-  "type": "duration",
-  "category": "mobility",
-  "typicalSets": 1,
-  "typicalReps": 1
- },
- {
-  "id": "wrist-warmup-routine",
-  "name": "Wrist Warmup Routine",
-  "type": "duration",
-  "category": "mobility"
- },
- {
-  "id": "yin-yoga",
-  "name": "Yin Yoga",
-  "type": "duration",
-  "category": "mobility"
- }
+  {
+    "id": "ab-wheel-rollout",
+    "name": "Ab Wheel Rollout",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:abs",
+      "pattern:anti-extension",
+      "modality:resistance",
+      "role:core",
+      "equipment:ab-wheel"
+    ]
+  },
+  {
+    "id": "abduction-machine",
+    "name": "Abduction Machine",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:abductors",
+      "muscle:glutes",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "active-passive-hang",
+    "name": "Active Passive Hang",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:forearms",
+      "muscle:upper-back",
+      "pattern:hang",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:pull-up-bar"
+    ]
+  },
+  {
+    "id": "adduction-machine",
+    "name": "Adduction Machine",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:adductors",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "ankle-mobility",
+    "name": "Ankle Mobility",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:calves",
+      "muscle:tibialis",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "arnold-press",
+    "name": "Arnold Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:side-delts",
+      "muscle:triceps",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "assault-bike",
+    "name": "Assault Bike",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:full-body",
+      "muscle:quads",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:assault-bike"
+    ]
+  },
+  {
+    "id": "assisted-pullup-machine",
+    "name": "Assisted Pull-up Machine",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "muscle:biceps",
+      "pattern:vertical-pull",
+      "modality:resistance",
+      "role:compound",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "atg-split-squat",
+    "name": "ATG Split Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:hip-flexors",
+      "pattern:lunge",
+      "pattern:single-leg",
+      "modality:mobility",
+      "role:accessory",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "back-bend",
+    "name": "Back Bend",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:lower-back",
+      "muscle:hip-flexors",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "back-bridge-knee-lift",
+    "name": "Back Bridge Knee Lift",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "muscle:abs",
+      "muscle:lower-back",
+      "pattern:anti-extension",
+      "modality:mobility",
+      "role:core",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "back-extension",
+    "name": "Back Extension",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lower-back",
+      "muscle:glutes",
+      "muscle:hamstrings",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "back-squat",
+    "name": "Back Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:lower-back",
+      "pattern:squat",
+      "modality:resistance",
+      "role:compound",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "banded-complex",
+    "name": "Banded Complex",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:full-body",
+      "modality:mobility",
+      "role:potentiation",
+      "equipment:band"
+    ]
+  },
+  {
+    "id": "banded-hamstring-stretch",
+    "name": "Banded Hamstring Stretch",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "modality:stretch",
+      "role:cooldown",
+      "equipment:band"
+    ]
+  },
+  {
+    "id": "banded-hip-abduction",
+    "name": "Banded Hip Abduction",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:abductors",
+      "muscle:glutes",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:band"
+    ]
+  },
+  {
+    "id": "banded-lat-prayer-stretch",
+    "name": "Banded Lat Prayer Stretch",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "modality:stretch",
+      "role:cooldown",
+      "equipment:band"
+    ]
+  },
+  {
+    "id": "banded-overhead-touch",
+    "name": "Banded Overhead Touch",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:rotator-cuff",
+      "pattern:vertical-push",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:band"
+    ]
+  },
+  {
+    "id": "banded-pull-apart",
+    "name": "Banded Pull-Apart",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:rear-delts",
+      "muscle:upper-back",
+      "pattern:horizontal-pull",
+      "modality:mobility",
+      "role:prehab",
+      "equipment:band"
+    ],
+    "videoUrl": "https://youtu.be/MnDpmNYUjbc?si=C96wu8tMTztGULFY"
+  },
+  {
+    "id": "banded-pullup",
+    "name": "Banded Pull-up",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "muscle:biceps",
+      "pattern:vertical-pull",
+      "modality:resistance",
+      "role:compound",
+      "equipment:band"
+    ]
+  },
+  {
+    "id": "banded-punch",
+    "name": "Banded Punch",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:front-delts",
+      "muscle:obliques",
+      "pattern:horizontal-push",
+      "pattern:rotation",
+      "modality:resistance",
+      "role:conditioning",
+      "equipment:band"
+    ]
+  },
+  {
+    "id": "banded-row",
+    "name": "Banded Row",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:upper-back",
+      "muscle:lats",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:band"
+    ]
+  },
+  {
+    "id": "bb-bench-press",
+    "name": "Barbell Bench Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:triceps",
+      "muscle:front-delts",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:compound",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "bb-bicep-curl",
+    "name": "Barbell Bicep Curl",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:biceps",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "bb-hip-thrust",
+    "name": "Barbell Hip Thrust",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "muscle:hamstrings",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:compound",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "bb-row",
+    "name": "Barbell Row",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "muscle:rear-delts",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:compound",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "battle-rope",
+    "name": "Battle Rope",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:abs",
+      "muscle:full-body",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:battle-rope"
+    ]
+  },
+  {
+    "id": "bear-crawl",
+    "name": "Bear Crawl",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:abs",
+      "muscle:full-body",
+      "pattern:anti-rotation",
+      "pattern:gait",
+      "modality:resistance",
+      "role:conditioning",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "behind-head-strict-press",
+    "name": "Behind-Head Strict Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:side-delts",
+      "muscle:triceps",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "belt-squat",
+    "name": "Belt Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:squat",
+      "modality:resistance",
+      "role:compound",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "bicep-curl",
+    "name": "Bicep Curl",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:biceps",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "bicycle-crunch",
+    "name": "Bicycle Crunch",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:obliques",
+      "muscle:abs",
+      "pattern:rotation",
+      "modality:resistance",
+      "role:core",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "bodyweight-squat",
+    "name": "Bodyweight Squat",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:squat",
+      "modality:resistance",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "box-jump",
+    "name": "Box Jump",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:calves",
+      "pattern:jump",
+      "modality:plyometric",
+      "role:power",
+      "equipment:box"
+    ]
+  },
+  {
+    "id": "box-squat",
+    "name": "Box Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:squat",
+      "modality:resistance",
+      "role:compound",
+      "equipment:box"
+    ]
+  },
+  {
+    "id": "boxing-cardio",
+    "name": "Boxing Cardio",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:full-body",
+      "muscle:front-delts",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:none"
+    ]
+  },
+  {
+    "id": "broad-jump",
+    "name": "Broad Jump",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:hamstrings",
+      "pattern:jump",
+      "modality:plyometric",
+      "role:power",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "bulgarian-split-squat",
+    "name": "Bulgarian Split Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:lunge",
+      "pattern:single-leg",
+      "modality:resistance",
+      "role:compound",
+      "equipment:bench"
+    ]
+  },
+  {
+    "id": "burpee",
+    "name": "Burpee",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:full-body",
+      "pattern:jump",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "cable-crunch",
+    "name": "Cable Crunch",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:abs",
+      "pattern:anti-extension",
+      "modality:resistance",
+      "role:core",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "cable-curl",
+    "name": "Cable Curl",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:biceps",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "cable-glute-kickback",
+    "name": "Cable Glute Kickback",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "cable-lateral-raise",
+    "name": "Cable Lateral Raise",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:side-delts",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "cable-pull-through",
+    "name": "Cable Pull-Through",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "muscle:hamstrings",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "cable-woodchop",
+    "name": "Cable Woodchop",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:obliques",
+      "muscle:abs",
+      "pattern:rotation",
+      "modality:resistance",
+      "role:core",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "calf-raise",
+    "name": "Calf Raise",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:calves",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "calf-stretch",
+    "name": "Calf Stretch",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:calves",
+      "modality:stretch",
+      "role:cooldown",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "cat-cow",
+    "name": "Cat-Cow",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:lower-back",
+      "muscle:abs",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "chaos-loaded-carry",
+    "name": "Chaos Loaded Carry",
+    "fields": [
+      "weightKg",
+      "distanceMeters"
+    ],
+    "tags": [
+      "muscle:abs",
+      "muscle:obliques",
+      "muscle:traps",
+      "pattern:carry",
+      "pattern:anti-rotation",
+      "modality:balance",
+      "role:accessory",
+      "equipment:band"
+    ]
+  },
+  {
+    "id": "chest-fly",
+    "name": "Chest Fly",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:cable"
+    ],
+    "videoUrl": "https://youtu.be/4mfLHnFL0Uw?si=Iaw3bNONtJyHzQu4"
+  },
+  {
+    "id": "chest-press-machine",
+    "name": "Chest Press Machine",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:triceps",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:compound",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "chest-to-wall",
+    "name": "Chest to Wall",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:abs",
+      "pattern:vertical-push",
+      "modality:isometric",
+      "role:accessory",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "chest-supported-row",
+    "name": "Chest-Supported Row",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:upper-back",
+      "muscle:lats",
+      "muscle:rear-delts",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:compound",
+      "equipment:bench"
+    ]
+  },
+  {
+    "id": "childs-pose",
+    "name": "Child's Pose",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:lower-back",
+      "modality:yoga",
+      "role:cooldown",
+      "equipment:yoga-mat"
+    ]
+  },
+  {
+    "id": "chin-up",
+    "name": "Chin-up",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:biceps",
+      "pattern:vertical-pull",
+      "modality:resistance",
+      "role:compound",
+      "equipment:pull-up-bar"
+    ]
+  },
+  {
+    "id": "clamshell",
+    "name": "Clamshell",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:abductors",
+      "muscle:glutes",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:band"
+    ]
+  },
+  {
+    "id": "close-grip-bench-press",
+    "name": "Close-Grip Bench Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:triceps",
+      "muscle:chest",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:compound",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "concentration-curl",
+    "name": "Concentration Curl",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:biceps",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "conventional-deadlift",
+    "name": "Conventional Deadlift",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "muscle:lower-back",
+      "muscle:traps",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:compound",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "copenhagen-plank",
+    "name": "Copenhagen Plank",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:adductors",
+      "muscle:obliques",
+      "pattern:anti-lateral-flexion",
+      "modality:isometric",
+      "role:prehab",
+      "equipment:bench"
+    ]
+  },
+  {
+    "id": "cossack-squat",
+    "name": "Cossack Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:adductors",
+      "pattern:squat",
+      "modality:mobility",
+      "role:accessory",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "couch-stretch",
+    "name": "Couch Stretch",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:hip-flexors",
+      "muscle:quads",
+      "modality:stretch",
+      "role:cooldown",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "crunch",
+    "name": "Crunch",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:abs",
+      "pattern:anti-extension",
+      "modality:resistance",
+      "role:core",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "cuban-rotation",
+    "name": "Cuban Rotation",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:rotator-cuff",
+      "muscle:rear-delts",
+      "pattern:rotation",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "curtsy-lunge",
+    "name": "Curtsy Lunge",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "muscle:abductors",
+      "muscle:quads",
+      "pattern:lunge",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "cycling",
+    "name": "Cycling",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:none"
+    ]
+  },
+  {
+    "id": "deadball-shoulder-over",
+    "name": "Deadball Shoulder Over",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:side-delts",
+      "muscle:abs",
+      "muscle:full-body",
+      "pattern:throw",
+      "modality:resistance",
+      "role:power",
+      "equipment:slam-ball"
+    ]
+  },
+  {
+    "id": "deadbug",
+    "name": "Deadbug",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:abs",
+      "pattern:anti-extension",
+      "modality:resistance",
+      "role:core",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "deadlift-iso-hold",
+    "name": "Deadlift Iso Hold",
+    "fields": [
+      "weightKg",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "muscle:lower-back",
+      "pattern:hinge",
+      "modality:isometric",
+      "role:potentiation",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "decline-bench-press",
+    "name": "Decline Bench Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:triceps",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "deep-squat-hold",
+    "name": "Deep Squat Hold",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:adductors",
+      "pattern:squat",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ],
+    "videoUrl": "https://youtu.be/CFVurupkiUQ?si=HXtgPhsBEPVvaG94"
+  },
+  {
+    "id": "deficit-calf-raise",
+    "name": "Deficit Calf Raise",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:calves",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:plate"
+    ]
+  },
+  {
+    "id": "deficit-drop",
+    "name": "Deficit Drop",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:calves",
+      "pattern:jump",
+      "modality:plyometric",
+      "role:potentiation",
+      "equipment:box"
+    ]
+  },
+  {
+    "id": "deficit-protracted-pushup",
+    "name": "Deficit Protracted Pushup",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:upper-back",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "deficit-tibialis-raise",
+    "name": "Deficit Tibialis Raise",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:tibialis",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:plate"
+    ]
+  },
+  {
+    "id": "diagonal-stretch",
+    "name": "Diagonal Stretch",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:obliques",
+      "muscle:lats",
+      "modality:stretch",
+      "role:cooldown",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "diamond-pushup",
+    "name": "Diamond Pushup",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:triceps",
+      "muscle:chest",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "dip",
+    "name": "Dip",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:triceps",
+      "muscle:front-delts",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:compound",
+      "equipment:dip-bar"
+    ]
+  },
+  {
+    "id": "dip-machine",
+    "name": "Dip Machine",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:triceps",
+      "muscle:chest",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "donkey-calf-raise",
+    "name": "Donkey Calf Raise",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:calves",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "donkey-kick",
+    "name": "Donkey Kick",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "doorway-chest-stretch",
+    "name": "Doorway Chest Stretch",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:front-delts",
+      "modality:stretch",
+      "role:cooldown",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "dorsiflexion-raise",
+    "name": "Dorsiflexion Raise",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:tibialis",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "db-bench-press",
+    "name": "Dumbbell Bench Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:triceps",
+      "muscle:front-delts",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:compound",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "db-clean",
+    "name": "Dumbbell Clean",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "muscle:hamstrings",
+      "muscle:traps",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:power",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "db-ohp",
+    "name": "Dumbbell Overhead Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:triceps",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:compound",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "db-pullover",
+    "name": "Dumbbell Pullover",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:lats",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "db-push-press",
+    "name": "Dumbbell Push Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:triceps",
+      "muscle:quads",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:power",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "db-renegade-row",
+    "name": "Dumbbell Renegade Row",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "muscle:abs",
+      "pattern:horizontal-pull",
+      "pattern:anti-rotation",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "db-rdl",
+    "name": "Dumbbell Romanian Deadlift",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "db-row",
+    "name": "Dumbbell Row",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:compound",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "db-shoulder-over",
+    "name": "Dumbbell Shoulder Over",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:side-delts",
+      "muscle:abs",
+      "pattern:rotation",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "dynamic-leg-swing",
+    "name": "Dynamic Leg Swing",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:hip-flexors",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "eccentric-pullup",
+    "name": "Eccentric Pull-up",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "muscle:biceps",
+      "pattern:vertical-pull",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:pull-up-bar"
+    ]
+  },
+  {
+    "id": "eccentric-pushup",
+    "name": "Eccentric Pushup",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:triceps",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "elbows-in-chest-press",
+    "name": "Elbows-In Chest Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:triceps",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "elephant-walk",
+    "name": "Elephant Walk",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:calves",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "elevated-deadlift",
+    "name": "Elevated Deadlift",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "muscle:lower-back",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:compound",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "elevated-pushup",
+    "name": "Elevated Pushup",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:triceps",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:box"
+    ]
+  },
+  {
+    "id": "elevated-split-squat",
+    "name": "Elevated Split Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:lunge",
+      "pattern:single-leg",
+      "modality:resistance",
+      "role:compound",
+      "equipment:box"
+    ]
+  },
+  {
+    "id": "elliptical",
+    "name": "Elliptical",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:gait",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:elliptical"
+    ]
+  },
+  {
+    "id": "external-rotation",
+    "name": "External Rotation",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:rotator-cuff",
+      "muscle:rear-delts",
+      "pattern:rotation",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:band"
+    ]
+  },
+  {
+    "id": "face-pull",
+    "name": "Face Pull",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:rear-delts",
+      "muscle:upper-back",
+      "muscle:rotator-cuff",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "farmers-carry",
+    "name": "Farmer's Carry",
+    "fields": [
+      "weightKg",
+      "distanceMeters"
+    ],
+    "tags": [
+      "muscle:traps",
+      "muscle:forearms",
+      "muscle:abs",
+      "pattern:carry",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "feet-elevated-hip-thrust",
+    "name": "Feet-Elevated Hip Thrust",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "muscle:hamstrings",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:bench"
+    ]
+  },
+  {
+    "id": "feet-elevated-scap-pushup",
+    "name": "Feet-Elevated Scapular Pushup",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:upper-back",
+      "pattern:horizontal-push",
+      "modality:mobility",
+      "role:prehab",
+      "equipment:box"
+    ]
+  },
+  {
+    "id": "floor-press",
+    "name": "Floor Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:triceps",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "flutter-kick",
+    "name": "Flutter Kick",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:abs",
+      "muscle:hip-flexors",
+      "pattern:anti-extension",
+      "modality:resistance",
+      "role:core",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "foam-roller-core-stretch",
+    "name": "Foam Roller Core Stretch",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:abs",
+      "muscle:lower-back",
+      "modality:stretch",
+      "role:cooldown",
+      "equipment:foam-roller"
+    ]
+  },
+  {
+    "id": "frog-pump",
+    "name": "Frog Pump",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "front-raise",
+    "name": "Front Raise",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "front-row",
+    "name": "Front Row",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:upper-back",
+      "muscle:traps",
+      "muscle:side-delts",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "front-squat",
+    "name": "Front Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:abs",
+      "pattern:squat",
+      "modality:resistance",
+      "role:compound",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "fdrs",
+    "name": "Full Depth Resting Squat",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:adductors",
+      "pattern:squat",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "glute-bridge",
+    "name": "Glute Bridge",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "glute-ham-raise",
+    "name": "Glute Ham Raise",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "goat-stretch",
+    "name": "GOAT Stretch",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:hip-flexors",
+      "muscle:hamstrings",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "goblet-box-squat",
+    "name": "Goblet Box Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:squat",
+      "modality:resistance",
+      "role:compound",
+      "equipment:box"
+    ]
+  },
+  {
+    "id": "goblet-squat",
+    "name": "Goblet Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:squat",
+      "modality:resistance",
+      "role:compound",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "good-morning",
+    "name": "Good Morning",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "muscle:lower-back",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "farmers-walk-grip-hold",
+    "name": "Grip Hold",
+    "fields": [
+      "weightKg",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:forearms",
+      "pattern:carry",
+      "modality:isometric",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "hack-squat",
+    "name": "Hack Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:squat",
+      "modality:resistance",
+      "role:compound",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "half-pushup-hold",
+    "name": "Half Pushup Hold",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:triceps",
+      "muscle:abs",
+      "modality:isometric",
+      "role:potentiation",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "hammer-curl",
+    "name": "Hammer Curl",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:biceps",
+      "muscle:forearms",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "hamstring-march",
+    "name": "Hamstring March",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "hamstring-walkout",
+    "name": "Hamstring Walkout",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "hanging-knee-raise",
+    "name": "Hanging Knee Raise",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:abs",
+      "muscle:hip-flexors",
+      "pattern:anti-extension",
+      "modality:resistance",
+      "role:core",
+      "equipment:pull-up-bar"
+    ]
+  },
+  {
+    "id": "hanging-leg-raise",
+    "name": "Hanging Leg Raise",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:abs",
+      "muscle:hip-flexors",
+      "pattern:anti-extension",
+      "modality:resistance",
+      "role:core",
+      "equipment:pull-up-bar"
+    ]
+  },
+  {
+    "id": "hanging-leg-tuck",
+    "name": "Hanging Leg Tuck",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:abs",
+      "muscle:hip-flexors",
+      "pattern:anti-extension",
+      "modality:resistance",
+      "role:core",
+      "equipment:pull-up-bar"
+    ]
+  },
+  {
+    "id": "hill-sprint",
+    "name": "Hill Sprint",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:calves",
+      "pattern:gait",
+      "modality:cardio",
+      "role:power",
+      "equipment:none"
+    ]
+  },
+  {
+    "id": "hip-flexor-stretch",
+    "name": "Hip Flexor Stretch",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:hip-flexors",
+      "modality:stretch",
+      "role:cooldown",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "piriformis-stretch",
+    "name": "Piriformis Stretch",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "muscle:hip-flexors",
+      "modality:stretch",
+      "role:cooldown",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "hip-thrust",
+    "name": "Hip Thrust",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "muscle:hamstrings",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:compound",
+      "equipment:bench"
+    ]
+  },
+  {
+    "id": "hollow-body-hold",
+    "name": "Hollow Body Hold",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:abs",
+      "pattern:anti-extension",
+      "modality:isometric",
+      "role:core",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "horizontal-row",
+    "name": "Horizontal Row",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:upper-back",
+      "muscle:lats",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "incline-bb-bench-press",
+    "name": "Incline Barbell Bench Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:front-delts",
+      "muscle:triceps",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:compound",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "incline-bench-machine",
+    "name": "Incline Bench Machine",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:front-delts",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "incline-db-curl",
+    "name": "Incline Dumbbell Curl",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:biceps",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "incline-db-press",
+    "name": "Incline Dumbbell Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:front-delts",
+      "muscle:triceps",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:compound",
+      "equipment:dumbbell"
+    ],
+    "videoUrl": "https://youtu.be/jMQA3XtJSgo?si=fmsw7Th8kFxv36eH"
+  },
+  {
+    "id": "incline-treadmill",
+    "name": "Incline Treadmill",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "muscle:calves",
+      "muscle:quads",
+      "pattern:gait",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:treadmill"
+    ]
+  },
+  {
+    "id": "interval-run",
+    "name": "Interval Run",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:hamstrings",
+      "muscle:calves",
+      "pattern:gait",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:none"
+    ]
+  },
+  {
+    "id": "isometric-heel-floating-split-squat",
+    "name": "Isometric Heel-Floating Split Squat",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:lunge",
+      "pattern:single-leg",
+      "modality:isometric",
+      "role:potentiation",
+      "equipment:bodyweight"
+    ],
+    "videoUrl": "https://youtu.be/dxE41q3wPi8?si=z8Mb0-8Betq9CQ1A"
+  },
+  {
+    "id": "jefferson-curl",
+    "name": "Jefferson Curl",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lower-back",
+      "muscle:hamstrings",
+      "pattern:hinge",
+      "modality:mobility",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "jog",
+    "name": "Jog",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:calves",
+      "pattern:gait",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:none"
+    ]
+  },
+  {
+    "id": "jump-rope",
+    "name": "Jump Rope",
+    "fields": [
+      "reps",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:calves",
+      "muscle:tibialis",
+      "pattern:jump",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:jump-rope"
+    ]
+  },
+  {
+    "id": "jump-squat",
+    "name": "Jump Squat",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:calves",
+      "pattern:jump",
+      "pattern:squat",
+      "modality:plyometric",
+      "role:power",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "kb-clean",
+    "name": "Kettlebell Clean",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "muscle:hamstrings",
+      "muscle:traps",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:power",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "kb-clean-and-press",
+    "name": "Kettlebell Clean and Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:full-body",
+      "muscle:front-delts",
+      "muscle:glutes",
+      "pattern:hinge",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:power",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "kb-deadlift",
+    "name": "Kettlebell Deadlift",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "muscle:lower-back",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:compound",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "kb-foot-raise",
+    "name": "Kettlebell Foot Raise",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:tibialis",
+      "muscle:calves",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "kb-halo",
+    "name": "Kettlebell Halo",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:rotator-cuff",
+      "muscle:abs",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "kb-lateral-run",
+    "name": "Kettlebell Lateral Run",
+    "fields": [
+      "weightKg",
+      "distanceMeters"
+    ],
+    "tags": [
+      "muscle:abductors",
+      "muscle:quads",
+      "muscle:abs",
+      "pattern:gait",
+      "pattern:carry",
+      "modality:resistance",
+      "role:conditioning",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "kb-push-press",
+    "name": "Kettlebell Push Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:triceps",
+      "muscle:quads",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:power",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "kb-rdl",
+    "name": "Kettlebell Romanian Deadlift",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "kb-swing",
+    "name": "Kettlebell Swing",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "muscle:hamstrings",
+      "muscle:lower-back",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:power",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "landmine-clean",
+    "name": "Landmine Clean",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "muscle:traps",
+      "muscle:full-body",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:power",
+      "equipment:landmine"
+    ]
+  },
+  {
+    "id": "landmine-clean-and-press",
+    "name": "Landmine Clean and Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:full-body",
+      "muscle:front-delts",
+      "muscle:glutes",
+      "pattern:hinge",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:power",
+      "equipment:landmine"
+    ]
+  },
+  {
+    "id": "landmine-press",
+    "name": "Landmine Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:chest",
+      "muscle:triceps",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:compound",
+      "equipment:landmine"
+    ]
+  },
+  {
+    "id": "landmine-row",
+    "name": "Landmine Row",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:landmine"
+    ]
+  },
+  {
+    "id": "landmine-squat",
+    "name": "Landmine Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:squat",
+      "modality:resistance",
+      "role:compound",
+      "equipment:landmine"
+    ]
+  },
+  {
+    "id": "lat-pulldown",
+    "name": "Lat Pulldown",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "muscle:biceps",
+      "pattern:vertical-pull",
+      "modality:resistance",
+      "role:compound",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "lat-stretch",
+    "name": "Lat Stretch",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:lats",
+      "modality:stretch",
+      "role:cooldown",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "lateral-band-walk",
+    "name": "Lateral Band Walk",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:abductors",
+      "muscle:glutes",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:band"
+    ],
+    "videoUrl": "https://youtu.be/wn9IpSl3WbQ?si=YAefeLOQvOCQsGcG"
+  },
+  {
+    "id": "lateral-run",
+    "name": "Lateral Run",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:abductors",
+      "muscle:quads",
+      "muscle:calves",
+      "pattern:gait",
+      "modality:plyometric",
+      "role:conditioning",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "leg-extension",
+    "name": "Leg Extension",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "leg-press",
+    "name": "Leg Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:squat",
+      "modality:resistance",
+      "role:compound",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "leg-press-calf-raise",
+    "name": "Leg Press Calf Raise",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:calves",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "loaded-butterfly-stretch",
+    "name": "Loaded Butterfly Stretch",
+    "fields": [
+      "weightKg",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:adductors",
+      "modality:stretch",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "loaded-carry",
+    "name": "Loaded Carry",
+    "fields": [
+      "weightKg",
+      "distanceMeters"
+    ],
+    "tags": [
+      "muscle:traps",
+      "muscle:forearms",
+      "muscle:abs",
+      "pattern:carry",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "low-incline-db-press",
+    "name": "Low Incline Dumbbell Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:front-delts",
+      "muscle:triceps",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "lunge-into-leg-thru",
+    "name": "Lunge into Leg-Thru",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:hip-flexors",
+      "pattern:lunge",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "lunging-complex",
+    "name": "Lunging Complex",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:hip-flexors",
+      "pattern:lunge",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "lunging-mobilisation",
+    "name": "Lunging Mobilisation",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:hip-flexors",
+      "muscle:quads",
+      "pattern:lunge",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "max-glute-squeeze",
+    "name": "Max Glute Squeeze",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "modality:isometric",
+      "role:potentiation",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "meadows-row",
+    "name": "Meadows Row",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:landmine"
+    ]
+  },
+  {
+    "id": "medicine-ball-rotational-throw",
+    "name": "Medicine Ball Rotational Throw",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:obliques",
+      "muscle:abs",
+      "pattern:throw",
+      "pattern:rotation",
+      "modality:plyometric",
+      "role:power",
+      "equipment:medicine-ball"
+    ]
+  },
+  {
+    "id": "medicine-ball-slam",
+    "name": "Medicine Ball Slam",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:abs",
+      "muscle:lats",
+      "muscle:full-body",
+      "pattern:throw",
+      "modality:plyometric",
+      "role:power",
+      "equipment:slam-ball"
+    ]
+  },
+  {
+    "id": "mountain-climber",
+    "name": "Mountain Climber",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:abs",
+      "muscle:hip-flexors",
+      "pattern:anti-extension",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "neutral-grip-pulldown",
+    "name": "Neutral-Grip Lat Pulldown",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:biceps",
+      "pattern:vertical-pull",
+      "modality:resistance",
+      "role:compound",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "nordic-eccentric",
+    "name": "Nordic Eccentric",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "one-arm-stand",
+    "name": "One Arm Stand",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:abs",
+      "modality:balance",
+      "role:accessory",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "overcoming-isometric-pull",
+    "name": "Overcoming Isometric Pull",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:lower-back",
+      "muscle:hamstrings",
+      "muscle:traps",
+      "pattern:hinge",
+      "modality:isometric",
+      "role:potentiation",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "overhead-carry",
+    "name": "Overhead Carry",
+    "fields": [
+      "weightKg",
+      "distanceMeters"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:abs",
+      "muscle:traps",
+      "pattern:carry",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "overhead-db-tricep-extension",
+    "name": "Overhead Dumbbell Tricep Extension",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:triceps",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:dumbbell"
+    ],
+    "videoUrl": "https://youtu.be/7h3lG2WnLXg?si=SDJMR43HZZBGpqYd"
+  },
+  {
+    "id": "overhead-mobility",
+    "name": "Overhead Mobility",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:front-delts",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "ohp",
+    "name": "Overhead Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:triceps",
+      "muscle:side-delts",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:compound",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "ohp-in-lunge",
+    "name": "Overhead Press in Lunge",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:triceps",
+      "muscle:abs",
+      "pattern:vertical-push",
+      "pattern:single-leg",
+      "modality:balance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "overhead-superman-iso-hold",
+    "name": "Overhead Superman Iso Hold",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:lower-back",
+      "muscle:lats",
+      "muscle:glutes",
+      "pattern:anti-extension",
+      "modality:isometric",
+      "role:core",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "overhead-tricep-stretch",
+    "name": "Overhead Tricep Stretch",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:triceps",
+      "muscle:lats",
+      "modality:stretch",
+      "role:cooldown",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "pallof-press",
+    "name": "Pallof Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:obliques",
+      "muscle:abs",
+      "pattern:anti-rotation",
+      "modality:resistance",
+      "role:core",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "pallof-press-in-lunge",
+    "name": "Pallof Press in Lunge",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:obliques",
+      "muscle:abs",
+      "muscle:glutes",
+      "pattern:anti-rotation",
+      "pattern:single-leg",
+      "modality:resistance",
+      "role:core",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "parallette-hold",
+    "name": "Parallette Hold",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:abs",
+      "muscle:front-delts",
+      "muscle:triceps",
+      "modality:isometric",
+      "role:core",
+      "equipment:dip-bar"
+    ]
+  },
+  {
+    "id": "parallette-hollow-body-hold",
+    "name": "Parallette Hollow Body Hold",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:abs",
+      "muscle:front-delts",
+      "pattern:anti-extension",
+      "modality:isometric",
+      "role:core",
+      "equipment:dip-bar"
+    ]
+  },
+  {
+    "id": "passive-hang",
+    "name": "Passive Hang",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:forearms",
+      "pattern:hang",
+      "modality:mobility",
+      "role:cooldown",
+      "equipment:pull-up-bar"
+    ]
+  },
+  {
+    "id": "pause-goblet-squat",
+    "name": "Pause Goblet Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:squat",
+      "modality:resistance",
+      "role:compound",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "pec-deck",
+    "name": "Pec Deck",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "pec-fly-crossover",
+    "name": "Pec Fly Crossover",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "pelvic-tilt",
+    "name": "Pelvic Tilt",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:abs",
+      "muscle:lower-back",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "pendlay-row",
+    "name": "Pendlay Row",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:upper-back",
+      "muscle:lats",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:compound",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "pike-pushup",
+    "name": "Pike Pushup",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:triceps",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:compound",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "planche-lean",
+    "name": "Planche Lean",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:abs",
+      "pattern:anti-extension",
+      "modality:isometric",
+      "role:accessory",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "planche-lean-pushup",
+    "name": "Planche Lean Pushup",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:chest",
+      "muscle:abs",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "plank",
+    "name": "Plank",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:abs",
+      "pattern:anti-extension",
+      "modality:isometric",
+      "role:core",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "pogo-jump",
+    "name": "Pogo Jump",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:calves",
+      "muscle:tibialis",
+      "pattern:jump",
+      "modality:plyometric",
+      "role:power",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "power-clean",
+    "name": "Power Clean",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:full-body",
+      "muscle:glutes",
+      "muscle:traps",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:power",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "preacher-curl",
+    "name": "Preacher Curl",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:biceps",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:ez-bar"
+    ]
+  },
+  {
+    "id": "prone-leg-curl",
+    "name": "Prone Leg Curl",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "pullup",
+    "name": "Pull-up",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "muscle:biceps",
+      "pattern:vertical-pull",
+      "modality:resistance",
+      "role:compound",
+      "equipment:pull-up-bar"
+    ]
+  },
+  {
+    "id": "pullup-iso-eccentric",
+    "name": "Pull-up Iso-Eccentric",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "pattern:vertical-pull",
+      "modality:isometric",
+      "role:accessory",
+      "equipment:pull-up-bar"
+    ]
+  },
+  {
+    "id": "push-jerk",
+    "name": "Push Jerk",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:triceps",
+      "muscle:quads",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:power",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "pushup",
+    "name": "Pushup",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:triceps",
+      "muscle:front-delts",
+      "pattern:horizontal-push",
+      "pattern:anti-extension",
+      "modality:resistance",
+      "role:compound",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "rear-delt-fly",
+    "name": "Rear Delt Fly",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:rear-delts",
+      "muscle:upper-back",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "rear-delt-machine",
+    "name": "Rear Delt Machine",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:rear-delts",
+      "muscle:upper-back",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "recumbent-bike",
+    "name": "Recumbent Bike",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:stationary-bike"
+    ]
+  },
+  {
+    "id": "reverse-crunch",
+    "name": "Reverse Crunch",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:abs",
+      "muscle:hip-flexors",
+      "pattern:anti-extension",
+      "modality:resistance",
+      "role:core",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "reverse-curl",
+    "name": "Reverse Curl",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:forearms",
+      "muscle:biceps",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:ez-bar"
+    ]
+  },
+  {
+    "id": "reverse-hyper",
+    "name": "Reverse Hyperextension",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "muscle:lower-back",
+      "muscle:hamstrings",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "ring-pushup",
+    "name": "Ring Pushup",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:triceps",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:rings"
+    ]
+  },
+  {
+    "id": "ring-row",
+    "name": "Ring Row",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:upper-back",
+      "muscle:lats",
+      "muscle:biceps",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:compound",
+      "equipment:rings"
+    ]
+  },
+  {
+    "id": "rdl",
+    "name": "Romanian Deadlift",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "muscle:lower-back",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:compound",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "rope-tricep-pushdown",
+    "name": "Rope Tricep Pushdown",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:triceps",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:cable"
+    ],
+    "videoUrl": "https://youtu.be/-xa-6cQaZKY?si=2oZWfORkwqj1n3vy"
+  },
+  {
+    "id": "rowing-machine",
+    "name": "Rowing Machine",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:full-body",
+      "muscle:lats",
+      "muscle:quads",
+      "pattern:horizontal-pull",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:rower"
+    ]
+  },
+  {
+    "id": "run",
+    "name": "Run",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:hamstrings",
+      "muscle:calves",
+      "pattern:gait",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:none"
+    ]
+  },
+  {
+    "id": "run-walk-progression",
+    "name": "Run-Walk Progression",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:calves",
+      "pattern:gait",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:none"
+    ]
+  },
+  {
+    "id": "russian-twist",
+    "name": "Russian Twist",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:obliques",
+      "muscle:abs",
+      "pattern:rotation",
+      "modality:resistance",
+      "role:core",
+      "equipment:medicine-ball"
+    ]
+  },
+  {
+    "id": "scapular-pullup",
+    "name": "Scapular Pull-up",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "muscle:traps",
+      "pattern:vertical-pull",
+      "modality:mobility",
+      "role:potentiation",
+      "equipment:pull-up-bar"
+    ]
+  },
+  {
+    "id": "scap-pushup",
+    "name": "Scapular Pushup",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:upper-back",
+      "muscle:chest",
+      "pattern:horizontal-push",
+      "modality:mobility",
+      "role:prehab",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "seated-cable-row",
+    "name": "Seated Cable Row",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:upper-back",
+      "muscle:lats",
+      "muscle:rear-delts",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:compound",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "seated-calf-raise",
+    "name": "Seated Calf Raise",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:calves",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "seated-db-ohp",
+    "name": "Seated Dumbbell Shoulder Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:triceps",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:compound",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "seated-leg-curl",
+    "name": "Seated Leg Curl",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "seated-row-machine",
+    "name": "Seated Row Machine",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:upper-back",
+      "muscle:lats",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:compound",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "shivasana",
+    "name": "Shivasana",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:full-body",
+      "modality:yoga",
+      "role:cooldown",
+      "equipment:yoga-mat"
+    ]
+  },
+  {
+    "id": "shoulder-dislocate",
+    "name": "Shoulder Dislocate",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:rotator-cuff",
+      "muscle:chest",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:band"
+    ]
+  },
+  {
+    "id": "shoulder-opener",
+    "name": "Shoulder Opener",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:chest",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "shoulder-press-machine",
+    "name": "Shoulder Press Machine",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:triceps",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:compound",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "shrug",
+    "name": "Shrug",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:traps",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "side-delt-raise",
+    "name": "Side Delt Raise",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:side-delts",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "side-glute-leg-raise",
+    "name": "Side Glute Leg Raise",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:abductors",
+      "muscle:glutes",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "side-lunge",
+    "name": "Side Lunge",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:adductors",
+      "pattern:lunge",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "side-plank",
+    "name": "Side Plank",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:obliques",
+      "muscle:abs",
+      "pattern:anti-lateral-flexion",
+      "modality:isometric",
+      "role:core",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "side-plank-band-row",
+    "name": "Side Plank Band Row",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:obliques",
+      "pattern:horizontal-pull",
+      "pattern:anti-lateral-flexion",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:band"
+    ]
+  },
+  {
+    "id": "sa-cross-body-pulldown",
+    "name": "Single-Arm Cross-Body Pulldown",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:obliques",
+      "pattern:vertical-pull",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "sa-db-row",
+    "name": "Single-Arm Dumbbell Row",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "sa-horizontal-row",
+    "name": "Single-Arm Horizontal Row",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:upper-back",
+      "muscle:lats",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "sa-kb-split-stance-deadlift",
+    "name": "Single-Arm Kettlebell Split-Stance Deadlift",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "muscle:obliques",
+      "pattern:hinge",
+      "pattern:single-leg",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "sa-kb-supported-row",
+    "name": "Single-Arm Kettlebell Supported Row",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "sa-lat-pulldown",
+    "name": "Single-Arm Lat Pulldown",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "pattern:vertical-pull",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "sa-ohp",
+    "name": "Single-Arm Overhead Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:triceps",
+      "muscle:obliques",
+      "pattern:vertical-push",
+      "pattern:anti-lateral-flexion",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "sa-push-press",
+    "name": "Single-Arm Push Press",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:triceps",
+      "muscle:obliques",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:power",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "sa-shoulder-press-machine",
+    "name": "Single-Arm Shoulder Press Machine",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:front-delts",
+      "muscle:triceps",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "sa-sm-push-away",
+    "name": "Single-Arm Smith Machine Push Away",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:chest",
+      "muscle:front-delts",
+      "pattern:horizontal-push",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:smith-machine"
+    ]
+  },
+  {
+    "id": "sa-supported-db-row",
+    "name": "Single-Arm Supported Dumbbell Row",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:bench"
+    ]
+  },
+  {
+    "id": "sl-leg-curl",
+    "name": "Single-Leg Curl",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "pattern:isolation",
+      "pattern:single-leg",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:machine"
+    ]
+  },
+  {
+    "id": "sl-glute-bridge",
+    "name": "Single-Leg Glute Bridge",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "muscle:hamstrings",
+      "pattern:hinge",
+      "pattern:single-leg",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "sl-rdl",
+    "name": "Single-Leg Romanian Deadlift",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "pattern:hinge",
+      "pattern:single-leg",
+      "modality:balance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "sl-rdl-to-knee-drive",
+    "name": "Single-Leg Romanian Deadlift to Knee Drive",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "muscle:hip-flexors",
+      "pattern:hinge",
+      "pattern:single-leg",
+      "modality:balance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ],
+    "videoUrl": "https://youtu.be/vI2S68dY2q8?si=eG-21EjJna4H8_xh"
+  },
+  {
+    "id": "sissy-squat",
+    "name": "Sissy Squat",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "pattern:squat",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "sit-up",
+    "name": "Sit-up",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:abs",
+      "muscle:hip-flexors",
+      "pattern:anti-extension",
+      "modality:resistance",
+      "role:core",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "ski-erg",
+    "name": "Ski Erg",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:abs",
+      "muscle:triceps",
+      "pattern:vertical-pull",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:ski-erg"
+    ]
+  },
+  {
+    "id": "skull-crusher",
+    "name": "Skull Crusher",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:triceps",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:ez-bar"
+    ]
+  },
+  {
+    "id": "sled-drag",
+    "name": "Sled Drag",
+    "fields": [
+      "weightKg",
+      "distanceMeters"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "pattern:gait",
+      "modality:resistance",
+      "role:conditioning",
+      "equipment:sled"
+    ]
+  },
+  {
+    "id": "sled-push",
+    "name": "Sled Push",
+    "fields": [
+      "weightKg",
+      "distanceMeters"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:calves",
+      "pattern:gait",
+      "modality:resistance",
+      "role:conditioning",
+      "equipment:sled"
+    ]
+  },
+  {
+    "id": "sm-side-bend",
+    "name": "Smith Machine Side Bend",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:obliques",
+      "pattern:anti-lateral-flexion",
+      "modality:resistance",
+      "role:core",
+      "equipment:smith-machine"
+    ]
+  },
+  {
+    "id": "smith-machine-squat",
+    "name": "Smith Machine Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:squat",
+      "modality:resistance",
+      "role:compound",
+      "equipment:smith-machine"
+    ]
+  },
+  {
+    "id": "snap-down",
+    "name": "Snap Down",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:full-body",
+      "muscle:quads",
+      "pattern:jump",
+      "modality:plyometric",
+      "role:potentiation",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "spanish-squat",
+    "name": "Spanish Squat",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "pattern:squat",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:band"
+    ]
+  },
+  {
+    "id": "split-squat",
+    "name": "Split Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:lunge",
+      "pattern:single-leg",
+      "modality:resistance",
+      "role:compound",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "split-stance-db-rdl",
+    "name": "Split-Stance Dumbbell Romanian Deadlift",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "pattern:hinge",
+      "pattern:single-leg",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "sprint",
+    "name": "Sprint",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "muscle:quads",
+      "pattern:gait",
+      "modality:cardio",
+      "role:power",
+      "equipment:none"
+    ]
+  },
+  {
+    "id": "squat-iso-hold",
+    "name": "Squat Iso Hold",
+    "fields": [
+      "weightKg",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:squat",
+      "modality:isometric",
+      "role:potentiation",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "squat-mobility-routine",
+    "name": "Squat Mobility Routine",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:calves",
+      "pattern:squat",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "stairmaster",
+    "name": "Stairmaster",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "muscle:quads",
+      "muscle:calves",
+      "pattern:gait",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:stairmaster"
+    ]
+  },
+  {
+    "id": "stationary-bike",
+    "name": "Stationary Bike",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:stationary-bike"
+    ]
+  },
+  {
+    "id": "step-up",
+    "name": "Step-Up",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:lunge",
+      "pattern:single-leg",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:box"
+    ]
+  },
+  {
+    "id": "step-up-complex",
+    "name": "Step-Up Complex",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:lunge",
+      "pattern:single-leg",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:box"
+    ]
+  },
+  {
+    "id": "stepback-lunge",
+    "name": "Stepback Lunge",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:lunge",
+      "pattern:single-leg",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "stilletto-squat",
+    "name": "Stiletto Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:calves",
+      "pattern:squat",
+      "pattern:single-leg",
+      "modality:balance",
+      "role:accessory",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "straight-arm-pulldown",
+    "name": "Straight-Arm Pulldown",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "suitcase-carry",
+    "name": "Suitcase Carry",
+    "fields": [
+      "weightKg",
+      "distanceMeters"
+    ],
+    "tags": [
+      "muscle:obliques",
+      "muscle:forearms",
+      "muscle:traps",
+      "pattern:carry",
+      "pattern:anti-lateral-flexion",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "sumo-deadlift",
+    "name": "Sumo Deadlift",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "muscle:adductors",
+      "muscle:hamstrings",
+      "muscle:lower-back",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:compound",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "sumo-squat",
+    "name": "Sumo Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:adductors",
+      "pattern:squat",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "sun-salutation",
+    "name": "Sun Salutation",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:full-body",
+      "modality:yoga",
+      "role:warmup",
+      "equipment:yoga-mat"
+    ],
+    "videoUrl": "https://youtu.be/PpXoK0T6OAQ?si=UZmFZlTjlOmnVWTP"
+  },
+  {
+    "id": "superman-iso-hold",
+    "name": "Superman Iso Hold",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:lower-back",
+      "muscle:glutes",
+      "pattern:anti-extension",
+      "modality:isometric",
+      "role:core",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "supine-twist",
+    "name": "Supine Twist",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:obliques",
+      "muscle:lower-back",
+      "pattern:rotation",
+      "modality:stretch",
+      "role:cooldown",
+      "equipment:yoga-mat"
+    ]
+  },
+  {
+    "id": "surrender",
+    "name": "Surrender",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:full-body",
+      "pattern:lunge",
+      "modality:resistance",
+      "role:conditioning",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "swim",
+    "name": "Swim",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:full-body",
+      "muscle:lats",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:none"
+    ]
+  },
+  {
+    "id": "t-bar-row",
+    "name": "T-Bar Row",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "pattern:horizontal-pull",
+      "modality:resistance",
+      "role:compound",
+      "equipment:landmine"
+    ]
+  },
+  {
+    "id": "t-spine-rotation",
+    "name": "T-Spine Rotation",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:upper-back",
+      "muscle:obliques",
+      "pattern:rotation",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "thread-the-needle",
+    "name": "Thread the Needle",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:upper-back",
+      "muscle:rear-delts",
+      "pattern:rotation",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:yoga-mat"
+    ]
+  },
+  {
+    "id": "three-way-calf-raise",
+    "name": "Three-Way Calf Raise",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:calves",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:bodyweight"
+    ],
+    "videoUrl": "https://youtu.be/-REeqQhn9No?si=0nDwpWauXTpOhYec"
+  },
+  {
+    "id": "thruster",
+    "name": "Thruster",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:full-body",
+      "muscle:quads",
+      "muscle:front-delts",
+      "pattern:squat",
+      "pattern:vertical-push",
+      "modality:resistance",
+      "role:conditioning",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "tibialis-raise",
+    "name": "Tibialis Raise",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:tibialis",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:bodyweight"
+    ],
+    "videoUrl": "https://youtu.be/pn7DLqo-IKs?si=Rd9XGJZJ9ekDkU2o"
+  },
+  {
+    "id": "toes-to-bar",
+    "name": "Toes to Bar",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:abs",
+      "muscle:hip-flexors",
+      "muscle:lats",
+      "pattern:anti-extension",
+      "modality:resistance",
+      "role:core",
+      "equipment:pull-up-bar"
+    ]
+  },
+  {
+    "id": "trap-bar-deadlift",
+    "name": "Trap Bar Deadlift",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:hamstrings",
+      "muscle:traps",
+      "pattern:hinge",
+      "modality:resistance",
+      "role:compound",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "treadmill",
+    "name": "Treadmill",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:calves",
+      "pattern:gait",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:treadmill"
+    ]
+  },
+  {
+    "id": "tricep-extension",
+    "name": "Tricep Extension",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:triceps",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "tricep-kickback",
+    "name": "Tricep Kickback",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:triceps",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:isolation",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "turkish-get-up",
+    "name": "Turkish Get-Up",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:full-body",
+      "muscle:abs",
+      "muscle:front-delts",
+      "modality:balance",
+      "role:accessory",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "twisting-lunge",
+    "name": "Twisting Lunge",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:obliques",
+      "pattern:lunge",
+      "pattern:rotation",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "two-leg-slider-curl",
+    "name": "Two-Leg Slider Curl",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:hamstrings",
+      "muscle:glutes",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:slider"
+    ],
+    "videoUrl": "https://youtube.com/shorts/MqI1iK-7BkQ?si=VkYCmQ9Rec3673se"
+  },
+  {
+    "id": "unilaterally-loaded-squat",
+    "name": "Unilaterally Loaded Squat",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "muscle:obliques",
+      "pattern:squat",
+      "pattern:anti-lateral-flexion",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:kettlebell"
+    ]
+  },
+  {
+    "id": "upright-row",
+    "name": "Upright Row",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:side-delts",
+      "muscle:traps",
+      "pattern:vertical-pull",
+      "modality:resistance",
+      "role:accessory",
+      "equipment:barbell"
+    ]
+  },
+  {
+    "id": "v-up",
+    "name": "V-Up",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:abs",
+      "muscle:hip-flexors",
+      "pattern:anti-extension",
+      "modality:resistance",
+      "role:core",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "vinyasa-flow",
+    "name": "Vinyasa Flow",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:full-body",
+      "modality:yoga",
+      "role:warmup",
+      "equipment:yoga-mat"
+    ]
+  },
+  {
+    "id": "walk",
+    "name": "Walk",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:calves",
+      "pattern:gait",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:none"
+    ]
+  },
+  {
+    "id": "walking-lunge",
+    "name": "Walking Lunge",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:glutes",
+      "pattern:lunge",
+      "pattern:single-leg",
+      "modality:resistance",
+      "role:compound",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "wall-ball",
+    "name": "Wall Ball",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:quads",
+      "muscle:front-delts",
+      "muscle:full-body",
+      "pattern:squat",
+      "pattern:throw",
+      "modality:resistance",
+      "role:conditioning",
+      "equipment:medicine-ball"
+    ]
+  },
+  {
+    "id": "wall-slide",
+    "name": "Wall Slide",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:upper-back",
+      "muscle:front-delts",
+      "modality:mobility",
+      "role:prehab",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "warrior-pose",
+    "name": "Warrior Pose",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:hip-flexors",
+      "muscle:quads",
+      "pattern:lunge",
+      "modality:yoga",
+      "role:warmup",
+      "equipment:yoga-mat"
+    ]
+  },
+  {
+    "id": "wide-grip-lat-pulldown",
+    "name": "Wide-Grip Lat Pulldown",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:lats",
+      "muscle:upper-back",
+      "pattern:vertical-pull",
+      "modality:resistance",
+      "role:compound",
+      "equipment:cable"
+    ]
+  },
+  {
+    "id": "wgs",
+    "name": "World's Greatest Stretch",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:hip-flexors",
+      "muscle:hamstrings",
+      "muscle:obliques",
+      "pattern:lunge",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "wrist-curl",
+    "name": "Wrist Curl",
+    "fields": [
+      "weightKg",
+      "reps"
+    ],
+    "tags": [
+      "muscle:forearms",
+      "pattern:isolation",
+      "modality:resistance",
+      "role:prehab",
+      "equipment:dumbbell"
+    ]
+  },
+  {
+    "id": "wrist-warmup-routine",
+    "name": "Wrist Warmup Routine",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:forearms",
+      "modality:mobility",
+      "role:warmup",
+      "equipment:bodyweight"
+    ]
+  },
+  {
+    "id": "yin-yoga",
+    "name": "Yin Yoga",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:full-body",
+      "modality:yoga",
+      "role:cooldown",
+      "equipment:yoga-mat"
+    ]
+  },
+  {
+    "id": "yoga-for-sciatica-sequence",
+    "name": "Yoga for Sciatica Sequence",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:glutes",
+      "muscle:lower-back",
+      "muscle:hamstrings",
+      "modality:yoga",
+      "role:prehab",
+      "equipment:yoga-mat"
+    ],
+    "videoUrl": "https://youtu.be/G5h0jkoBFbI?si=nhNrByNm3u2S5k_L"
+  },
+  {
+    "id": "zone-2-training",
+    "name": "Zone 2 Training",
+    "fields": [
+      "distanceMeters",
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:full-body",
+      "pattern:gait",
+      "modality:cardio",
+      "role:conditioning",
+      "equipment:none"
+    ]
+  }
 ]

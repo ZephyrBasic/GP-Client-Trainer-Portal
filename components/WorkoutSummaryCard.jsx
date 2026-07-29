@@ -5,11 +5,22 @@ import Spacer from './Spacer'
 import { Colors } from '../constants/Colors'
 
 const WorkoutSummaryCard = ({ stats }) => {
-    const { totalWorkouts, totalVolume, thisWeekVolume, totalReps, totalWorkSeconds, recent, maxRecentVolume } = stats
+    const {
+        totalWorkouts, totalVolume, thisWeekVolume, totalReps, totalWorkSeconds,
+        totalLoadedDistance, totalLoadedTime, recent, maxRecentVolume,
+    } = stats
 
     // Volume counts loaded work only, so bodyweight and timed work are shown
     // alongside it rather than disappearing into a zero.
     const workMinutes = Math.round((totalWorkSeconds ?? 0) / 60)
+
+    // Carries and loaded holds are load applied over distance and time rather than
+    // over reps. They are their own units (kg-m, kg-min), so they get their own
+    // figures instead of being folded into volume - and they are hidden entirely
+    // when zero, which for most clients is always.
+    const loadedDistance = Math.round(totalLoadedDistance ?? 0)
+    const loadedMinutes = Math.round((totalLoadedTime ?? 0) / 60)
+    const hasLoadedCarryWork = loadedDistance > 0 || loadedMinutes > 0
 
     return (
         <ThemedCard>
@@ -53,6 +64,26 @@ const WorkoutSummaryCard = ({ stats }) => {
                     <ThemedText style={styles.statLabel}>Timed work (min)</ThemedText>
                 </View>
             </View>
+
+            {hasLoadedCarryWork && (
+                <>
+                    <Spacer height={12} />
+                    <View style={styles.statsRow}>
+                        <View style={styles.stat}>
+                            <ThemedText title={true} style={styles.statNumber}>
+                                {loadedDistance.toLocaleString()}
+                            </ThemedText>
+                            <ThemedText style={styles.statLabel}>Loaded distance (kg·m)</ThemedText>
+                        </View>
+                        <View style={styles.stat}>
+                            <ThemedText title={true} style={styles.statNumber}>
+                                {loadedMinutes.toLocaleString()}
+                            </ThemedText>
+                            <ThemedText style={styles.statLabel}>Loaded time (kg·min)</ThemedText>
+                        </View>
+                    </View>
+                </>
+            )}
 
             {recent.length > 0 && (
                 <>

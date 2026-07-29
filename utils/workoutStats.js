@@ -1,7 +1,6 @@
 // Sets store each measurement as a nullable field, so a set carries only the
-// dimensions its exercise actually uses. `weight` is the legacy field name and is
-// still read here so workouts logged before the exercise repository keep counting.
-const weightOf = (set) => set.weightKg ?? set.weight ?? null
+// dimensions its exercise declares in `fields`.
+const weightOf = (set) => set.weightKg ?? null
 
 const eachSet = (workout, visit) => {
     for (const exercise of workout.exercises ?? []) {
@@ -9,8 +8,11 @@ const eachSet = (workout, visit) => {
     }
 }
 
-// Loaded volume only - reps x kg. Bodyweight and timed work deliberately score 0
-// here because adding them would mix units; they are surfaced as separate totals.
+// Loaded volume is reps x kg and nothing else. Carries and loaded holds score 0
+// here on purpose: kg-metres and kg-seconds are different units, and summing all
+// three into one figure gives a number that cannot be compared week to week - a
+// 40kg carry over 20m would swamp a set of squats and then jump 50% just because
+// the carry got 10m longer. They get their own totals below instead.
 const volumeOf = (workout) => {
     let volume = 0
     eachSet(workout, (set) => {
@@ -19,6 +21,22 @@ const volumeOf = (workout) => {
     })
     return volume
 }
+
+// The other two ways load gets applied: kg x metres for carries and sled work,
+// kg x seconds for weighted iso holds.
+const loadedBy = (workout, field) => {
+    let total = 0
+    eachSet(workout, (set) => {
+        const weight = weightOf(set)
+        if (weight != null && set[field] != null) {
+            total += (Number(set[field]) || 0) * (Number(weight) || 0)
+        }
+    })
+    return total
+}
+
+const loadedDistanceOf = (workout) => loadedBy(workout, 'distanceMeters')
+const loadedTimeOf = (workout) => loadedBy(workout, 'durationSeconds')
 
 const sumField = (workout, field) => {
     let total = 0
@@ -42,6 +60,8 @@ export const computeWorkoutStats = (workouts) => {
     return {
         totalWorkouts: workouts.length,
         totalVolume: sum(workouts, volumeOf),
+        totalLoadedDistance: sum(workouts, loadedDistanceOf),
+        totalLoadedTime: sum(workouts, loadedTimeOf),
         totalReps: sum(workouts, (w) => sumField(w, 'reps')),
         totalWorkSeconds: sum(workouts, (w) => sumField(w, 'durationSeconds')),
         totalDistanceMeters: sum(workouts, (w) => sumField(w, 'distanceMeters')),
@@ -53,4 +73,6 @@ export const computeWorkoutStats = (workouts) => {
 }
 
 export const volumeForWorkout = volumeOf
+export const loadedDistanceForWorkout = loadedDistanceOf
+export const loadedTimeForWorkout = loadedTimeOf
 export const repsForWorkout = (workout) => sumField(workout, 'reps')
