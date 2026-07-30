@@ -7,7 +7,7 @@ import ProgressMediaTile from '../../../../components/ProgressMediaTile'
 import { useProgressMedia } from '../../../../hooks/useProgressMedia'
 
 const ClientProgress = () => {
-    const { clientId } = useLocalSearchParams()
+    const { clientId } = useLocalSearchParams<{ clientId: string }>()
     const router = useRouter()
     const { media, loading } = useProgressMedia(clientId)
 

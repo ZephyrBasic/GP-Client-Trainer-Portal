@@ -27,7 +27,7 @@ const VideoPlayerView = ({ url }) => {
 }
 
 const MediaDetail = () => {
-    const { mediaId } = useLocalSearchParams()
+    const { mediaId } = useLocalSearchParams<{ mediaId: string }>()
     const { profile } = useAuth()
     const router = useRouter()
     const colorScheme = useColorScheme()

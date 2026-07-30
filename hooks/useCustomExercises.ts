@@ -4,8 +4,8 @@ import { db } from '../firebase/config'
 
 // Exercises a trainer has added beyond the bundled repository. Clients read their
 // own trainer's additions so a program using a custom movement is still loggable.
-export const useCustomExercises = (profile) => {
-    const [customExercises, setCustomExercises] = useState([])
+export const useCustomExercises = (profile?: any) => {
+    const [customExercises, setCustomExercises] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
 
     const ownerId = profile?.role === 'trainer' ? profile.uid : profile?.trainerId ?? null
@@ -22,7 +22,7 @@ export const useCustomExercises = (profile) => {
         const unsubscribe = onSnapshot(
             customQuery,
             (snapshot) => {
-                const data = snapshot.docs.map((docSnap) => ({
+                const data = snapshot.docs.map((docSnap): any => ({
                     // Namespaced so a custom exercise can never collide with a
                     // bundled repository id.
                     id: `custom:${docSnap.id}`,
@@ -43,7 +43,7 @@ export const useCustomExercises = (profile) => {
 
     // Shaped like a bundled catalog record (see constants/exercises.json) so the
     // picker, search index and log form treat custom and bundled the same.
-    const addCustomExercise = async ({ name, fields, tags }) => {
+    const addCustomExercise = async ({ name, fields, tags }: { name: string, fields: string[], tags: string[] }) => {
         if (profile?.role !== 'trainer') {
             throw new Error('Only trainers can add exercises to the library.')
         }

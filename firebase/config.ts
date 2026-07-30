@@ -1,4 +1,9 @@
 import { initializeApp, getApps, getApp } from 'firebase/app'
+// getReactNativePersistence is only declared in @firebase/auth's React Native
+// entry point (index.rn.d.ts). Metro resolves that entry, but tsc resolves a
+// single entry for the whole project and picks the browser one, so the symbol
+// exists at runtime on native while being invisible to the typechecker.
+// @ts-expect-error -- see above; remove once firebase exports this from its root types
 import { initializeAuth, getReactNativePersistence, getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'

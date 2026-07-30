@@ -1,0 +1,30 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    // Deliberately loose. This was a fast, mechanical JS -> TS migration: the
+    // goal is editor autocomplete and catching obvious mistakes at module
+    // boundaries, not proving the whole app null-safe. `strict` stays off so
+    // unannotated locals fall back to `any` instead of generating thousands of
+    // errors from Firestore's `DocumentData` flowing through every hook.
+    // Tightening later is a per-flag decision, not a rewrite.
+    "strict": false,
+
+    // Types cost nothing during development: Metro compiles via Babel, which
+    // strips types without checking them, so `expo start` and Fast Refresh never
+    // run tsc. `npm run typecheck` is the only thing that does, and it is opt-in.
+    //
+    // incremental caches the last result so repeat runs only re-check what
+    // changed - the difference between a check you actually run and one you skip.
+    "incremental": true,
+    "tsBuildInfoFile": "node_modules/.cache/tsconfig.tsbuildinfo",
+
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  // scripts/ runs under plain `node`, never through Metro, and imports nothing
+  // from the app. Leaving it as untyped .js keeps `node scripts/validate-exercises.js`
+  // working without a build step.
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
+  "exclude": ["node_modules", "scripts"]
+}

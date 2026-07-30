@@ -1,5 +1,5 @@
 import { createElement } from 'react'
-import { Platform, StyleSheet, View } from 'react-native'
+import { Platform, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native'
 import { WebView } from 'react-native-webview'
 
 import ThemedText from './ThemedText'
@@ -14,7 +14,7 @@ import { embedUrl } from '../utils/videoUrl'
  * has no web implementation). That platform split is the whole reason this
  * component exists; callers just hand it a url.
  */
-const VideoEmbed = ({ url, style }) => {
+const VideoEmbed = ({ url, style }: { url?: string, style?: StyleProp<ViewStyle> }) => {
     const src = embedUrl(url)
 
     if (!src) {

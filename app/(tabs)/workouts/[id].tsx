@@ -14,7 +14,7 @@ import { volumeForWorkout } from '../../../utils/workoutStats'
 import { formatSet } from '../../../utils/formatSet'
 
 const WorkoutDetail = () => {
-    const { id } = useLocalSearchParams()
+    const { id } = useLocalSearchParams<{ id: string }>()
     const router = useRouter()
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light

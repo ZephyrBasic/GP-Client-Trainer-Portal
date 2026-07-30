@@ -1,7 +1,7 @@
-import { Text, useColorScheme } from 'react-native'
+import { Text, useColorScheme, type TextProps } from 'react-native'
 import { Colors } from '../constants/Colors'
 
-const ThemedText = ({ style, title = false, ...props }) => {
+const ThemedText = ({ style, title = false, ...props }: TextProps & { title?: boolean }) => {
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
 

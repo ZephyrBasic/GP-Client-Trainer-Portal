@@ -15,7 +15,7 @@ import { computeWorkoutStats, volumeForWorkout } from '../../../../utils/workout
 import { formatSet } from '../../../../utils/formatSet'
 
 const ClientDetail = () => {
-    const { clientId } = useLocalSearchParams()
+    const { clientId } = useLocalSearchParams<{ clientId: string }>()
     const router = useRouter()
     const [clientProfile, setClientProfile] = useState(null)
     const { workouts, loading } = useWorkouts(clientId)

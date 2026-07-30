@@ -5,8 +5,8 @@ import { db } from '../firebase/config'
 // One-time (non-live) name lookups for a set of uids, cached across calls -
 // used to show a comment author's name without a persistent listener per
 // comment (names essentially never change mid-session).
-export const useUserNames = (uids) => {
-    const [names, setNames] = useState({})
+export const useUserNames = (uids: string[]) => {
+    const [names, setNames] = useState<Record<string, string>>({})
     const key = uids.join(',')
 
     useEffect(() => {

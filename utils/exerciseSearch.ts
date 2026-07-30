@@ -1,4 +1,4 @@
-import EXERCISES from '../constants/exercises.json'
+import EXERCISES from '../constants/exerciseCatalog'
 
 // Coaching shorthand used throughout the programs (e.g. "SA Lat Pulldown"),
 // expanded so a client typing either form finds the same exercise.

@@ -2,7 +2,12 @@ import { Stack, useLocalSearchParams } from 'expo-router'
 import ChatThread from '../../../components/ChatThread'
 
 const ChatScreen = () => {
-    const { chatId, clientId, trainerId, name } = useLocalSearchParams()
+    const { chatId, clientId, trainerId, name } = useLocalSearchParams<{
+        chatId: string
+        clientId: string
+        trainerId: string
+        name: string
+    }>()
 
     return (
         <>
