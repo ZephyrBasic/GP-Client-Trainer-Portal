@@ -15,9 +15,22 @@ import type { Equipment, ExerciseTag, Facet, Modality, Muscle, Pattern, Role, Se
 export type { Equipment, ExerciseTag, Facet, Modality, Muscle, Pattern, Role, SetField }
 
 /**
+ * A window of a longer video, in whole seconds.
+ *
+ * Only meaningful alongside a YouTube `videoUrl`, and validate-exercises.js
+ * rejects it on anything else: self-hosted clips are trimmed in the editor
+ * before upload, so a window would be a second way to say the same thing.
+ */
+export interface VideoClip {
+    start: number
+    /** Exclusive end. `end - start` must fall inside the 15-45s house rule. */
+    end: number
+}
+
+/**
  * A record in the bundled catalog.
  *
- * The five keys below are the whole schema: validate-exercises.js rejects any
+ * The six keys below are the whole schema: validate-exercises.js rejects any
  * other key outright, which is why this is an exact shape rather than an
  * extensible one. Notably absent, and absent on purpose: `typicalSets` /
  * `typicalReps` (a set is prefilled from that client's own last performance,
@@ -54,13 +67,21 @@ export interface ExerciseRecord {
     tags: ExerciseTag[]
 
     /**
-     * Optional https link to a how-to demo, surfaced as "Watch how-to" in the
-     * picker. Absent on most records, which is fine and not a gap to fill.
+     * Optional https link to a how-to demo, shown by the info button in the picker.
      *
-     * In practice these are YouTube watch/share URLs - see components/VideoEmbed.tsx
-     * for why that needs an iframe rather than expo-video.
+     * Either a YouTube link (played in YouTube's iframe) or a direct media file
+     * such as a Firebase Storage download URL (played by expo-video). Which one
+     * is derived from the URL in utils/videoUrl.ts, not stored, so replacing a
+     * borrowed clip with Zeph's own footage is a one-field edit.
      */
     videoUrl?: string
+
+    /**
+     * Which seconds of `videoUrl` to play, when the demo is buried in a longer
+     * video. Absent means play the whole thing, which is the normal case for a
+     * Short or for self-hosted footage.
+     */
+    clip?: VideoClip
 }
 
 /**
@@ -83,6 +104,7 @@ export interface CustomExerciseRecord {
     /** Firestore Timestamp, or null for the brief window before the server resolves it. */
     createdAt: unknown
     videoUrl?: string
+    clip?: VideoClip
 }
 
 /**

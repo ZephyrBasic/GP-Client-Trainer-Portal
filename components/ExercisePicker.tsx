@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { FlatList, Modal, Pressable, StyleSheet, useColorScheme, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 
 import ThemedText from './ThemedText'
@@ -51,6 +52,8 @@ const NEW_ROLE_OPTIONS = ['compound', 'accessory', 'isolation', 'core', 'prehab'
 const ExercisePicker = ({ visible, onSelect, onClose }) => {
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
+    // See ExerciseInfoModal: real insets rather than a hardcoded top padding.
+    const insets = useSafeAreaInsets()
     const { profile } = useAuth()
     const { customExercises, addCustomExercise } = useCustomExercises(profile)
 
@@ -138,7 +141,15 @@ const ExercisePicker = ({ visible, onSelect, onClose }) => {
 
     return (
         <Modal visible={visible} animationType="slide" onRequestClose={handleClose}>
-            <View style={[styles.container, { backgroundColor: theme.background }]}>
+            <View style={[
+                styles.container,
+                {
+                    backgroundColor: theme.background,
+                    paddingTop: insets.top + 12,
+                    // The list scrolls under the home indicator without this.
+                    paddingBottom: insets.bottom,
+                },
+            ]}>
                 <View style={styles.headerRow}>
                     <ThemedText style={styles.heading}>{adding ? 'Add Exercise' : 'Choose Exercise'}</ThemedText>
                     <Pressable onPress={adding ? () => setAdding(false) : handleClose} hitSlop={10}>
@@ -288,7 +299,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        paddingTop: 60,
     },
     headerRow: {
         flexDirection: 'row',

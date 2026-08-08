@@ -12,6 +12,7 @@ const fs = require('fs')
 const path = require('path')
 
 const { FIELDS, FACETS } = require('./exerciseVocab')
+const { CLIP_SECONDS, isYouTube, isMediaFile } = require('./videoSources')
 
 const args = process.argv.slice(2)
 const showStats = args.includes('--stats')
@@ -108,13 +109,55 @@ for (const [i, ex] of exercises.entries()) {
         }
     }
 
-    // --- videoUrl -------------------------------------------------------
-    // Optional: a how-to demo the client can open from the picker. Absent means
-    // no demo exists yet, which is not a fault - most records have none.
+    // --- videoUrl / clip ------------------------------------------------
+    // Optional: a how-to demo the client opens from the info button. Absent means
+    // no demo exists yet - a gap to fill, but not a schema fault, so it stays a
+    // warning-free absence here and is reported by verify-videos.js instead.
+    //
+    // Only the shape is checked here. Whether the video still exists, is
+    // embeddable, runs 15-45s and comes from a vouched-for channel needs the
+    // YouTube API, so it lives in verify-videos.js - this file must keep working
+    // offline and stay fast enough to gate a commit.
     if (ex.videoUrl !== undefined) {
         if (typeof ex.videoUrl !== 'string' || !/^https:\/\/\S+$/.test(ex.videoUrl)) {
             fail(id, `videoUrl must be an https URL, got ${JSON.stringify(ex.videoUrl)}`)
+        } else {
+            // A `t=`/`start=` timestamp on a watch URL is silently dropped when the
+            // link is rewritten to /embed/{id}, so the intent behind it is lost.
+            // `clip` is where a start time belongs.
+            const stamped = ex.videoUrl.match(/[?&](t|start)=/)
+            if (stamped) {
+                fail(id, `videoUrl carries a "${stamped[1]}=" timestamp the player ignores - use clip instead`)
+            }
+            if (/[?&]si=/.test(ex.videoUrl)) {
+                warn(id, 'videoUrl has a "si=" share-tracking param - safe to strip')
+            }
+            if (!isYouTube(ex.videoUrl) && !isMediaFile(ex.videoUrl)) {
+                fail(id, `videoUrl is neither a YouTube link nor a playable media file: ${ex.videoUrl}`)
+            }
         }
+    }
+
+    if (ex.clip !== undefined) {
+        const { start, end } = ex.clip ?? {}
+        const whole = (n) => typeof n === 'number' && Number.isInteger(n) && n >= 0
+
+        if (typeof ex.clip !== 'object' || ex.clip === null || Array.isArray(ex.clip)) {
+            fail(id, 'clip must be an object { start, end }')
+        } else if (Object.keys(ex.clip).sort().join() !== 'end,start') {
+            fail(id, `clip takes exactly start and end, got [${Object.keys(ex.clip).join(', ')}]`)
+        } else if (!whole(start) || !whole(end)) {
+            fail(id, 'clip.start and clip.end must be whole seconds >= 0')
+        } else if (end <= start) {
+            fail(id, `clip.end (${end}) must be after clip.start (${start})`)
+        } else if (end - start < CLIP_SECONDS.min || end - start > CLIP_SECONDS.max) {
+            fail(id, `clip runs ${end - start}s, outside the ${CLIP_SECONDS.min}-${CLIP_SECONDS.max}s window`)
+        }
+
+        if (ex.videoUrl === undefined) fail(id, 'clip without a videoUrl to clip')
+        // Self-hosted footage is trimmed before upload, so a window here would be
+        // a second, contradictable way of saying the same thing.
+        else if (!isYouTube(ex.videoUrl)) fail(id, 'clip only applies to a YouTube videoUrl')
     }
 
     // --- no v1 leftovers ------------------------------------------------
@@ -125,7 +168,7 @@ for (const [i, ex] of exercises.entries()) {
     for (const dead of ['type', 'category', 'typicalSets', 'typicalReps', 'aliases']) {
         if (dead in ex) fail(id, `v1 field "${dead}" still present`)
     }
-    const known = new Set(['id', 'name', 'fields', 'tags', 'videoUrl'])
+    const known = new Set(['id', 'name', 'fields', 'tags', 'videoUrl', 'clip'])
     for (const k of Object.keys(ex)) if (!known.has(k)) fail(id, `unknown property "${k}"`)
 }
 

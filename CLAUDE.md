@@ -24,7 +24,26 @@ node scripts/validate-exercises.js          # after editing constants/exercises.
 node scripts/validate-exercises.js --stats  # ... plus facet coverage
 ```
 
+```bash
+python -m pip install --upgrade yt-dlp      # one-off, for the harvester below
+python scripts/find-exercise-videos.py      # search YouTube for candidate demos -> videoCandidates.json
+node scripts/promote-videos.js --dry        # preview which candidates would enter the catalog
+node scripts/promote-videos.js              # ... and write them in
+```
+
+```bash
+npm run verify:videos                       # how-to demo coverage; offline, no key needed
+npm run verify:videos -- --missing          # ... plus every exercise with no demo yet
+npm run verify:videos -- --oembed           # ... plus live/embeddable check on every video, NO key
+npm run verify:videos -- --online           # ... plus duration + channel checks (needs YOUTUBE_API_KEY)
+npm run verify:videos -- --learn            # print each video's channel, to seed APPROVED_CHANNELS
+```
+
+`--oembed` is the one to reach for routinely: YouTube's oEmbed endpoint answers 200 only for a video that is public *and* embeddable, so it catches both dead-player failures with no API key and no quota. It can't see duration or `channelId` — that still needs `--online`.
+
 There is no test runner or linter — `npm run typecheck` and `validate-exercises.js` are the only automated checks, and both exit non-zero so they can gate a commit. Firebase project id: `gp-client-trainer-portal`.
+
+`verify-videos.js` is deliberately **not** a commit gate: it needs the network and an API key, so it can neither run offline nor in CI without a secret. It's a periodic maintenance run for catching demos that have rotted, not something to wire into the dev loop.
 
 Typechecking is **opt-in and off the dev loop**: Metro compiles through Babel, which strips types without checking them, so `expo start` and Fast Refresh never invoke tsc. Running `npm run typecheck` is a separate, deliberate act; `incremental` is on so repeat runs only re-check what changed. Nothing here should be wired into the dev server.
 
@@ -74,7 +93,7 @@ Reading helpers live in `utils/formatSet.ts` (display) and `utils/workoutStats.t
 
 ### Exercise repository
 
-`constants/exercises.json` is a bundled catalog of ~317 records. Each has `fields` (which measurements a set takes — `weightKg`/`reps`/`distanceMeters`/`durationSeconds`), faceted `tags`, and an optional `videoUrl` (an https link to a how-to demo, surfaced as "Watch how-to" in the picker; absent on most records and that's fine). Nothing else: there are deliberately **no** `typicalSets`/`typicalReps`, because a set starts empty and is prefilled from that client's own last performance (`utils/exerciseHistory.ts`) rather than from a generic prescription, and no `aliases` — the spelling variants earned their keep while importing the spreadsheets and nothing after it.
+`constants/exercises.json` is a bundled catalog of ~317 records. Each has `fields` (which measurements a set takes — `weightKg`/`reps`/`distanceMeters`/`durationSeconds`), faceted `tags`, an optional `videoUrl` (a how-to demo, shown by the info button in the picker) and an optional `clip` window on that video. Nothing else: there are deliberately **no** `typicalSets`/`typicalReps`, because a set starts empty and is prefilled from that client's own last performance (`utils/exerciseHistory.ts`) rather than from a generic prescription, and no `aliases` — the spelling variants earned their keep while importing the spreadsheets and nothing after it.
 
 Logging is **select-only**: clients pick from the catalog + their trainer's custom exercises, they cannot type a free-text exercise name.
 
@@ -100,7 +119,7 @@ Unused measurement fields are stored as `null`, never `0` — "no weight" must s
 
 `types/exercise.ts` is the compile-time counterpart to `validate-exercises.js`. The two are meant to say the same thing; if you change one, change the other.
 
-- `ExerciseRecord` is the exact five-key schema (`id`, `name`, `fields`, `tags`, `videoUrl?`). It's exact rather than extensible because the validator rejects unknown keys outright.
+- `ExerciseRecord` is the exact six-key schema (`id`, `name`, `fields`, `tags`, `videoUrl?`, `clip?`). It's exact rather than extensible because the validator rejects unknown keys outright.
 - `CustomExerciseRecord` is the Firestore counterpart, with `id: \`custom:${string}\`` and `isCustom: true` as the discriminant. **Prefer `AnyExerciseRecord` in UI code** — a client's picker is always the bundled catalog *plus* their trainer's additions, so anything typed to `ExerciseRecord` alone is quietly wrong.
 - `tagValues(exercise, 'muscle')` returns `Muscle[]`, not `string[]`, so a typo'd comparison against the result fails to compile.
 
@@ -111,6 +130,32 @@ npm run gen:types      # after editing scripts/exerciseVocab.js
 ```
 
 Regeneration is manual and deliberately not wired into `npm run typecheck` — the check stays a single fast `tsc` call. The cost of that choice: edit `exerciseVocab.js` without running `gen:types` and the types silently lag the validator. `validate-exercises.js` still catches the data, so the failure mode is stale autocomplete rather than bad data.
+
+#### How-to demos
+
+Every exercise should eventually have a demo of **15–45 seconds** — long enough to show the movement, short enough that a client watches it mid-session instead of skipping. That window is defined once in `scripts/videoSources.js` as `CLIP_SECONDS` and enforced from there.
+
+Two kinds of demo coexist in the same `videoUrl` field, on purpose. Borrowed YouTube clips give coverage now; Zeph's own footage in Firebase Storage replaces them one exercise at a time. The *kind* is derived from the URL in `utils/videoUrl.ts`, never stored, so that swap is a one-field edit with no migration and no flag to keep in sync.
+
+`clip: { start, end }` narrows playback to the seconds that actually show the movement, which is what lets a six-minute breakdown serve as a 30-second demo — it becomes `?start=&end=` on the embed URL. It is **YouTube-only**, and the validator rejects it elsewhere: self-hosted footage is trimmed in the editor before upload, so a window there would be a second, contradictable way of saying the same thing. A `t=`/`start=` timestamp left on a watch URL is a hard error, because rewriting the link to `/embed/{id}` silently drops it — the intent has to move into `clip` or it's lost.
+
+Self-hosting is cheap enough not to worry about: at 720p a 30s clip is ~8 MB, so all 317 is ~2.5 GB — inside Storage's free allowance, and $0.065/month if billed. Egress ($0.12/GB after 1 GB/day) is the only real cost, and these files are immutable, so **upload them with `Cache-Control: public, max-age=31536000`**. Clients rewatch the same handful of demos in their own programme constantly; with that header those replays come from the device cache, and without it you pay for every one.
+
+Verification splits along the same offline/online line as everything else here. `validate-exercises.js` checks shape only — URL is YouTube or a playable media file, clip is whole seconds in the right window, clip has a video to clip. Whether a video still *exists*, is embeddable, is public, runs 15–45s and comes from a channel Zeph vouches for needs the YouTube Data API, so it lives in `scripts/verify-videos.js`.
+
+#### Finding demos
+
+`scripts/find-exercise-videos.py` searches YouTube for candidates and writes `constants/videoCandidates.json`; `scripts/promote-videos.js` copies chosen ones into the catalog. The staging file exists because **no score can tell whether a clip actually demonstrates the movement correctly** — that judgement is Zeph's and his beta testers', and the two-file split keeps an unreviewed guess from reaching a client by accident. `promote-videos.js` is `--dry` capable and refuses to overwrite an existing `videoUrl` without `--overwrite`, so a hand-picked demo is never replaced by a scored one.
+
+It's Python, unlike the rest of `scripts/`, because yt-dlp is a Python library and driving it in-process is what keeps a 317-exercise sweep to minutes. yt-dlp is also why no API key is needed: the Data API's `search.list` costs 100 quota units a call, so one pass over the catalog would be ~31,700 against a 10,000/day ceiling — three days per sweep. The harvester rewrites its output after every completed search (via a temp file and a rename, so an interrupt can't truncate the JSON) and skips ids already present, so a run is resumable.
+
+`--rescore` re-ranks the staging file without searching again, and `--boost SCORE` re-searches only the exercises whose best candidate falls below a score, using alternate query forms built from the muscle and modality tags — the primary query trusts the catalog's name, which fails on house shorthand (`fdrs`, `sa-sm-push-away`) and on spellings YouTube doesn't use ("Shivasana" for Savasana).
+
+Ranking is a confidence signal, not a verdict. Name-word overlap dominates; a 15–45s duration, an instructional title, and a channel that recurs across many exercises all add. Two penalties matter more than they look: a title carrying a word that is *almost* one of ours but not it is penalised hard, because anatomical antonyms are often one letter apart and "Adduction Machine" otherwise outranks "Abduction Machine" on the shared word "machine"; and titles matching the workout-log/reaction/compilation vocabulary are pushed right down. A low top score means "search found nothing convincing", which is exactly the queue-ordering a human reviewer wants.
+
+**What none of this can catch is a video that is live, embeddable, correctly titled and still the wrong movement** — the promoted `wall-ball` demo was wikiHow's playground game, and `db-shoulder-over` was a shoulder press. Both pass every automated check there is. `--oembed` warns when a title's words don't overlap the exercise name, which orders the review queue, but semantic correctness is irreducibly a human call. Treat the catalog's demos as reviewed only where someone has actually watched them.
+
+"Reputable" is not something an API can judge, so it reduces to "from a channel on `APPROVED_CHANNELS`" — one human judgement, then enforced forever. That list ships **empty and unguessed**: populate it with `npm run verify:videos -- --learn`, which prints the real channel id behind every video already in the catalog. While it's empty the channel check switches itself off, so the first `--online` run reports genuine rot instead of flagging all 317 records at once. The check that matters most is the silent one: a deleted or private video simply doesn't come back in the API response, and in the app that renders as a dead player nobody reports.
 
 Import the catalog from `constants/exerciseCatalog.ts`, not from `exercises.json` directly — a raw JSON import is inferred structurally and gives `tags: string[]`, discarding every vocabulary the facets exist to enforce.
 
@@ -141,7 +186,18 @@ Auth errors are mapped to human copy through `utils/firebaseErrors.ts` — route
 
 Tabs whose route is a folder (`clients`, `workouts`, `messages`, `progress`) set `headerShown: false` on their `Tabs.Screen`, because the nested `Stack` renders its own header — leaving both on shows the title twice.
 
-How-to demos are YouTube links, which `expo-video` can't play (it wants a direct media file), so `components/VideoEmbed.tsx` embeds YouTube's own iframe player: a `WebView` on native, a real `<iframe>` on web, since `react-native-webview` has no web build. URL parsing lives separately in `utils/videoUrl.ts` so it's testable without a React Native runtime. `ExerciseInfoModal` is a stacked `Modal` rather than a pushed route on purpose — `ExercisePicker` is itself a `Modal`, and on native a pushed screen would open *behind* it.
+**The YouTube player is split per platform, and that split is load-bearing.** `VideoEmbed.tsx` only routes; the player itself is `YouTubePlayer.tsx` (native) and `YouTubePlayer.web.tsx` (web), which Metro picks between. `VideoFrame.tsx` holds the shared 16:9 box and spinner so both render into an identically sized frame.
+
+- **Native uses `react-native-youtube-iframe`, not our own WebView.** Getting a YouTube embed to play in a WebView is genuinely fiddly and three hand-rolled attempts failed in three different ways: pointing a WebView at the embed URL makes it a *top-level document*, which YouTube refuses (*"Error 153: Video player configuration error"*); framing it from a document whose origin claims to be youtube.com is refused differently (*"152: This video is unavailable"*). The library frames the player from a real third-party origin it hosts (`DEFAULT_BASE_URL`, a github.io page) and sets a desktop User-Agent. A clip window reaches it through `initialPlayerParams.start/end`. **Don't replace this with a bare WebView** — it looks like an unnecessary dependency and is not.
+- **Web keeps a real `<iframe>` and does not use the library.** The library's web path needs `react-native-web-webview`, which is deliberately not installed; and on web the plain embed URL already works, because it genuinely sits in an iframe on the app's own origin — precisely the arrangement that is hard to reproduce on native. `YouTubePlayer.tsx` is the default (native) file so `tsc` resolves imports of `./YouTubePlayer`.
+- **A web-only stylesheet clears `transform` on the fullscreen element's ancestors.** Chrome sizes a fullscreen element against its nearest ancestor carrying a CSS transform instead of the viewport, and React Native Web puts an identity `matrix(1,0,0,1,0,0)` on ScrollView. A fullscreened video therefore inherited the scroll viewport's box — measured at `1280×571 at (0,61)` against a `1280×631` viewport, offset by the header and short by its height. `*:has(:fullscreen) { transform: none }` frees it, scoped to only the ancestors involved and only while something is fullscreen.
+- **Fullscreen is switched off on Android only** (`preventFullScreen`, which also disables the WebView's `allowsFullscreenVideo`). Android hands WebView fullscreen to the *Activity's* decor view while an RN `<Modal>` is a separate Dialog window above it; the two don't compose, and pressing fullscreen tore `ExerciseInfoModal` down, dropping the client back on the picker underneath. Every route to this player is inside a Modal, so no player setting fixes it. In portrait the loss is small — the frame is already full-width 16:9, and fullscreen's real gain is landscape rotation, which this app isn't set up for. Getting that back means doing fullscreen *inside* the React tree (an expanded view plus `expo-screen-orientation`) rather than handing off to Android.
+
+Direct media files are the other branch and stay in `VideoEmbed.tsx`: `expo-video` plays them on every platform and gives native controls free. That branch is its own component rather than an inline `if`, because `useVideoPlayer` is a hook and can't be called conditionally. URL parsing lives in `utils/videoUrl.ts` so it's testable without a React Native runtime.
+
+The native path cannot be exercised from a dev machine — web takes the `<iframe>` branch and never touches the library — so changes to `YouTubePlayer.tsx` need a device or simulator to verify.
+
+`ExerciseInfoModal` is a stacked `Modal` rather than a pushed route on purpose — `ExercisePicker` is itself a `Modal`, and on native a pushed screen would open *behind* it. That choice is what forces the Android fullscreen compromise above; the two are linked, so revisit them together.
 
 ## Working style in this repo
 

@@ -1,81 +1,68 @@
-import { createElement } from 'react'
-import { Platform, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native'
-import { WebView } from 'react-native-webview'
+import { View, type StyleProp, type ViewStyle } from 'react-native'
+import { useVideoPlayer, VideoView } from 'expo-video'
 
 import ThemedText from './ThemedText'
-import { embedUrl } from '../utils/videoUrl'
+import YouTubePlayer from './YouTubePlayer'
+import { videoStyles } from './VideoFrame'
+import { videoSource, type VideoClip } from '../utils/videoUrl'
 
 /**
  * Plays a how-to demo inside the app rather than handing it to the browser.
  *
- * The links in the catalog are YouTube watch/share URLs, which expo-video cannot
- * play - it wants a direct media file. So the player is YouTube's own iframe,
- * which needs a WebView on native and a real <iframe> on web (react-native-webview
- * has no web implementation). That platform split is the whole reason this
- * component exists; callers just hand it a url.
+ * Two players, because the catalog holds two kinds of demo. Borrowed YouTube clips
+ * cannot go through expo-video - it wants a direct media file - so they go to
+ * YouTubePlayer, which is itself split per platform (see those files; getting a
+ * YouTube embed to play in a native WebView is the fiddly part). Zeph's own footage
+ * in Firebase Storage *is* a direct media file, so it takes expo-video everywhere
+ * and gets native controls for free.
+ *
+ * Callers just hand over a url and an optional clip window; which player runs is
+ * derived from the url in utils/videoUrl.ts.
  */
-const VideoEmbed = ({ url, style }: { url?: string, style?: StyleProp<ViewStyle> }) => {
-    const src = embedUrl(url)
+const VideoEmbed = ({ url, clip, style }: {
+    url?: string,
+    clip?: VideoClip,
+    style?: StyleProp<ViewStyle>,
+}) => {
+    const source = videoSource(url, clip)
 
-    if (!src) {
+    if (!source) {
         return (
-            <View style={[styles.frame, styles.fallback, style]}>
-                <ThemedText style={styles.fallbackText}>
+            <View style={[videoStyles.frame, videoStyles.centered, style]}>
+                <ThemedText style={{ color: '#fff', fontSize: 13 }}>
                     This demo can&apos;t be played in the app.
                 </ThemedText>
             </View>
         )
     }
 
-    if (Platform.OS === 'web') {
-        // createElement because JSX in this file compiles to RN components, and
-        // <iframe> is not one of them.
-        return (
-            <View style={[styles.frame, style]}>
-                {createElement('iframe', {
-                    src,
-                    allow: 'accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen',
-                    allowFullScreen: true,
-                    frameBorder: '0',
-                    style: { width: '100%', height: '100%', border: 0 },
-                })}
-            </View>
-        )
+    if (source.kind === 'youtube') {
+        return <YouTubePlayer url={url as string} clip={clip} style={style} />
     }
 
+    // Its own component, not a branch here, because useVideoPlayer is a hook and
+    // cannot be called conditionally.
+    return <FileVideo uri={source.uri} style={style} />
+}
+
+/** A self-hosted clip. Loops, because a 30-second demo is worth watching twice. */
+const FileVideo = ({ uri, style }: { uri: string, style?: StyleProp<ViewStyle> }) => {
+    const player = useVideoPlayer(uri, (p) => {
+        p.loop = true
+        p.muted = true
+    })
+
     return (
-        <View style={[styles.frame, style]}>
-            <WebView
-                source={{ uri: src }}
-                style={styles.webview}
-                allowsFullscreenVideo
-                allowsInlineMediaPlayback
-                mediaPlaybackRequiresUserAction={false}
+        <View style={[videoStyles.frame, style]}>
+            <VideoView
+                player={player}
+                style={videoStyles.fill}
+                contentFit="contain"
+                allowsFullscreen
+                nativeControls
             />
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    frame: {
-        width: '100%',
-        aspectRatio: 16 / 9,
-        borderRadius: 10,
-        overflow: 'hidden',
-        backgroundColor: '#000',
-    },
-    webview: {
-        flex: 1,
-        backgroundColor: '#000',
-    },
-    fallback: {
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    fallbackText: {
-        color: '#fff',
-        fontSize: 13,
-    },
-})
 
 export default VideoEmbed
