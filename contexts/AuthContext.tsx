@@ -54,10 +54,24 @@ export const AuthProvider = ({ children }) => {
         if (!user) return
 
         setProfileLoading(true)
-        const unsubscribe = onSnapshot(doc(db, 'users', user.uid), (snapshot) => {
-            setProfile(snapshot.exists() ? { uid: snapshot.id, ...snapshot.data() } : null)
-            setProfileLoading(false)
-        })
+        const unsubscribe = onSnapshot(
+            doc(db, 'users', user.uid),
+            (snapshot) => {
+                setProfile(snapshot.exists() ? { uid: snapshot.id, ...snapshot.data() } : null)
+                setProfileLoading(false)
+            },
+            (error) => {
+                // Without this handler the listener fails silently: profileLoading
+                // stays true, `loading` below never settles, and the root layout
+                // renders its spinner forever - the app looks like it cannot start
+                // rather than like it lost the network. Releasing the gate lets the
+                // signed-in UI render in whatever degraded state it can manage.
+                // The last known profile is deliberately kept: a dropped connection
+                // shouldn't demote a trainer's session to a client's.
+                console.warn('[auth] profile listener failed:', error)
+                setProfileLoading(false)
+            }
+        )
         return unsubscribe
     }, [user])
 
