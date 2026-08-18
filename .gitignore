@@ -43,3 +43,6 @@ yarn-error.*
 
 # local Claude Code settings
 .claude/settings.local.json
+
+# working notes and plans - scratch, not part of the repo's documentation
+.claude/docs/
