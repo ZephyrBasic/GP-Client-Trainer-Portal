@@ -6,15 +6,18 @@ import ThemedText from '../../../components/ThemedText'
 import ThemedButton from '../../../components/ThemedButton'
 import WorkoutSummaryCard from '../../../components/WorkoutSummaryCard'
 import WorkoutListItem from '../../../components/WorkoutListItem'
+import OfflineBanner from '../../../components/OfflineBanner'
 import Spacer from '../../../components/Spacer'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useWorkouts } from '../../../hooks/useWorkouts'
+import { useOffline } from '../../../hooks/useOffline'
 import { computeWorkoutStats } from '../../../utils/workoutStats'
 
 const WorkoutsHistory = () => {
     const { profile } = useAuth()
     const router = useRouter()
-    const { workouts, loading } = useWorkouts(profile?.uid)
+    const { workouts, loading, offline: workoutsOffline, retry } = useWorkouts(profile?.uid)
+    const offline = useOffline(workoutsOffline)
     const stats = computeWorkoutStats(workouts)
 
     return (
@@ -25,6 +28,7 @@ const WorkoutsHistory = () => {
                 contentContainerStyle={styles.listContent}
                 ListHeaderComponent={
                     <>
+                        <OfflineBanner visible={offline} onRetry={retry} />
                         <ThemedButton onPress={() => router.push('/workouts/new')}>
                             <ThemedText style={styles.btnText}>+ Log Workout</ThemedText>
                         </ThemedButton>

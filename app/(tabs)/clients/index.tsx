@@ -1,35 +1,34 @@
-import { useEffect, useState } from 'react'
 import { FlatList, Pressable, StyleSheet } from 'react-native'
 import { Redirect, useRouter } from 'expo-router'
-import { collection, onSnapshot, query, where } from 'firebase/firestore'
+import { collection, query, where } from 'firebase/firestore'
 
 import ThemedView from '../../../components/ThemedView'
 import ThemedText from '../../../components/ThemedText'
 import ThemedCard from '../../../components/ThemedCard'
+import OfflineBanner from '../../../components/OfflineBanner'
 import Spacer from '../../../components/Spacer'
 import { db } from '../../../firebase/config'
 import { useAuth } from '../../../contexts/AuthContext'
+import { useFirestoreQuery } from '../../../hooks/useFirestoreSnapshot'
+import { useOffline } from '../../../hooks/useOffline'
 
 const ClientsRoster = () => {
     const { profile } = useAuth()
     const router = useRouter()
-    const [clients, setClients] = useState([])
-    const [loading, setLoading] = useState(true)
 
-    useEffect(() => {
-        if (profile?.role !== 'trainer') return
-
-        const clientsQuery = query(
-            collection(db, 'users'),
-            where('trainerId', '==', profile.uid),
-            where('role', '==', 'client')
-        )
-        const unsubscribe = onSnapshot(clientsQuery, (snapshot) => {
-            setClients(snapshot.docs.map((docSnap) => ({ uid: docSnap.id, ...docSnap.data() })))
-            setLoading(false)
-        })
-        return unsubscribe
-    }, [profile?.uid, profile?.role])
+    const { data: clients, loading, offline: clientsOffline, retry } = useFirestoreQuery(
+        () =>
+            profile?.role === 'trainer'
+                ? query(
+                      collection(db, 'users'),
+                      where('trainerId', '==', profile.uid),
+                      where('role', '==', 'client')
+                  )
+                : null,
+        [profile?.uid, profile?.role],
+        { idKey: 'uid' }
+    )
+    const offline = useOffline(clientsOffline)
 
     if (profile && profile.role !== 'trainer') {
         return <Redirect href="/" />
@@ -41,6 +40,8 @@ const ClientsRoster = () => {
                 Your Clients
             </ThemedText>
             <Spacer height={16} />
+
+            <OfflineBanner visible={offline} onRetry={retry} />
 
             {loading ? (
                 <ThemedText>Loading...</ThemedText>

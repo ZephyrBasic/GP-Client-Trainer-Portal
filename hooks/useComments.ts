@@ -1,26 +1,12 @@
-import { useEffect, useState } from 'react'
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
+import { collection, orderBy, query } from 'firebase/firestore'
 import { db } from '../firebase/config'
+import { useFirestoreQuery } from './useFirestoreSnapshot'
 
 export const useComments = (mediaId) => {
-    const [comments, setComments] = useState([])
-    const [loading, setLoading] = useState(true)
+    const { data, loading, offline, retry } = useFirestoreQuery(
+        () => (mediaId ? query(collection(db, 'progressMedia', mediaId, 'comments'), orderBy('createdAt', 'asc')) : null),
+        [mediaId]
+    )
 
-    useEffect(() => {
-        if (!mediaId) {
-            setComments([])
-            setLoading(false)
-            return
-        }
-
-        setLoading(true)
-        const commentsQuery = query(collection(db, 'progressMedia', mediaId, 'comments'), orderBy('createdAt', 'asc'))
-        const unsubscribe = onSnapshot(commentsQuery, (snapshot) => {
-            setComments(snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() })))
-            setLoading(false)
-        })
-        return unsubscribe
-    }, [mediaId])
-
-    return { comments, loading }
+    return { comments: data, loading, offline, retry }
 }

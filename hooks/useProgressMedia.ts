@@ -1,30 +1,15 @@
-import { useEffect, useState } from 'react'
-import { collection, onSnapshot, query, where } from 'firebase/firestore'
+import { collection, query, where } from 'firebase/firestore'
 import { db } from '../firebase/config'
+import { useFirestoreQuery } from './useFirestoreSnapshot'
 
 // Sorted client-side (rather than an orderBy in the query) so we don't need
 // a composite Firestore index just for one client's own media feed.
 export const useProgressMedia = (clientId?: string | null) => {
-    const [media, setMedia] = useState<any[]>([])
-    const [loading, setLoading] = useState(true)
+    const { data, loading, offline, retry } = useFirestoreQuery(
+        () => (clientId ? query(collection(db, 'progressMedia'), where('clientId', '==', clientId)) : null),
+        [clientId],
+        { sort: (a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0) }
+    )
 
-    useEffect(() => {
-        if (!clientId) {
-            setMedia([])
-            setLoading(false)
-            return
-        }
-
-        setLoading(true)
-        const mediaQuery = query(collection(db, 'progressMedia'), where('clientId', '==', clientId))
-        const unsubscribe = onSnapshot(mediaQuery, (snapshot) => {
-            const data = snapshot.docs.map((docSnap): any => ({ id: docSnap.id, ...docSnap.data() }))
-            data.sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0))
-            setMedia(data)
-            setLoading(false)
-        })
-        return unsubscribe
-    }, [clientId])
-
-    return { media, loading }
+    return { media: data, loading, offline, retry }
 }

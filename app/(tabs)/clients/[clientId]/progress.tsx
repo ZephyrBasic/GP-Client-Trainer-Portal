@@ -4,12 +4,15 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import ThemedView from '../../../../components/ThemedView'
 import ThemedText from '../../../../components/ThemedText'
 import ProgressMediaTile from '../../../../components/ProgressMediaTile'
+import OfflineBanner from '../../../../components/OfflineBanner'
 import { useProgressMedia } from '../../../../hooks/useProgressMedia'
+import { useOffline } from '../../../../hooks/useOffline'
 
 const ClientProgress = () => {
     const { clientId } = useLocalSearchParams<{ clientId: string }>()
     const router = useRouter()
-    const { media, loading } = useProgressMedia(clientId)
+    const { media, loading, offline: mediaOffline, retry } = useProgressMedia(clientId)
+    const offline = useOffline(mediaOffline)
 
     return (
         <ThemedView style={styles.container}>
@@ -18,6 +21,7 @@ const ClientProgress = () => {
                 keyExtractor={(item) => item.id}
                 numColumns={3}
                 contentContainerStyle={styles.listContent}
+                ListHeaderComponent={<OfflineBanner visible={offline} onRetry={retry} />}
                 ListEmptyComponent={
                     loading ? (
                         <ThemedText style={styles.empty}>Loading...</ThemedText>

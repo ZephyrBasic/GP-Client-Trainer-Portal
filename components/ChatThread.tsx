@@ -5,15 +5,20 @@ import { collection, doc, serverTimestamp, setDoc, writeBatch } from 'firebase/f
 import ThemedText from './ThemedText'
 import ThemedTextInput from './ThemedTextInput'
 import ChatBubble from './ChatBubble'
+import OfflineBanner from './OfflineBanner'
 import { db } from '../firebase/config'
 import { useAuth } from '../contexts/AuthContext'
 import { useMessages } from '../hooks/useMessages'
+import { SNAPSHOT_TIMEOUT_MS } from '../hooks/useFirestoreSnapshot'
+import { useOffline } from '../hooks/useOffline'
 import { Colors } from '../constants/Colors'
 
 const ChatThread = ({ chatId, clientId, trainerId }) => {
     const { profile } = useAuth()
     const [chatReady, setChatReady] = useState(false)
-    const { messages, loading } = useMessages(chatReady ? chatId : null)
+    const [chatSetupFailed, setChatSetupFailed] = useState(false)
+    const [chatAttempt, setChatAttempt] = useState(0)
+    const { messages, loading, offline: messagesOffline, retry } = useMessages(chatReady ? chatId : null)
     const [text, setText] = useState('')
     const [sending, setSending] = useState(false)
     const [error, setError] = useState('')
@@ -25,10 +30,39 @@ const ChatThread = ({ chatId, clientId, trainerId }) => {
         // the listener can attach first and die permanently on a
         // permission-denied (Firestore doesn't auto-retry a denied listener).
         setChatReady(false)
+        setChatSetupFailed(false)
+
+        // This gate needs its own timeout for the same reason the listeners do,
+        // and it is easy to miss because it isn't an onSnapshot. Offline, setDoc's
+        // promise never settles - it resolves on the server's acknowledgement,
+        // which never comes - so chatReady stayed false, useMessages was never
+        // given a chatId, and the thread rendered a confident "No messages yet.
+        // Say hello!" over a conversation it simply hadn't loaded.
+        const timer = setTimeout(() => setChatSetupFailed(true), SNAPSHOT_TIMEOUT_MS)
+
         setDoc(doc(db, 'chats', chatId), { clientId, trainerId }, { merge: true })
-            .then(() => setChatReady(true))
-            .catch(() => {})
-    }, [chatId, clientId, trainerId])
+            .then(() => {
+                clearTimeout(timer)
+                setChatSetupFailed(false)
+                setChatReady(true)
+            })
+            .catch((err) => {
+                clearTimeout(timer)
+                console.warn('[chat] could not prepare chat doc:', err)
+                setChatSetupFailed(true)
+            })
+
+        return () => clearTimeout(timer)
+    }, [chatId, clientId, trainerId, chatAttempt])
+
+    const offline = useOffline(messagesOffline, chatSetupFailed)
+
+    // Retry has to re-run the setDoc gate as well as the listener: if chat setup
+    // is what failed, resubscribing alone would have nothing to subscribe to.
+    const handleRetry = () => {
+        setChatAttempt((n) => n + 1)
+        retry()
+    }
 
     useEffect(() => {
         if (messages.length > 0) {
@@ -65,6 +99,10 @@ const ChatThread = ({ chatId, clientId, trainerId }) => {
 
     return (
         <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+            {/* Outside the list, not a ListHeaderComponent: the thread scrolls
+                itself to the newest message, which would park a header banner
+                off-screen exactly when it matters. */}
+            <OfflineBanner visible={offline} onRetry={handleRetry} style={styles.banner} />
             <FlatList
                 ref={listRef}
                 data={messages}
@@ -114,6 +152,10 @@ const styles = StyleSheet.create({
     listContent: {
         padding: 16,
         flexGrow: 1,
+    },
+    banner: {
+        marginHorizontal: 16,
+        marginTop: 12,
     },
     empty: {
         textAlign: 'center',

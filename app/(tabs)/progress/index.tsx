@@ -8,10 +8,12 @@ import ThemedText from '../../../components/ThemedText'
 import ThemedTextInput from '../../../components/ThemedTextInput'
 import ThemedButton from '../../../components/ThemedButton'
 import ProgressMediaTile from '../../../components/ProgressMediaTile'
+import OfflineBanner from '../../../components/OfflineBanner'
 import Spacer from '../../../components/Spacer'
 import { Colors } from '../../../constants/Colors'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useProgressMedia } from '../../../hooks/useProgressMedia'
+import { useOffline } from '../../../hooks/useOffline'
 import { uploadProgressMedia } from '../../../utils/uploadProgressMedia'
 
 const ProgressFeed = () => {
@@ -19,7 +21,8 @@ const ProgressFeed = () => {
     const theme = Colors[colorScheme] ?? Colors.light
     const { profile } = useAuth()
     const router = useRouter()
-    const { media, loading } = useProgressMedia(profile?.uid)
+    const { media, loading, offline: mediaOffline, retry } = useProgressMedia(profile?.uid)
+    const offline = useOffline(mediaOffline)
 
     const [pendingAsset, setPendingAsset] = useState(null)
     const [caption, setCaption] = useState('')
@@ -90,6 +93,7 @@ const ProgressFeed = () => {
                 contentContainerStyle={styles.listContent}
                 ListHeaderComponent={
                     <View style={styles.uploadSection}>
+                        <OfflineBanner visible={offline} onRetry={retry} />
                         {!pendingAsset ? (
                             <View style={styles.pickerRow}>
                                 <ThemedButton onPress={captureNew} style={styles.pickerBtn}>

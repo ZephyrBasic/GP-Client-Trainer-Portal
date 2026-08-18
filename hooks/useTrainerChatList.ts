@@ -1,43 +1,46 @@
-import { useEffect, useState } from 'react'
-import { collection, onSnapshot, query, where } from 'firebase/firestore'
+import { useMemo } from 'react'
+import { collection, query, where } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import { getChatId } from '../utils/chatId'
+import { useFirestoreQuery } from './useFirestoreSnapshot'
 
 // Merges the trainer's client roster (always shown, even before a first
 // message) with chat metadata (last message preview) so the trainer can
 // start a conversation with any client, not just ones already messaged.
 export const useTrainerChatList = (trainerId) => {
-    const [clients, setClients] = useState([])
-    const [chatMeta, setChatMeta] = useState({})
-    const [loading, setLoading] = useState(true)
+    const {
+        data: clients,
+        loading,
+        offline: clientsOffline,
+        retry: retryClients,
+    } = useFirestoreQuery(
+        () =>
+            trainerId
+                ? query(
+                      collection(db, 'users'),
+                      where('trainerId', '==', trainerId),
+                      where('role', '==', 'client')
+                  )
+                : null,
+        [trainerId],
+        { idKey: 'uid' }
+    )
 
-    useEffect(() => {
-        if (!trainerId) return
-        const clientsQuery = query(
-            collection(db, 'users'),
-            where('trainerId', '==', trainerId),
-            where('role', '==', 'client')
-        )
-        const unsubscribe = onSnapshot(clientsQuery, (snapshot) => {
-            setClients(snapshot.docs.map((docSnap) => ({ uid: docSnap.id, ...docSnap.data() })))
-            setLoading(false)
-        })
-        return unsubscribe
-    }, [trainerId])
+    const { data: chatDocs, offline: chatsOffline, retry: retryChats } = useFirestoreQuery(
+        () => (trainerId ? query(collection(db, 'chats'), where('trainerId', '==', trainerId)) : null),
+        [trainerId]
+    )
 
-    useEffect(() => {
-        if (!trainerId) return
-        const chatsQuery = query(collection(db, 'chats'), where('trainerId', '==', trainerId))
-        const unsubscribe = onSnapshot(chatsQuery, (snapshot) => {
-            const meta = {}
-            snapshot.docs.forEach((docSnap) => {
-                const data = docSnap.data()
-                meta[data.clientId] = { lastMessage: data.lastMessage ?? null, lastMessageAt: data.lastMessageAt ?? null }
-            })
-            setChatMeta(meta)
+    const chatMeta = useMemo(() => {
+        const meta = {}
+        chatDocs.forEach((chat) => {
+            meta[chat.clientId] = {
+                lastMessage: chat.lastMessage ?? null,
+                lastMessageAt: chat.lastMessageAt ?? null,
+            }
         })
-        return unsubscribe
-    }, [trainerId])
+        return meta
+    }, [chatDocs])
 
     const chats = clients
         .map((client) => ({
@@ -48,5 +51,13 @@ export const useTrainerChatList = (trainerId) => {
         }))
         .sort((a, b) => (b.lastMessageAt?.toMillis?.() ?? 0) - (a.lastMessageAt?.toMillis?.() ?? 0))
 
-    return { chats, loading }
+    const retry = () => {
+        retryClients()
+        retryChats()
+    }
+
+    // Either listener failing means the list on screen is not the truth: an
+    // unreachable roster hides clients outright, unreachable chat metadata
+    // silently shows stale previews. Both are worth the banner.
+    return { chats, loading, offline: clientsOffline || chatsOffline, retry }
 }

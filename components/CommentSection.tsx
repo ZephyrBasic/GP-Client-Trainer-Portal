@@ -5,15 +5,18 @@ import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import ThemedText from './ThemedText'
 import ThemedTextInput from './ThemedTextInput'
 import ThemedButton from './ThemedButton'
+import OfflineBanner from './OfflineBanner'
 import Spacer from './Spacer'
 import { db } from '../firebase/config'
 import { useAuth } from '../contexts/AuthContext'
 import { useComments } from '../hooks/useComments'
 import { useUserNames } from '../hooks/useUserNames'
+import { useOffline } from '../hooks/useOffline'
 
 const CommentSection = ({ mediaId }) => {
     const { profile } = useAuth()
-    const { comments, loading } = useComments(mediaId)
+    const { comments, loading, offline: commentsOffline, retry } = useComments(mediaId)
+    const offline = useOffline(commentsOffline)
     const names = useUserNames(comments.map((comment) => comment.authorId))
     const [text, setText] = useState('')
     const [sending, setSending] = useState(false)
@@ -41,6 +44,8 @@ const CommentSection = ({ mediaId }) => {
         <View>
             <ThemedText style={styles.heading}>Comments</ThemedText>
             <Spacer height={8} />
+
+            <OfflineBanner visible={offline} onRetry={retry} />
 
             {!loading && comments.length === 0 ? <ThemedText style={styles.empty}>No comments yet.</ThemedText> : null}
 

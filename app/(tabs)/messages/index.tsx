@@ -4,14 +4,17 @@ import { useRouter } from 'expo-router'
 import ThemedView from '../../../components/ThemedView'
 import ThemedText from '../../../components/ThemedText'
 import ThemedCard from '../../../components/ThemedCard'
+import OfflineBanner from '../../../components/OfflineBanner'
 import Spacer from '../../../components/Spacer'
 import ChatThread from '../../../components/ChatThread'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useTrainerChatList } from '../../../hooks/useTrainerChatList'
+import { useOffline } from '../../../hooks/useOffline'
 import { getChatId } from '../../../utils/chatId'
 
 const TrainerChatList = ({ trainerId, router }) => {
-    const { chats, loading } = useTrainerChatList(trainerId)
+    const { chats, loading, offline: chatsOffline, retry } = useTrainerChatList(trainerId)
+    const offline = useOffline(chatsOffline)
 
     return (
         <ThemedView style={styles.container}>
@@ -19,6 +22,7 @@ const TrainerChatList = ({ trainerId, router }) => {
                 data={chats}
                 keyExtractor={(item) => item.chatId}
                 contentContainerStyle={styles.listContent}
+                ListHeaderComponent={<OfflineBanner visible={offline} onRetry={retry} />}
                 ListEmptyComponent={
                     loading ? (
                         <ThemedText style={styles.empty}>Loading...</ThemedText>

@@ -1,45 +1,33 @@
-import { useEffect, useState } from 'react'
-import { addDoc, collection, onSnapshot, query, serverTimestamp, where } from 'firebase/firestore'
+import { useMemo } from 'react'
+import { addDoc, collection, query, serverTimestamp, where } from 'firebase/firestore'
 import { db } from '../firebase/config'
+import { useFirestoreQuery } from './useFirestoreSnapshot'
 
 // Exercises a trainer has added beyond the bundled repository. Clients read their
 // own trainer's additions so a program using a custom movement is still loggable.
 export const useCustomExercises = (profile?: any) => {
-    const [customExercises, setCustomExercises] = useState<any[]>([])
-    const [loading, setLoading] = useState(true)
-
     const ownerId = profile?.role === 'trainer' ? profile.uid : profile?.trainerId ?? null
 
-    useEffect(() => {
-        if (!ownerId) {
-            setCustomExercises([])
-            setLoading(false)
-            return
-        }
+    // This one already had an error callback, but that only ever covered half the
+    // problem: an unreachable backend invokes no callback at all, so it still hung.
+    // Going through the shared helper is what adds the timeout.
+    const { data, loading, offline, retry } = useFirestoreQuery(
+        () => (ownerId ? query(collection(db, 'customExercises'), where('createdBy', '==', ownerId)) : null),
+        [ownerId],
+        { sort: (a, b) => a.name.localeCompare(b.name) }
+    )
 
-        setLoading(true)
-        const customQuery = query(collection(db, 'customExercises'), where('createdBy', '==', ownerId))
-        const unsubscribe = onSnapshot(
-            customQuery,
-            (snapshot) => {
-                const data = snapshot.docs.map((docSnap): any => ({
-                    // Namespaced so a custom exercise can never collide with a
-                    // bundled repository id.
-                    id: `custom:${docSnap.id}`,
-                    isCustom: true,
-                    ...docSnap.data(),
-                }))
-                data.sort((a, b) => a.name.localeCompare(b.name))
-                setCustomExercises(data)
-                setLoading(false)
-            },
-            () => {
-                setCustomExercises([])
-                setLoading(false)
-            }
-        )
-        return unsubscribe
-    }, [ownerId])
+    const customExercises = useMemo(
+        () =>
+            data.map((row): any => ({
+                ...row,
+                // Namespaced so a custom exercise can never collide with a
+                // bundled repository id.
+                id: `custom:${row.id}`,
+                isCustom: true,
+            })),
+        [data]
+    )
 
     // Shaped like a bundled catalog record (see constants/exercises.json) so the
     // picker, search index and log form treat custom and bundled the same.
@@ -56,5 +44,5 @@ export const useCustomExercises = (profile?: any) => {
         })
     }
 
-    return { customExercises, loading, addCustomExercise }
+    return { customExercises, loading, offline, retry, addCustomExercise }
 }

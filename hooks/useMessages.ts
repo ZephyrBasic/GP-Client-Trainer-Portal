@@ -1,26 +1,12 @@
-import { useEffect, useState } from 'react'
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
+import { collection, orderBy, query } from 'firebase/firestore'
 import { db } from '../firebase/config'
+import { useFirestoreQuery } from './useFirestoreSnapshot'
 
 export const useMessages = (chatId) => {
-    const [messages, setMessages] = useState([])
-    const [loading, setLoading] = useState(true)
+    const { data, loading, offline, retry } = useFirestoreQuery(
+        () => (chatId ? query(collection(db, 'chats', chatId, 'messages'), orderBy('createdAt', 'asc')) : null),
+        [chatId]
+    )
 
-    useEffect(() => {
-        if (!chatId) {
-            setMessages([])
-            setLoading(false)
-            return
-        }
-
-        setLoading(true)
-        const messagesQuery = query(collection(db, 'chats', chatId, 'messages'), orderBy('createdAt', 'asc'))
-        const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
-            setMessages(snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() })))
-            setLoading(false)
-        })
-        return unsubscribe
-    }, [chatId])
-
-    return { messages, loading }
+    return { messages: data, loading, offline, retry }
 }

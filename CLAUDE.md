@@ -163,7 +163,33 @@ That module's `as ExerciseRecord[]` is the one place the model is taken on trust
 
 ### Data-fetching convention
 
-Every collection read is a hook in `hooks/` that owns one `onSnapshot` subscription and returns `{ data, loading }`, cleaning up on unmount and resetting when its id argument is null. Sorting is generally done client-side to avoid needing composite Firestore indexes (`firestore.indexes.json` is deliberately near-empty). Follow this shape for new reads rather than calling Firestore from a screen.
+**Every Firestore read goes through `hooks/useFirestoreSnapshot.ts`** — `useFirestoreQuery` for a collection, `useFirestoreDoc` for a single document. Don't call `onSnapshot` from a hook or a screen. Each returns `{ data, loading, offline, error, retry }`, owns exactly one subscription, cleans up on unmount, and resets when its id argument is null. Collection reads sort client-side via the `sort` option, to avoid needing composite indexes (`firestore.indexes.json` is deliberately near-empty).
+
+Domain hooks in `hooks/` stay — they wrap the helper, name the collection, and rename `data` (`useWorkouts` returns `workouts`). That's the layer to add a new read at.
+
+Two reasons it's centralised rather than copy-pasted. First, the migration to `@react-native-firebase` should be an edit to one file, since its listener API is close enough (`onSnapshot(onNext, onError)`) to hide behind the same signature. Second, and the reason this exists at all:
+
+**A listener left to itself can hang forever, or worse, answer confidently and wrongly.** Three different failures produce this, they need different fixes, and conflating them is why an earlier attempt fixed only one:
+
+- **The listener errors** (rules reject it, token expires). Firestore *does* invoke the error callback, so an error callback is the fix.
+- **The backend is unreachable and Firestore is still trying.** It invokes **nothing** — it queues the listener and keeps retrying, by design. Error callbacks don't help; only a timeout does.
+- **Firestore gives up and answers from an empty cache.** After its own watchdog it raises a snapshot from the local cache, which without persistence is empty. `onNext` fires *successfully* with a valid "does not exist" / "no documents", **cancelling the timeout**, running no error callback, and rendering a confident empty state.
+
+The third is the dangerous one and is easy to miss by reasoning alone — measured, it calls back at ~11 s, beating the 10 s timeout. A timeout alone would trade a visibly-stuck spinner for a page that quietly lies.
+
+So the helper does three things per listener: an error callback; a **10 s** timeout (`SNAPSHOT_TIMEOUT_MS`, matching Firestore's own watchdog); and `snapshot.metadata.fromCache` as the offline signal, which says *this answer didn't come from the server* — still a fact about the data, not a question for the OS. That needs `includeMetadataChanges: true`, without which a reconnection confirming unchanged data raises no callback and the banner sticks.
+
+The timeout *releases the loading gate without unsubscribing*, so late data still arrives, renders, and clears `offline` by itself — recovery is automatic and `retry` is for reassurance. Last-good data is kept on error, and a cache-backed "doesn't exist" never overwrites a profile we already have: a dropped connection must not blank out what's on screen, nor demote a trainer's session.
+
+`offline` means specifically *this is not server-backed* — cache-sourced, timed out, or Firestore reported `unavailable`. A rules rejection sets `error` but not `offline`, because telling someone to check their wifi over a permissions bug sends them the wrong way. Surface it with `<OfflineBanner visible={offline} onRetry={retry} />`, which sits above the screen's normal content and is dismissible.
+
+**Wrap the flag in `useOffline(...)`** (`hooks/useOffline.ts`) rather than passing a hook's `offline` straight to the banner. Nearly every read keys off `profile.uid`, so when the *profile* is what failed, the screen hands its hook a null id and the hook truthfully answers "no id, nothing to subscribe to, not offline" — every component behaves correctly and the screen still lies. `useOffline` folds in the auth-level flag.
+
+**Do not add a connectivity library** (`expo-network`, NetInfo) to any of this. The outage that prompted the work was broken DNS on a phone that was fully "connected" — wifi associated, raw-IP HTTPS completing in ~350 ms. Anything that asks the OS about the network lies in exactly the situation being handled; watching for *data arriving* is the only check that doesn't.
+
+`AuthContext` is the one deliberate exception: it feeds two pieces of state rather than the helper's single `{ data, loading }`, so it applies the same timeout by hand, importing the same constant so the gate and the screens under it can't disagree.
+
+**There is no offline cache to fall back on, on native.** The JS SDK's persistence is IndexedDB-based, React Native has no IndexedDB, and the SDK *silently downgrades* to a memory-only cache that dies with the app — it warns to the console and carries on, so asking for persistence appears to work. Verified against `firebase@12.16.0`; the evidence is in `.claude/docs/offline-resilience.md`. This is why the offline UI promises "possibly incomplete" and never "showing cached data", and it's the main thing `@react-native-firebase` would buy.
 
 ### TypeScript conventions
 

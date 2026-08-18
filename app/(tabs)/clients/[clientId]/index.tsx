@@ -1,34 +1,40 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { FlatList, Pressable, StyleSheet, View } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { doc, onSnapshot } from 'firebase/firestore'
+import { doc } from 'firebase/firestore'
 
 import ThemedView from '../../../../components/ThemedView'
 import ThemedText from '../../../../components/ThemedText'
 import ThemedCard from '../../../../components/ThemedCard'
 import ThemedButton from '../../../../components/ThemedButton'
 import WorkoutSummaryCard from '../../../../components/WorkoutSummaryCard'
+import OfflineBanner from '../../../../components/OfflineBanner'
 import Spacer from '../../../../components/Spacer'
 import { db } from '../../../../firebase/config'
 import { useWorkouts } from '../../../../hooks/useWorkouts'
+import { useFirestoreDoc } from '../../../../hooks/useFirestoreSnapshot'
+import { useOffline } from '../../../../hooks/useOffline'
 import { computeWorkoutStats, volumeForWorkout } from '../../../../utils/workoutStats'
 import { formatSet } from '../../../../utils/formatSet'
 
 const ClientDetail = () => {
     const { clientId } = useLocalSearchParams<{ clientId: string }>()
     const router = useRouter()
-    const [clientProfile, setClientProfile] = useState(null)
-    const { workouts, loading } = useWorkouts(clientId)
+    const { workouts, loading, offline: workoutsOffline, retry: retryWorkouts } = useWorkouts(clientId)
     const stats = computeWorkoutStats(workouts)
     const [expandedId, setExpandedId] = useState(null)
 
-    useEffect(() => {
-        if (!clientId) return
-        const unsubscribe = onSnapshot(doc(db, 'users', clientId), (snapshot) => {
-            setClientProfile(snapshot.exists() ? snapshot.data() : null)
-        })
-        return unsubscribe
-    }, [clientId])
+    const {
+        data: clientProfile,
+        offline: profileOffline,
+        retry: retryProfile,
+    } = useFirestoreDoc(() => (clientId ? doc(db, 'users', clientId) : null), [clientId])
+
+    const offline = useOffline(workoutsOffline, profileOffline)
+    const retry = () => {
+        retryWorkouts()
+        retryProfile()
+    }
 
     return (
         <ThemedView style={styles.container}>
@@ -38,6 +44,7 @@ const ClientDetail = () => {
                 contentContainerStyle={styles.listContent}
                 ListHeaderComponent={
                     <>
+                        <OfflineBanner visible={offline} onRetry={retry} />
                         <ThemedText title={true} style={styles.title}>
                             {clientProfile?.name ?? 'Client'}
                         </ThemedText>

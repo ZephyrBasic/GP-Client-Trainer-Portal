@@ -19,10 +19,23 @@ export const useUserNames = (uids: string[]) => {
                 const snapshot = await getDoc(doc(db, 'users', uid))
                 return [uid, snapshot.exists() ? snapshot.data().name : 'Unknown']
             })
-        ).then((entries) => {
-            if (cancelled) return
-            setNames((prev) => ({ ...prev, ...Object.fromEntries(entries) }))
-        })
+        )
+            .then((entries) => {
+                if (cancelled) return
+                setNames((prev) => ({ ...prev, ...Object.fromEntries(entries) }))
+            })
+            .catch((err) => {
+                // Not an onSnapshot, but the same failure shape: offline these
+                // getDocs reject (or hang) and, unhandled, left every comment
+                // author showing "..." forever plus an unhandled rejection.
+                // Resolve to a stated unknown instead of a permanent placeholder.
+                if (cancelled) return
+                console.warn('[users] name lookup failed:', err)
+                setNames((prev) => ({
+                    ...prev,
+                    ...Object.fromEntries(unique.map((uid) => [uid, 'Unknown'])),
+                }))
+            })
 
         return () => {
             cancelled = true
