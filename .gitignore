@@ -46,3 +46,6 @@ yarn-error.*
 
 # working notes and plans - scratch, not part of the repo's documentation
 .claude/docs/
+
+# issue tracker for the engineering skills - local tickets, not shared
+.scratch/
