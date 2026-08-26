@@ -1,5 +1,45 @@
 ## Project Overview
-GreenPulse Client Trainer Portal is a workout tracker. Trainers can prescribe programs/workouts for clients, clients then check off sets/exercises as they go through their workout in real time. Clients can also create empty workouts so they can track their exercise without trainer prescribed programs/workouts.
+
+GreenPulse Client Trainer Portal is a workout tracker. Trainers prescribe workouts to their clients; clients then check off sets and exercises as they work through a session in real time. Clients can also start a self-directed session, so they can track their training without a prescribed workout.
+
+## Current scope
+
+The overview above is the **goal**, not the current state. Prescription does not exist yet: today
+a workout is a client-authored log written in one shot at the end (`app/(tabs)/workouts/new.tsx`),
+and `firestore.rules` deliberately forbids a trainer from creating one. The domain model for
+prescription is settled in `CONTEXT.md` and `docs/adr/0001`–`0005`, which are **authoritative** —
+read those before touching workouts, templates, or sessions.
+
+Three shipped features are **out of scope** while the core tracking loop is built. Disable rather
+than delete them — `href: null` on their tabs in `app/(tabs)/_layout.tsx`, code and rules left
+intact — so re-enabling stays a one-line change. **None of that is applied yet**; all three are
+still live:
+
+- **Messaging** (`app/(tabs)/messages/`) — currently has no `href` gate at all, so it shows for
+  both roles.
+- **Progress media** (`app/(tabs)/progress/`, and the trainer's client-progress route).
+- **Custom exercises** — `components/ExercisePicker.tsx` still sources them via
+  `useCustomExercises`. Once dropped, templates draw only from `constants/exercises.json`, so
+  prescribing a movement outside the catalog means editing that file and shipping a build.
+
+Trainers have no Workouts tab today, so template authoring has no home yet.
+
+### Known divergences between the glossary and the code
+
+`CONTEXT.md` is authoritative and the code has not caught up. Each of these is deliberate — don't
+"fix" either side to match the other without a decision:
+
+- **Work Volume** is defined per-Exercise and never summed across Exercises, but
+  `utils/workoutStats.ts` and `components/WorkoutSummaryCard.tsx` compute and display per-session
+  and all-time volume totals. Those predate the term and are left as shipped on purpose; new work
+  measures volume per Exercise.
+- **Session** is the domain term for a performed workout, but the collection, its hook and its
+  routes are all still called `workouts` (`hooks/useWorkouts.ts`, `app/(tabs)/workouts/`).
+  Reconciling that is a data migration, not a rename.
+- **A Client's Trainer is changeable** per the glossary, but `firestore.rules` refuses any update
+  altering `trainerId`. That rule is deliberate: the same clause guards `role`, and relaxing it
+  would let a client link to any trainer or promote themselves to one. Allowing a switch needs a
+  gated path, not a loosened rule.
 
 ## What this is
 
@@ -110,7 +150,7 @@ renders its own header.
 - Type the boundaries, infer the insides: props and exported signatures carry annotations, locals don't.
 - Themed primitives **extend** RN's prop types (`ViewProps`, `TextProps`, …) rather than redeclaring `style`.
 - Route params use the generic: `useLocalSearchParams<{ id: string }>()`.
-- Firestore snapshot rows are annotated `any`; a real `Workout`/`ProgressMedia` type is the upgrade path.
+- Firestore snapshot rows are annotated `any`; a real `Session`/`ProgressMedia` type is the upgrade path.
 - Asset modules are declared in `types/assets.d.ts` (committed on purpose; `expo-env.d.ts` is generated).
 - `firebase/config.ts` needs one `@ts-expect-error` for `getReactNativePersistence`. Don't "fix" it.
 
@@ -141,8 +181,7 @@ merged into `main`.
 
 ### Issue tracker
 
-Issues live as markdown files under `.scratch/<feature-slug>/` in this repo (gitignored, like
-`.claude/docs/`). See `docs/agents/issue-tracker.md`.
+Issues live as markdown files under `.scratch/<feature-slug>/` in this repo. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
