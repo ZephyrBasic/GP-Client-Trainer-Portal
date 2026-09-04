@@ -9,7 +9,7 @@ import ThemedTextInput from '../../components/ThemedTextInput'
 import ThemedButton from '../../components/ThemedButton'
 import Spacer from '../../components/Spacer'
 
-import { Colors } from '../../constants/Colors'
+import { Space } from '../../constants/Layout'
 import { useAuth } from '../../contexts/AuthContext'
 import { getAuthErrorMessage } from '../../utils/firebaseErrors'
 
@@ -43,13 +43,15 @@ const Login = () => {
     return (
         <ThemedView style={styles.container}>
             <Spacer />
-            <ThemedText title={true} style={styles.title}>
+            <ThemedText variant="title" tone="title" style={styles.title}>
                 Login to your account
             </ThemedText>
 
-            <Spacer height={20} />
+            <Spacer height={Space.xl} />
 
-            <ThemedText style={styles.label}>Email</ThemedText>
+            <ThemedText variant="label" tone="muted" style={styles.label}>
+                Email
+            </ThemedText>
             <ThemedTextInput
                 value={email}
                 onChangeText={setEmail}
@@ -57,25 +59,33 @@ const Login = () => {
                 editable={!submitting}
             />
 
-            <Spacer height={16} />
-            <ThemedText style={styles.label}>Password</ThemedText>
+            <Spacer height={Space.lg} />
+            <ThemedText variant="label" tone="muted" style={styles.label}>
+                Password
+            </ThemedText>
             <ThemedTextInput value={password} onChangeText={setPassword} secureTextEntry editable={!submitting} />
 
             {error ? (
                 <>
-                    <Spacer height={16} />
-                    <ThemedText style={{ color: Colors.warning }}>{error}</ThemedText>
+                    <Spacer height={Space.lg} />
+                    <ThemedText variant="body" tone="danger">
+                        {error}
+                    </ThemedText>
                 </>
             ) : null}
 
-            <Spacer height={20} />
+            <Spacer height={Space.xl} />
             <ThemedButton onPress={handleLogin} disabled={submitting}>
-                <ThemedText style={styles.btnText}>{submitting ? 'Logging in...' : 'Login'}</ThemedText>
+                <ThemedText variant="cardTitle" tone="onPrimary">
+                    {submitting ? 'Logging in...' : 'Login'}
+                </ThemedText>
             </ThemedButton>
 
-            <Spacer height={20} />
-            <Link href="/register" style={{ textAlign: 'center' }}>
-                <ThemedText>Need an account? Register</ThemedText>
+            <Spacer height={Space.xl} />
+            <Link href="/register" style={styles.link}>
+                <ThemedText variant="body" tone="accent">
+                    Need an account? Register
+                </ThemedText>
             </Link>
         </ThemedView>
     )
@@ -87,19 +97,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        paddingHorizontal: 20,
+        paddingHorizontal: Space.xl,
     },
     title: {
         textAlign: 'center',
-        fontSize: 18,
-        marginBottom: 10,
+        marginBottom: Space.sm,
     },
     label: {
-        marginBottom: 6,
-        fontSize: 14,
+        marginBottom: Space.sm,
     },
-    btnText: {
-        color: '#fff',
-        fontWeight: 'bold',
+    link: {
+        textAlign: 'center',
     },
 })

@@ -34,6 +34,9 @@ yarn-error.*
 .env
 .env*.local
 
+# service account keys for the Admin SDK migration scripts - never committed
+secrets/
+
 # typescript
 *.tsbuildinfo
 
@@ -46,3 +49,14 @@ yarn-error.*
 
 # working notes and plans - scratch, not part of the repo's documentation
 .claude/docs/
+
+# tickets and local skills: the assistant's working files, not the app's. They
+# turn over far faster than the code, and without these three lines a plain
+# `git add -A` sweeps all of them into a commit.
+.claude/tickets/
+.claude/skills/
+Next Steps List.txt
+
+# harvester output, not a constant: find-exercise-videos.py writes it and
+# promote-videos.js reads it. 1.4 MB of intermediate, regenerated on demand.
+constants/videoCandidates.json

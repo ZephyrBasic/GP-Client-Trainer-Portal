@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet, View } from 'react-native'
+import { FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet, useColorScheme, View } from 'react-native'
 import { collection, doc, serverTimestamp, setDoc, writeBatch } from 'firebase/firestore'
 
 import ThemedText from './ThemedText'
@@ -14,6 +14,8 @@ import { useOffline } from '../hooks/useOffline'
 import { Colors } from '../constants/Colors'
 
 const ChatThread = ({ chatId, clientId, trainerId }) => {
+    const colorScheme = useColorScheme()
+    const theme = Colors[colorScheme] ?? Colors.light
     const { profile } = useAuth()
     const [chatReady, setChatReady] = useState(false)
     const [chatSetupFailed, setChatSetupFailed] = useState(false)
@@ -118,7 +120,7 @@ const ChatThread = ({ chatId, clientId, trainerId }) => {
                 }
                 renderItem={({ item }) => <ChatBubble text={item.text} isOwn={item.senderId === profile.uid} />}
             />
-            {error ? <ThemedText style={styles.error}>{error}</ThemedText> : null}
+            {error ? <ThemedText style={[styles.error, { color: theme.danger }]}>{error}</ThemedText> : null}
             <View style={styles.inputRow}>
                 <ThemedTextInput
                     style={styles.input}
@@ -132,11 +134,12 @@ const ChatThread = ({ chatId, clientId, trainerId }) => {
                     disabled={!canSend}
                     style={({ pressed }) => [
                         styles.sendBtn,
+                        { backgroundColor: theme.primary },
                         !canSend && styles.sendBtnDisabled,
                         pressed && canSend && styles.sendBtnPressed,
                     ]}
                 >
-                    <ThemedText style={styles.sendBtnText}>Send</ThemedText>
+                    <ThemedText style={[styles.sendBtnText, { color: theme.onPrimary }]}>Send</ThemedText>
                 </Pressable>
             </View>
         </KeyboardAvoidingView>
@@ -163,7 +166,6 @@ const styles = StyleSheet.create({
         opacity: 0.7,
     },
     error: {
-        color: Colors.warning,
         paddingHorizontal: 16,
         paddingBottom: 4,
     },
@@ -178,7 +180,6 @@ const styles = StyleSheet.create({
         maxHeight: 100,
     },
     sendBtn: {
-        backgroundColor: Colors.primary,
         paddingHorizontal: 16,
         paddingVertical: 12,
         borderRadius: 5,
@@ -190,7 +191,6 @@ const styles = StyleSheet.create({
         opacity: 0.8,
     },
     sendBtnText: {
-        color: '#fff',
         fontWeight: 'bold',
     },
 })

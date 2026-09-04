@@ -6,7 +6,7 @@
 export const buildExerciseHistory = (workouts) => {
     const history = new Map()
 
-    // `workouts` arrives newest-first from useWorkouts, so the first hit wins.
+    // Sessions arrive newest-first from useSessions, so the first hit wins.
     for (const workout of workouts) {
         for (const exercise of workout.exercises ?? []) {
             const key = exercise.exerciseId ?? exercise.name

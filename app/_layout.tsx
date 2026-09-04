@@ -3,6 +3,7 @@ import { Redirect, Stack } from 'expo-router'
 import { ActivityIndicator, Platform, StyleSheet, useColorScheme } from 'react-native'
 import * as ScreenOrientation from 'expo-screen-orientation'
 import { Colors } from '../constants/Colors'
+import { useSignalFonts } from '../constants/Type'
 import { AuthProvider, useAuth } from '../contexts/AuthContext'
 import { useProtectedRoute } from '../hooks/useProtectedRoute'
 import ThemedView from '../components/ThemedView'
@@ -17,7 +18,7 @@ const RootLayoutNav = () => {
     if (loading) {
         return (
             <ThemedView style={styles.loading}>
-                <ActivityIndicator size="large" color={Colors.primary} />
+                <ActivityIndicator size="large" color={theme.primary} />
             </ThemedView>
         )
     }
@@ -47,6 +48,19 @@ const RootLayout = () => {
         if (Platform.OS === 'web') return
         ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP).catch(() => {})
     }, [])
+
+    // Space Grotesk + IBM Plex Sans, loaded at runtime rather than bundled -
+    // see constants/Type.ts. `fontsLoaded` gates the first frame so nothing
+    // flashes in the system face and reflows a moment later. `fontError`
+    // does NOT gate it: React Native has no CSS fallback-stack mechanism, so
+    // if the font genuinely fails to load, the only fallback that exists is
+    // rendering the system face on purpose - a font failure has to degrade
+    // to that, never to a blank app stuck waiting for fonts that are never
+    // coming.
+    const [fontsLoaded, fontError] = useSignalFonts()
+    if (!fontsLoaded && !fontError) {
+        return null
+    }
 
     return (
         <AuthProvider>

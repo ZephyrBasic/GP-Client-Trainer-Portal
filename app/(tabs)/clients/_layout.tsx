@@ -14,7 +14,11 @@ const ClientsLayout = () => {
             }}
         >
             <Stack.Screen name="index" options={{ title: 'Clients' }} />
-            <Stack.Screen name="[clientId]" options={{ title: 'Client' }} />
+            {/* [clientId] is a folder with a Stack of its own, so it draws its
+                own header - the same reason the tabs set headerShown: false on
+                this navigator one level up. Titling it here as well stacked two
+                identical "Client" bars on top of each other. */}
+            <Stack.Screen name="[clientId]" options={{ headerShown: false }} />
         </Stack>
     )
 }

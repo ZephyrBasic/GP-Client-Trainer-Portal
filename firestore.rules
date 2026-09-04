@@ -31,17 +31,184 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    match /workouts/{workoutId} {
+    match /sessions/{sessionId} {
+      // A Session is a record of one workout a client actually performed. This
+      // collection was called `workouts` until the rename; the rules below are
+      // unchanged in effect, only re-pathed. Deploy them only once
+      // scripts/migrate-workouts-to-sessions.js has copied the data across -
+      // until then this path matches nothing and every client's history is
+      // denied by the catch-all at the bottom of the file.
       function isLinkedTrainer(clientId) {
         return isSignedIn()
           && get(/databases/$(database)/documents/users/$(clientId)).data.trainerId == request.auth.uid;
       }
 
       // Owning client has full control; their linked trainer gets read-only
-      // access (workouts are logged by clients, viewed by trainers).
+      // access (sessions are logged by clients, viewed by trainers).
+      //
+      // A session in flight is the same document in the same collection: it is
+      // created when the client taps start, updated once when they finish, and
+      // deleted if they discard it. These three clauses already cover all of
+      // that, so live sessions needed no new rule - which is the point of
+      // keeping status a field rather than a separate collection.
+      //
+      // Two things are deliberately NOT enforced here. That a client has only
+      // one session open is a product rule held in the UI (ADR 0003): rules
+      // cannot run a query, and the alternatives - a pointer on the user
+      // document kept consistent by a batched write, or a fixed path the
+      // session migrates out of - add a failure mode to every session write to
+      // prevent an outcome that grants no access to anything. And a completed
+      // session is not frozen against later update: the owning client may edit
+      // their own record, which is what makes a duration or a date correctable.
       allow read: if isOwner(resource.data.clientId) || isLinkedTrainer(resource.data.clientId);
       allow create: if isOwner(request.resource.data.clientId);
       allow update, delete: if isOwner(resource.data.clientId);
+    }
+
+    match /workoutTemplates/{templateId} {
+      // A Workout Template is one object whoever authored it - a trainer's
+      // prescription and a client's own saved routine are the same document -
+      // so every rule here keys off authorId and none of them looks up a role.
+
+      // The second reader is an assigned client, and this is the whole reason an
+      // assignment's id is derived from the pair rather than minted: rules
+      // cannot run a query, so "is this client assigned?" has to be a path we
+      // can build and test. Same trick /chats uses to avoid a participants
+      // array. Kept in step with utils/assignmentId.ts - if the separator ever
+      // changes, it changes in both places or clients silently lose access.
+      //
+      // Existence, deliberately, not `active`. Unassigning soft-removes (ADR
+      // 0004): the document stays, so a client who has been unassigned can still
+      // read the template and versions their past sessions cite. Only their
+      // workout list honours the flag.
+      function isAssignedClient() {
+        return isSignedIn()
+          && exists(/databases/$(database)/documents/assignments/$(templateId + '_' + request.auth.uid));
+      }
+
+      allow read: if isOwner(resource.data.authorId) || isAssignedClient();
+
+      allow create: if isOwner(request.resource.data.authorId);
+
+      // Only the author edits, and authorship is fixed at creation: reassigning
+      // it would hand a template - and every client assigned to it - to someone
+      // who never wrote it.
+      allow update: if isOwner(resource.data.authorId)
+        && request.resource.data.authorId == resource.data.authorId;
+
+      // No delete at all. Sessions cite the version they ran (ADR 0002), and
+      // deleting the parent would orphan those versions and make a client's own
+      // history unreadable. Retiring a template is unassigning it, not deleting.
+      allow delete: if false;
+
+      match /versions/{versionId} {
+        function templateAuthor() {
+          return get(/databases/$(database)/documents/workoutTemplates/$(templateId)).data.authorId;
+        }
+
+        // Versions follow the parent: whoever may read the template may read its
+        // contents. An assigned client needs this to perform the workout, and
+        // needs it to keep working after being unassigned, since a past session
+        // cites the exact version it ran.
+        allow read: if (isSignedIn() && templateAuthor() == request.auth.uid) || isAssignedClient();
+
+        // Create-only, and only by the template's author. This get() is why
+        // hooks/useWorkoutTemplates writes the template before its first
+        // version rather than batching the pair: rules cannot see a sibling
+        // write, so a batch would find no parent here and be denied. Publishing
+        // a later version inverts that order - the parent already exists, so the
+        // version is written first and the pointer moved after it.
+        allow create: if isSignedIn() && templateAuthor() == request.auth.uid;
+
+        // A version is immutable. Progressing a workout publishes a new one
+        // (ADR 0002); editing or deleting an old one would silently rewrite
+        // what a past session appears to have been asked to do.
+        //
+        // This is the whole guarantee, and it needs no help: a write to a
+        // document that already exists is an update, never a create, so the
+        // create rule above cannot be used to overwrite a version by reusing
+        // its id.
+        allow update, delete: if false;
+      }
+    }
+
+    match /assignments/{assignmentId} {
+      // An assignment joins one client to one workout template and carries that
+      // client's target frequency (ADR 0004). Its id is always the derived pair
+      // "templateId_clientId", which is what makes the existence check on
+      // workoutTemplates above possible - see utils/assignmentId.ts.
+      //
+      // Top-level rather than a subcollection of the template, so a client can
+      // ask "what am I prescribed?" with one equality filter instead of a
+      // collection-group query.
+      function templateAuthor(templateId) {
+        return get(/databases/$(database)/documents/workoutTemplates/$(templateId)).data.authorId;
+      }
+      function trainerOf(clientId) {
+        return get(/databases/$(database)/documents/users/$(clientId)).data.trainerId;
+      }
+
+      // Per-client target loads (ADR 0004) ride on this same document as one
+      // optional map keyed by exercise id. Absent means "no overrides", which is
+      // why adding them needed no migration.
+      //
+      // Constrained to being a map and no further, deliberately. Rules cannot
+      // walk a structure of arbitrary keys, and the value of trying would be
+      // small: the write rules below already say only the owning trainer may
+      // touch this document at all, so nobody can set a client's loads but the
+      // person whose job that is. utils/prescription reads anything it does not
+      // recognise as "no override", so a malformed entry falls back to the
+      // template's own targets rather than to bad ones.
+      function overridesWellFormed(data) {
+        return !data.keys().hasAny(['targetOverrides']) || data.targetOverrides is map;
+      }
+
+      // The named client and the owning trainer, and nobody else. Both clauses
+      // read stored fields rather than deriving anything from the id, because
+      // the id is only trustworthy inasmuch as create verified it - which it
+      // does, below.
+      allow read: if isOwner(resource.data.clientId) || isOwner(resource.data.trainerId);
+
+      // Four things have to hold, and dropping any one of them breaks a
+      // different guarantee:
+      //
+      //   - the writer is the trainer named on the document, so a client can
+      //     never assign anything to themselves;
+      //   - the id is exactly the pair it claims to join. Without this a trainer
+      //     could write a document whose id names someone else's template and
+      //     hand their own client read access to it, since the template's read
+      //     rule only ever tests that the path exists;
+      //   - the trainer authored the template, so nobody assigns work they did
+      //     not write;
+      //   - the client is theirs. trainerId is only ever set on client profiles
+      //     (see AuthContext), so this doubles as the role check.
+      allow create: if isOwner(request.resource.data.trainerId)
+        && assignmentId == request.resource.data.templateId + '_' + request.resource.data.clientId
+        && templateAuthor(request.resource.data.templateId) == request.auth.uid
+        && trainerOf(request.resource.data.clientId) == request.auth.uid
+        && request.resource.data.timesPerWeek is number
+        && request.resource.data.active is bool
+        && overridesWellFormed(request.resource.data);
+
+      // Only the owning trainer, and only the mutable parts: which client and
+      // which template are fixed at creation. Changing either would let a
+      // verified id go stale and describe a pair the document no longer joins,
+      // which is the one thing the create rule exists to prevent. trainerId is
+      // pinned for the same reason it is on a user profile - it is the field the
+      // read and write rules key off.
+      allow update: if isOwner(resource.data.trainerId)
+        && request.resource.data.templateId == resource.data.templateId
+        && request.resource.data.clientId == resource.data.clientId
+        && request.resource.data.trainerId == resource.data.trainerId
+        && request.resource.data.timesPerWeek is number
+        && request.resource.data.active is bool
+        && overridesWellFormed(request.resource.data);
+
+      // Never deleted. The surviving document is what keeps the existence check
+      // on workoutTemplates true, and that is what keeps a client's past
+      // sessions readable after they are unassigned (ADR 0004). Unassigning
+      // clears `active`; it does not remove anything.
+      allow delete: if false;
     }
 
     match /chats/{chatId} {

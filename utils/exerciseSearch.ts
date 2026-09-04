@@ -1,4 +1,5 @@
 import EXERCISES from '../constants/exerciseCatalog'
+import type { SetField } from '../types/exercise'
 
 // Coaching shorthand used throughout the programs (e.g. "SA Lat Pulldown"),
 // expanded so a client typing either form finds the same exercise.
@@ -121,7 +122,9 @@ export const searchExercises = (queryText, limit = 50, extra = []) => {
 // The catalog declares this per exercise instead of deriving it from a coarse
 // `type`, which is how a loaded carry gets weight + distance and a plank gets
 // duration alone. Custom exercises carry the same `fields` array.
-export const fieldsFor = (exercise) => {
+// Annotated, unlike its neighbours, because the return crosses into
+// ExerciseSetEditor's typed props: the array decides which columns render.
+export const fieldsFor = (exercise): SetField[] => {
     const fields = exercise?.fields
     return Array.isArray(fields) && fields.length ? fields : ['reps']
 }
@@ -141,3 +144,35 @@ export const tagValues = (exercise, facet) => {
 export const roleOf = (exercise) => tagValues(exercise, 'role')[0] ?? null
 
 export const hasTag = (exercise, tag) => (exercise?.tags ?? []).includes(tag)
+
+// A tag value or a facet name, read for a person: 'lower-back' -> 'Lower Back'.
+// Shared by the picker's facet sheet and ExerciseInfoModal, which both turned
+// this into their own copy before it moved here.
+export const titleCase = (value) =>
+    value.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+
+// The same value, kept lowercase - a picker row's meta line ("barbell ·
+// squat") reads as a caption, not a heading, so it stays down at the row's
+// own case rather than shouting a tag value at title case.
+export const spaceCase = (value) => value.replace(/-/g, ' ')
+
+const FACETS = ['muscle', 'pattern', 'modality', 'role', 'equipment']
+
+/**
+ * Which values of each facet actually appear on a bundled exercise, computed
+ * once at module load the same way INDEX is.
+ *
+ * Deliberately not the full vocabulary in scripts/exerciseVocab.js: that list
+ * is what a record's tags are validated against, not what the catalog uses,
+ * and a facet sheet offering a value nothing carries would filter to an empty
+ * list. Ninety-two is the real count across the five facets; the vocabulary
+ * allows a few more that no record happens to use yet.
+ */
+export const FACET_VALUES = FACETS.reduce((acc, facet) => {
+    const values = new Set()
+    for (const exercise of EXERCISES) {
+        for (const value of tagValues(exercise, facet)) values.add(value)
+    }
+    acc[facet] = Array.from(values).sort()
+    return acc
+}, {})

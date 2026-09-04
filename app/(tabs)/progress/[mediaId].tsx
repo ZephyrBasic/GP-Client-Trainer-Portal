@@ -115,7 +115,7 @@ const MediaDetail = () => {
                         {!confirmingDelete ? (
                             <ThemedButton
                                 onPress={() => setConfirmingDelete(true)}
-                                style={{ backgroundColor: Colors.warning }}
+                                style={{ backgroundColor: theme.danger }}
                             >
                                 <ThemedText style={styles.deleteText}>Delete</ThemedText>
                             </ThemedButton>
@@ -133,7 +133,7 @@ const MediaDetail = () => {
                                     </ThemedButton>
                                     <ThemedButton
                                         onPress={handleDelete}
-                                        style={[styles.confirmBtn, { backgroundColor: Colors.warning }]}
+                                        style={[styles.confirmBtn, { backgroundColor: theme.danger }]}
                                         disabled={deleting}
                                     >
                                         <ThemedText style={styles.deleteText}>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Pressable, StyleSheet, useColorScheme, View, type ViewProps } from 'react-native'
+import { StyleSheet, useColorScheme, View, type ViewProps } from 'react-native'
 import ThemedText from './ThemedText'
+import ThemedButton from './ThemedButton'
 import { Colors } from '../constants/Colors'
 
 type Props = {
@@ -34,11 +35,7 @@ const OfflineBanner = ({ visible, onRetry, message, style }: Props) => {
 
     return (
         <View
-            style={[
-                styles.banner,
-                { backgroundColor: theme.uiBackground, borderLeftColor: Colors.warning },
-                style,
-            ]}
+            style={[styles.banner, { backgroundColor: theme.dangerTint, borderColor: theme.danger }, style]}
         >
             <View style={styles.body}>
                 <ThemedText style={styles.message}>
@@ -46,13 +43,13 @@ const OfflineBanner = ({ visible, onRetry, message, style }: Props) => {
                 </ThemedText>
                 <View style={styles.actions}>
                     {onRetry && (
-                        <Pressable onPress={onRetry} hitSlop={8}>
-                            <ThemedText style={[styles.action, { color: Colors.primary }]}>Retry</ThemedText>
-                        </Pressable>
+                        <ThemedButton variant="ghost" onPress={onRetry} style={styles.action}>
+                            <ThemedText style={styles.actionText}>Retry</ThemedText>
+                        </ThemedButton>
                     )}
-                    <Pressable onPress={() => setDismissed(true)} hitSlop={8}>
-                        <ThemedText style={styles.action}>Dismiss</ThemedText>
-                    </Pressable>
+                    <ThemedButton variant="ghost" onPress={() => setDismissed(true)} style={styles.action}>
+                        <ThemedText style={styles.actionText}>Dismiss</ThemedText>
+                    </ThemedButton>
                 </View>
             </View>
         </View>
@@ -63,23 +60,27 @@ export default OfflineBanner
 
 const styles = StyleSheet.create({
     banner: {
-        borderRadius: 5,
-        borderLeftWidth: 4,
-        padding: 12,
+        borderRadius: 8,
+        borderWidth: 1,
+        padding: 11,
         marginBottom: 12,
     },
     body: {
         gap: 8,
     },
     message: {
-        fontSize: 13,
+        fontSize: 12.5,
     },
     actions: {
         flexDirection: 'row',
-        gap: 16,
+        gap: 7,
     },
     action: {
-        fontSize: 13,
-        fontWeight: 'bold',
+        flex: 1,
+        padding: 8,
+    },
+    actionText: {
+        fontSize: 12,
+        fontWeight: '600',
     },
 })

@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react'
-import { ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { deleteDoc, doc, onSnapshot } from 'firebase/firestore'
 
 import ThemedView from '../../../components/ThemedView'
 import ThemedText from '../../../components/ThemedText'
 import ThemedCard from '../../../components/ThemedCard'
-import ThemedButton from '../../../components/ThemedButton'
+import ThemedButton, { buttonTextColor } from '../../../components/ThemedButton'
+import SessionDiff from '../../../components/SessionDiff'
+import VerdictBadge, { SessionKindChip } from '../../../components/VerdictBadge'
 import Spacer from '../../../components/Spacer'
 import { Colors } from '../../../constants/Colors'
+import { Space, SCREEN_PADDING } from '../../../constants/Layout'
 import { db } from '../../../firebase/config'
-import { volumeForWorkout } from '../../../utils/workoutStats'
+import { SESSIONS } from '../../../hooks/useSessions'
+import { deviations } from '../../../utils/prescription'
 import { formatSet } from '../../../utils/formatSet'
+import { shortDateLabel } from '../../../utils/dateInput'
 
 const WorkoutDetail = () => {
     const { id } = useLocalSearchParams<{ id: string }>()
@@ -24,11 +29,12 @@ const WorkoutDetail = () => {
     const [accessDenied, setAccessDenied] = useState(false)
     const [confirmingDelete, setConfirmingDelete] = useState(false)
     const [deleting, setDeleting] = useState(false)
+    const [showDiff, setShowDiff] = useState(false)
 
     useEffect(() => {
         if (!id) return
         const unsubscribe = onSnapshot(
-            doc(db, 'workouts', id),
+            doc(db, SESSIONS, id),
             (snapshot) => {
                 setWorkout(snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null)
                 setLoading(false)
@@ -44,7 +50,7 @@ const WorkoutDetail = () => {
     const handleDelete = async () => {
         setDeleting(true)
         try {
-            await deleteDoc(doc(db, 'workouts', id))
+            await deleteDoc(doc(db, SESSIONS, id))
             router.back()
         } catch (err) {
             setDeleting(false)
@@ -67,30 +73,86 @@ const WorkoutDetail = () => {
         )
     }
 
-    const dateLabel = workout.date?.toDate ? workout.date.toDate().toLocaleDateString() : 'Unknown date'
-    const volume = volumeForWorkout(workout)
+    const dateLabel = workout.date?.toDate ? shortDateLabel(workout.date.toDate()) : 'Unknown date'
+    const exerciseCount = workout.exercises?.length ?? 0
+    // Both stored at completion and never recomputed (ADR 0002), so what this
+    // screen shows cannot drift from the verdict as Versions are published
+    // afterwards. A Session with no diff is either Self-Directed or one whose
+    // plan never reached the phone; neither has anything to itemise.
+    const changes = deviations(workout.diff)
 
     return (
         <ThemedView style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
-                <ThemedText title={true} style={styles.date}>
-                    {dateLabel}
-                </ThemedText>
-                <ThemedText style={styles.meta}>
-                    {workout.durationMinutes ?? 0} min · Volume {Math.round(volume).toLocaleString()}
-                </ThemedText>
+                {/* The record's head is drawn exactly like a row of History -
+                    same name, same meta line, same verdict pill - since this
+                    screen is what that row opens into. The diff (when there is
+                    one) sits inside the same card, behind the same
+                    show/hide toggle .claude/docs/design/Review.dc.html draws. */}
+                <ThemedCard>
+                    <View style={styles.headRow}>
+                        <View style={styles.textCol}>
+                            {/* Which workout this was, said in the same
+                                one-line form every other screen uses. A Session
+                                with no Template says so rather than leaving a
+                                gap - "no plan" is a real answer, not a missing
+                                name. */}
+                            <ThemedText variant="cardTitle" tone="title" numberOfLines={1}>
+                                {workout.templateName || 'Session without a plan'}
+                            </ThemedText>
+                            {/* Absent rather than zero: a duration nobody
+                                recorded is not a workout that took no time. */}
+                            <ThemedText variant="small" tone="muted">
+                                {dateLabel} · {exerciseCount} exercise{exerciseCount === 1 ? '' : 's'}
+                                {workout.durationMinutes != null ? ` · ${workout.durationMinutes} min` : ''}
+                            </ThemedText>
+                        </View>
+                        <VerdictBadge verdict={workout.verdict} />
+                        <SessionKindChip session={workout} />
+                    </View>
 
-                <Spacer height={16} />
+                    {/* The itemisation, and deliberately behind a tap: what the
+                        Client did is the record, and what they were asked for
+                        is the question they open when they want it. A Session
+                        with no diff shows no control at all rather than an
+                        empty one. */}
+                    {workout.diff?.length ? (
+                        <>
+                            <View style={[styles.divider, { backgroundColor: theme.lineSoft }]} />
+                            {showDiff ? (
+                                <>
+                                    <SessionDiff diff={workout.diff} />
+                                    <Spacer height={Space.md} />
+                                    <Pressable onPress={() => setShowDiff(false)}>
+                                        <ThemedText variant="small" tone="accent" style={styles.diffToggle}>
+                                            Hide comparison
+                                        </ThemedText>
+                                    </Pressable>
+                                </>
+                            ) : (
+                                <Pressable onPress={() => setShowDiff(true)}>
+                                    <ThemedText variant="small" tone="accent" style={styles.diffToggle}>
+                                        {changes.length > 0
+                                            ? `Show what changed · ${changes.length} exercise${changes.length === 1 ? '' : 's'}`
+                                            : 'Show the comparison'}
+                                    </ThemedText>
+                                </Pressable>
+                            )}
+                        </>
+                    ) : null}
+                </ThemedCard>
+
+                <Spacer height={Space.xl} />
                 {(workout.exercises ?? []).map((exercise, index) => (
                     <View key={index}>
-                        <Spacer height={index === 0 ? 0 : 12} />
+                        <Spacer height={index === 0 ? 0 : Space.md} />
                         <ThemedCard>
-                            <ThemedText title={true} style={styles.exerciseName}>
+                            <ThemedText variant="cardTitle" tone="title">
                                 {exercise.name}
                             </ThemedText>
-                            <Spacer height={8} />
+                            <Spacer height={Space.sm} />
                             {(exercise.sets ?? []).map((set, setIndex) => (
-                                <ThemedText key={setIndex} style={styles.setLine}>
+                                <ThemedText key={setIndex} variant="small" tone="faint" style={styles.setLine}>
                                     Set {setIndex + 1}: {formatSet(set)}
                                 </ThemedText>
                             ))}
@@ -100,38 +162,42 @@ const WorkoutDetail = () => {
 
                 {workout.notes ? (
                     <>
-                        <Spacer height={16} />
+                        <Spacer height={Space.xl} />
                         <ThemedCard>
-                            <ThemedText style={styles.label}>Notes</ThemedText>
-                            <Spacer height={4} />
-                            <ThemedText>{workout.notes}</ThemedText>
+                            <ThemedText variant="label" tone="muted">Notes</ThemedText>
+                            <Spacer height={Space.xs} />
+                            <ThemedText variant="body" tone="body">{workout.notes}</ThemedText>
                         </ThemedCard>
                     </>
                 ) : null}
 
-                <Spacer height={24} />
+                <Spacer height={Space.xxl} />
                 {!confirmingDelete ? (
-                    <ThemedButton onPress={() => setConfirmingDelete(true)} style={{ backgroundColor: Colors.warning }}>
-                        <ThemedText style={styles.deleteBtnText}>Delete Workout</ThemedText>
+                    <ThemedButton variant="danger" onPress={() => setConfirmingDelete(true)}>
+                        <ThemedText style={{ color: buttonTextColor('danger', theme), fontWeight: '600' }}>
+                            Delete Workout
+                        </ThemedText>
                     </ThemedButton>
                 ) : (
                     <View>
-                        <ThemedText>Delete this workout? This cannot be undone.</ThemedText>
-                        <Spacer height={10} />
+                        <ThemedText variant="body" tone="body">Delete this workout? This cannot be undone.</ThemedText>
+                        <Spacer height={Space.md} />
                         <View style={styles.confirmRow}>
                             <ThemedButton
+                                variant="ghost"
                                 onPress={() => setConfirmingDelete(false)}
-                                style={[styles.confirmBtn, { backgroundColor: theme.uiBackground }]}
+                                style={styles.confirmBtn}
                                 disabled={deleting}
                             >
                                 <ThemedText>Cancel</ThemedText>
                             </ThemedButton>
                             <ThemedButton
+                                variant="danger"
                                 onPress={handleDelete}
-                                style={[styles.confirmBtn, { backgroundColor: Colors.warning }]}
+                                style={styles.confirmBtn}
                                 disabled={deleting}
                             >
-                                <ThemedText style={styles.deleteBtnText}>
+                                <ThemedText style={{ color: buttonTextColor('danger', theme), fontWeight: '600' }}>
                                     {deleting ? 'Deleting...' : 'Confirm Delete'}
                                 </ThemedText>
                             </ThemedButton>
@@ -148,38 +214,35 @@ export default WorkoutDetail
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
+        padding: SCREEN_PADDING,
     },
     scrollContent: {
         paddingBottom: 20,
     },
-    date: {
-        fontSize: 18,
-        fontWeight: 'bold',
+    headRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: Space.md,
     },
-    meta: {
-        marginTop: 4,
-        opacity: 0.8,
+    textCol: {
+        flex: 1,
+        gap: Space.xs,
     },
-    exerciseName: {
-        fontSize: 16,
+    divider: {
+        height: 1,
+        marginVertical: Space.md,
+    },
+    diffToggle: {
+        fontWeight: '600',
     },
     setLine: {
         marginBottom: 2,
     },
-    label: {
-        fontSize: 13,
-        opacity: 0.8,
-    },
     confirmRow: {
         flexDirection: 'row',
-        gap: 10,
+        gap: Space.md,
     },
     confirmBtn: {
         flex: 1,
-    },
-    deleteBtnText: {
-        color: '#fff',
-        fontWeight: 'bold',
     },
 })

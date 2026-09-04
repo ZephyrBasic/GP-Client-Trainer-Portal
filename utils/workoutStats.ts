@@ -48,9 +48,26 @@ const sumField = (workout, field) => {
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000
 
+/**
+ * The Sessions that count as "this week".
+ *
+ * The trailing seven days, deliberately, and not the calendar week. Target
+ * Frequency is an expectation rather than a schedule (ADR 0001): there are no
+ * due dates and nothing is ever overdue, so a boundary that resets to zero every
+ * Monday morning would show every Client as having done nothing for the first
+ * day and a half of it - which is not a fact about their training. A trailing
+ * window answers the question a Trainer is actually asking, "are they doing it?",
+ * and never lies at the start of a week.
+ *
+ * Exported so the completion ratio and the summary card above it mean the same
+ * thing by "this week". Two windows on one screen, both labelled the same way,
+ * would be a bug nobody could see.
+ */
+export const sessionsThisWeek = (workouts, now = Date.now()) =>
+    workouts.filter((w) => w.date?.toMillis && now - w.date.toMillis() <= ONE_WEEK_MS)
+
 export const computeWorkoutStats = (workouts) => {
-    const now = Date.now()
-    const thisWeek = workouts.filter((w) => w.date?.toMillis && now - w.date.toMillis() <= ONE_WEEK_MS)
+    const thisWeek = sessionsThisWeek(workouts)
 
     const sum = (list, fn) => list.reduce((total, w) => total + fn(w), 0)
 

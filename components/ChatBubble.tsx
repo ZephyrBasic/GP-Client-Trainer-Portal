@@ -8,8 +8,8 @@ const ChatBubble = ({ text, isOwn }) => {
 
     return (
         <View style={[styles.row, isOwn ? styles.rowOwn : styles.rowOther]}>
-            <View style={[styles.bubble, { backgroundColor: isOwn ? Colors.primary : theme.uiBackground }]}>
-                <ThemedText style={isOwn ? styles.textOwn : null}>{text}</ThemedText>
+            <View style={[styles.bubble, { backgroundColor: isOwn ? theme.primary : theme.uiBackground }]}>
+                <ThemedText style={isOwn ? { color: theme.onPrimary } : null}>{text}</ThemedText>
             </View>
         </View>
     )
@@ -33,8 +33,5 @@ const styles = StyleSheet.create({
         paddingHorizontal: 14,
         paddingVertical: 10,
         borderRadius: 16,
-    },
-    textOwn: {
-        color: '#fff',
     },
 })

@@ -97,10 +97,14 @@ const ProgressFeed = () => {
                         {!pendingAsset ? (
                             <View style={styles.pickerRow}>
                                 <ThemedButton onPress={captureNew} style={styles.pickerBtn}>
-                                    <ThemedText style={styles.pickerBtnText}>Record / Take Photo</ThemedText>
+                                    <ThemedText style={[styles.pickerBtnText, { color: theme.onPrimary }]}>
+                                        Record / Take Photo
+                                    </ThemedText>
                                 </ThemedButton>
                                 <ThemedButton onPress={pickFromLibrary} style={styles.pickerBtn}>
-                                    <ThemedText style={styles.pickerBtnText}>Choose from Library</ThemedText>
+                                    <ThemedText style={[styles.pickerBtnText, { color: theme.onPrimary }]}>
+                                        Choose from Library
+                                    </ThemedText>
                                 </ThemedButton>
                             </View>
                         ) : (
@@ -122,7 +126,12 @@ const ProgressFeed = () => {
                                 <Spacer height={10} />
                                 {uploading ? (
                                     <View style={styles.progressTrack}>
-                                        <View style={[styles.progressBar, { width: `${Math.round(progress * 100)}%` }]} />
+                                        <View
+                                            style={[
+                                                styles.progressBar,
+                                                { width: `${Math.round(progress * 100)}%`, backgroundColor: theme.primary },
+                                            ]}
+                                        />
                                     </View>
                                 ) : (
                                     <View style={styles.confirmRow}>
@@ -133,7 +142,9 @@ const ProgressFeed = () => {
                                             <ThemedText>Cancel</ThemedText>
                                         </ThemedButton>
                                         <ThemedButton onPress={handleUpload} style={styles.confirmBtn}>
-                                            <ThemedText style={styles.pickerBtnText}>Upload</ThemedText>
+                                            <ThemedText style={[styles.pickerBtnText, { color: theme.onPrimary }]}>
+                                                Upload
+                                            </ThemedText>
                                         </ThemedButton>
                                     </View>
                                 )}
@@ -142,7 +153,7 @@ const ProgressFeed = () => {
                         {error ? (
                             <>
                                 <Spacer height={10} />
-                                <ThemedText style={{ color: Colors.warning }}>{error}</ThemedText>
+                                <ThemedText style={{ color: theme.danger }}>{error}</ThemedText>
                             </>
                         ) : null}
                         <Spacer height={10} />
@@ -187,7 +198,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     pickerBtnText: {
-        color: '#fff',
         fontWeight: 'bold',
         textAlign: 'center',
     },
@@ -213,7 +223,6 @@ const styles = StyleSheet.create({
     },
     progressBar: {
         height: 10,
-        backgroundColor: Colors.primary,
     },
     empty: {
         marginTop: 10,

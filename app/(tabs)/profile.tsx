@@ -5,13 +5,19 @@ import ThemedView from '../../components/ThemedView'
 import ThemedText from '../../components/ThemedText'
 import ThemedCard from '../../components/ThemedCard'
 import ThemedButton from '../../components/ThemedButton'
+import ThemedChip from '../../components/ThemedChip'
 import OfflineBanner from '../../components/OfflineBanner'
 import Spacer from '../../components/Spacer'
+import { Space } from '../../constants/Layout'
 import { db } from '../../firebase/config'
 import { useAuth } from '../../contexts/AuthContext'
 import { useFirestoreDoc } from '../../hooks/useFirestoreSnapshot'
 import { useOffline } from '../../hooks/useOffline'
 
+/**
+ * Me - identity, and the one fact each role needs about the other side of
+ * the relationship: a Trainer's invite code, or a Client's trainer.
+ */
 const Profile = () => {
     const { profile, offline: authOffline, signOut } = useAuth()
 
@@ -39,16 +45,18 @@ const Profile = () => {
         // offline to sign out, because they won't be able to sign back in.
         return (
             <ThemedView style={styles.container}>
-                <ThemedText>
+                <ThemedText variant="body" tone="body">
                     {authOffline
                         ? "Can't reach the server, so we couldn't load your profile. Check your connection - this screen will fill in on its own once you're back."
                         : "We couldn't load your profile. Try signing out and back in."}
                 </ThemedText>
                 {!authOffline && (
                     <>
-                        <Spacer height={20} />
+                        <Spacer height={Space.xl} />
                         <ThemedButton onPress={signOut}>
-                            <ThemedText style={styles.btnText}>Sign Out</ThemedText>
+                            <ThemedText variant="cardTitle" tone="onPrimary">
+                                Sign Out
+                            </ThemedText>
                         </ThemedButton>
                     </>
                 )}
@@ -64,38 +72,51 @@ const Profile = () => {
                 their own profile. */}
             <OfflineBanner visible={offline} onRetry={retry} />
 
-            <ThemedCard>
-                <ThemedText title={true} style={styles.name}>
+            <ThemedCard raised={true}>
+                <ThemedText variant="title" tone="title">
                     {profile.name}
                 </ThemedText>
-                <ThemedText>{profile.email}</ThemedText>
-                <Spacer height={8} />
-                <ThemedText style={styles.roleBadge}>{profile.role === 'trainer' ? 'Trainer' : 'Client'}</ThemedText>
+                <Spacer height={Space.xs} />
+                <ThemedText variant="body" tone="muted">
+                    {profile.email}
+                </ThemedText>
+                <Spacer height={Space.sm} />
+                <ThemedChip label={profile.role === 'trainer' ? 'Trainer' : 'Client'} tone="muted" />
             </ThemedCard>
 
-            <Spacer height={16} />
+            <Spacer height={Space.lg} />
 
             {profile.role === 'trainer' ? (
                 <ThemedCard>
-                    <ThemedText style={styles.label}>Your invite code</ThemedText>
-                    <Spacer height={4} />
-                    <ThemedText title={true} style={styles.inviteCode}>
+                    <ThemedText variant="label" tone="muted">
+                        Your invite code
+                    </ThemedText>
+                    <Spacer height={Space.xs} />
+                    <ThemedText variant="title" tone="title" style={styles.inviteCode}>
                         {profile.inviteCode}
                     </ThemedText>
-                    <Spacer height={8} />
-                    <ThemedText>Share this with clients so they can link to you when they register.</ThemedText>
+                    <Spacer height={Space.sm} />
+                    <ThemedText variant="body" tone="muted">
+                        Share this with clients so they can link to you when they register.
+                    </ThemedText>
                 </ThemedCard>
             ) : (
                 <ThemedCard>
-                    <ThemedText style={styles.label}>Your trainer</ThemedText>
-                    <Spacer height={4} />
-                    <ThemedText>{trainerLabel}</ThemedText>
+                    <ThemedText variant="label" tone="muted">
+                        Your trainer
+                    </ThemedText>
+                    <Spacer height={Space.xs} />
+                    <ThemedText variant="body" tone="title">
+                        {trainerLabel}
+                    </ThemedText>
                 </ThemedCard>
             )}
 
-            <Spacer height={24} />
+            <Spacer height={Space.xxl} />
             <ThemedButton onPress={signOut}>
-                <ThemedText style={styles.btnText}>Sign Out</ThemedText>
+                <ThemedText variant="cardTitle" tone="onPrimary">
+                    Sign Out
+                </ThemedText>
             </ThemedButton>
         </ThemedView>
     )
@@ -106,28 +127,9 @@ export default Profile
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
-    },
-    name: {
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    roleBadge: {
-        fontWeight: 'bold',
-        textTransform: 'uppercase',
-        fontSize: 12,
-        letterSpacing: 1,
-    },
-    label: {
-        fontSize: 13,
-        opacity: 0.8,
+        padding: Space.xl,
     },
     inviteCode: {
-        fontSize: 24,
         letterSpacing: 2,
-    },
-    btnText: {
-        color: '#fff',
-        fontWeight: 'bold',
     },
 })

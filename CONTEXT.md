@@ -16,6 +16,9 @@ _Avoid_: Coach, PT, instructor
 A person a Trainer coaches. Has exactly one Trainer at a time, set at registration and
 changeable if they move to another coach.
 _Avoid_: Customer, athlete, user, member
+_Not yet supported_: `firestore.rules` refuses any update altering `trainerId`. The same clause
+guards `role`, so relaxing it would let a Client link to any Trainer or promote themselves to one.
+Switching coach needs a gated path, not a loosened rule.
 
 ### Planning
 

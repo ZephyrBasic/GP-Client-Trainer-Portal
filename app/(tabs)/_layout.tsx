@@ -1,4 +1,4 @@
-import { Tabs } from 'expo-router'
+import { Tabs, useSegments } from 'expo-router'
 import { useColorScheme } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors } from '../../constants/Colors'
@@ -9,6 +9,14 @@ const TabsLayout = () => {
     const theme = Colors[colorScheme] ?? Colors.light
     const { profile } = useAuth()
     const isTrainer = profile?.role === 'trainer'
+    const segments = useSegments()
+
+    // The live session draws its own footer (a running clock, FINISH), so the
+    // tab bar underneath it is dead weight at best and a second way to leave a
+    // half-finished workout at worst. Detected from the route rather than a
+    // screen-owned flag, since a flag would need plumbing through a navigator
+    // that does not otherwise know what its screens are doing.
+    const inLiveSession = segments[1] === 'workouts' && segments[2] === 'session'
 
     // Tabs whose route is a folder render their own Stack header (with the back
     // button and per-screen title), so the Tabs header is switched off for those
@@ -18,58 +26,78 @@ const TabsLayout = () => {
             screenOptions={{
                 headerStyle: { backgroundColor: theme.navBackground },
                 headerTintColor: theme.title,
-                tabBarStyle: { backgroundColor: theme.navBackground },
+                tabBarStyle: inLiveSession
+                    ? { display: 'none' }
+                    : { backgroundColor: theme.navBackground },
                 tabBarActiveTintColor: theme.iconColorFocused,
                 tabBarInactiveTintColor: theme.iconColor,
             }}
         >
+            {/* Today draws its own header - eyebrow date, title and the
+                trainer pill - so the native one is switched off here too,
+                same as every folder-route tab below it. */}
             <Tabs.Screen
                 name="index"
                 options={{
-                    title: 'Home',
+                    headerShown: false,
+                    title: 'Today',
                     href: isTrainer ? null : undefined,
-                    tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
+                    tabBarIcon: ({ color, size }) => <Ionicons name="time" size={size} color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="clients"
                 options={{
                     headerShown: false,
-                    title: 'Clients',
+                    title: 'Roster',
                     href: isTrainer ? undefined : null,
                     tabBarIcon: ({ color, size }) => <Ionicons name="people" size={size} color={color} />,
                 }}
             />
+            {/* Both roles now, where this was client-only: a Trainer had nowhere
+                to author a Workout Template. The two roles see different things
+                under it - a Client's own session History, a Trainer's Template
+                Library - so the label, icon and landing route all switch on
+                role here rather than the screen redirecting one of them away. */}
             <Tabs.Screen
                 name="workouts"
                 options={{
                     headerShown: false,
-                    title: 'Workouts',
-                    href: isTrainer ? null : undefined,
-                    tabBarIcon: ({ color, size }) => <Ionicons name="barbell" size={size} color={color} />,
+                    title: isTrainer ? 'Library' : 'History',
+                    href: isTrainer ? '/workouts/templates' : '/workouts',
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name={isTrainer ? 'barbell' : 'list'} size={size} color={color} />
+                    ),
                 }}
             />
+            {/* Messaging is out of scope while the core tracking loop is built (see
+                CLAUDE.md, "Current scope"); it showed for both roles before, so
+                dropping `href: null` is the whole of switching it back on. */}
             <Tabs.Screen
                 name="messages"
                 options={{
                     headerShown: false,
                     title: 'Messages',
+                    href: null,
                     tabBarIcon: ({ color, size }) => <Ionicons name="chatbubbles" size={size} color={color} />,
                 }}
             />
+            {/* Progress media, likewise out of scope - but this one was a client-only
+                tab, so switching it back on means restoring the role check
+                (`href: isTrainer ? null : undefined`), not plain `undefined`. */}
             <Tabs.Screen
                 name="progress"
                 options={{
                     headerShown: false,
                     title: 'Progress',
-                    href: isTrainer ? null : undefined,
+                    href: null,
                     tabBarIcon: ({ color, size }) => <Ionicons name="videocam" size={size} color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="profile"
                 options={{
-                    title: 'Profile',
+                    title: 'Me',
                     tabBarIcon: ({ color, size }) => <Ionicons name="person" size={size} color={color} />,
                 }}
             />

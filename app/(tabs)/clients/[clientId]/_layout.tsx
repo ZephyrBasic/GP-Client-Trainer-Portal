@@ -13,7 +13,10 @@ const ClientDetailLayout = () => {
                 headerTintColor: theme.title,
             }}
         >
-            <Stack.Screen name="index" options={{ title: 'Client' }} />
+            {/* The screen draws its own header - a circular back button, the
+                Client's name and how much is prescribed to them - the same
+                reason Today and the live Session switch theirs off too. */}
+            <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="progress" options={{ title: 'Progress' }} />
         </Stack>
     )

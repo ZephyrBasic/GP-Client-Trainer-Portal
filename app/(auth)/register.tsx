@@ -10,6 +10,7 @@ import ThemedButton from '../../components/ThemedButton'
 import Spacer from '../../components/Spacer'
 
 import { Colors } from '../../constants/Colors'
+import { Radius, Space } from '../../constants/Layout'
 import { useAuth } from '../../contexts/AuthContext'
 import { getAuthErrorMessage } from '../../utils/firebaseErrors'
 
@@ -52,17 +53,21 @@ const Register = () => {
     return (
         <ThemedView style={styles.container}>
             <Spacer />
-            <ThemedText title={true} style={styles.title}>
+            <ThemedText variant="title" tone="title" style={styles.title}>
                 Register for an account
             </ThemedText>
 
-            <Spacer height={20} />
+            <Spacer height={Space.xl} />
 
-            <ThemedText style={styles.label}>Name</ThemedText>
+            <ThemedText variant="label" tone="muted" style={styles.label}>
+                Name
+            </ThemedText>
             <ThemedTextInput value={name} onChangeText={setName} autoCapitalize="words" editable={!submitting} />
 
-            <Spacer height={16} />
-            <ThemedText style={styles.label}>Email</ThemedText>
+            <Spacer height={Space.lg} />
+            <ThemedText variant="label" tone="muted" style={styles.label}>
+                Email
+            </ThemedText>
             <ThemedTextInput
                 value={email}
                 onChangeText={setEmail}
@@ -70,42 +75,58 @@ const Register = () => {
                 editable={!submitting}
             />
 
-            <Spacer height={16} />
-            <ThemedText style={styles.label}>Password</ThemedText>
+            <Spacer height={Space.lg} />
+            <ThemedText variant="label" tone="muted" style={styles.label}>
+                Password
+            </ThemedText>
             <ThemedTextInput value={password} onChangeText={setPassword} secureTextEntry editable={!submitting} />
 
-            <Spacer height={16} />
-            <ThemedText style={styles.label}>I am a...</ThemedText>
-            <Spacer height={8} />
+            <Spacer height={Space.lg} />
+            <ThemedText variant="label" tone="muted" style={styles.label}>
+                I am a...
+            </ThemedText>
+            <Spacer height={Space.sm} />
             <ThemedView style={styles.roleRow}>
                 <Pressable
                     style={[
                         styles.roleOption,
-                        { borderColor: theme.iconColor },
-                        role === 'client' && { backgroundColor: Colors.primary, borderColor: Colors.primary },
+                        { borderColor: theme.line },
+                        role === 'client' && { backgroundColor: theme.primary, borderColor: theme.primary },
                     ]}
                     onPress={() => setRole('client')}
                     disabled={submitting}
                 >
-                    <ThemedText style={role === 'client' && styles.roleTextSelected}>Client</ThemedText>
+                    <ThemedText
+                        variant="body"
+                        tone={role === 'client' ? 'onPrimary' : 'body'}
+                    >
+                        Client
+                    </ThemedText>
                 </Pressable>
                 <Pressable
                     style={[
                         styles.roleOption,
-                        { borderColor: theme.iconColor },
-                        role === 'trainer' && { backgroundColor: Colors.primary, borderColor: Colors.primary },
+                        { borderColor: theme.line },
+                        role === 'trainer' && { backgroundColor: theme.primary, borderColor: theme.primary },
                     ]}
                     onPress={() => setRole('trainer')}
                     disabled={submitting}
                 >
-                    <ThemedText style={role === 'trainer' && styles.roleTextSelected}>Trainer</ThemedText>
+                    <ThemedText
+                        variant="body"
+                        tone={role === 'trainer' ? 'onPrimary' : 'body'}
+                    >
+                        Trainer
+                    </ThemedText>
                 </Pressable>
             </ThemedView>
 
             {role === 'client' && (
                 <>
-                    <Spacer height={16} />
-                    <ThemedText style={styles.label}>Trainer invite code</ThemedText>
+                    <Spacer height={Space.lg} />
+                    <ThemedText variant="label" tone="muted" style={styles.label}>
+                        Trainer invite code
+                    </ThemedText>
                     <ThemedTextInput
                         value={inviteCode}
                         onChangeText={(text) => setInviteCode(text.toUpperCase())}
@@ -118,19 +139,25 @@ const Register = () => {
 
             {error ? (
                 <>
-                    <Spacer height={16} />
-                    <ThemedText style={{ color: Colors.warning }}>{error}</ThemedText>
+                    <Spacer height={Space.lg} />
+                    <ThemedText variant="body" tone="danger">
+                        {error}
+                    </ThemedText>
                 </>
             ) : null}
 
-            <Spacer height={20} />
+            <Spacer height={Space.xl} />
             <ThemedButton onPress={handleRegister} disabled={submitting}>
-                <ThemedText style={styles.btnText}>{submitting ? 'Creating account...' : 'Register'}</ThemedText>
+                <ThemedText variant="cardTitle" tone="onPrimary">
+                    {submitting ? 'Creating account...' : 'Register'}
+                </ThemedText>
             </ThemedButton>
 
-            <Spacer height={20} />
-            <Link href="/login" style={{ textAlign: 'center' }}>
-                <ThemedText>Already have an account? Login</ThemedText>
+            <Spacer height={Space.xl} />
+            <Link href="/login" style={styles.link}>
+                <ThemedText variant="body" tone="accent">
+                    Already have an account? Login
+                </ThemedText>
             </Link>
         </ThemedView>
     )
@@ -142,33 +169,27 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        paddingHorizontal: 20,
+        paddingHorizontal: Space.xl,
     },
     title: {
         textAlign: 'center',
-        fontSize: 18,
-        marginBottom: 10,
+        marginBottom: Space.sm,
     },
     label: {
-        marginBottom: 6,
-        fontSize: 14,
+        marginBottom: Space.sm,
     },
     roleRow: {
         flexDirection: 'row',
-        gap: 12,
+        gap: Space.md,
     },
     roleOption: {
         flex: 1,
         borderWidth: 1,
-        borderRadius: 5,
-        paddingVertical: 12,
+        borderRadius: Radius.pill,
+        paddingVertical: Space.md,
         alignItems: 'center',
     },
-    roleTextSelected: {
-        color: '#fff',
-    },
-    btnText: {
-        color: '#fff',
-        fontWeight: 'bold',
+    link: {
+        textAlign: 'center',
     },
 })

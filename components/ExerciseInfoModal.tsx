@@ -3,9 +3,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 
 import ThemedText from './ThemedText'
+import SectionLabel from './SectionLabel'
 import VideoEmbed from './VideoEmbed'
 import { Colors } from '../constants/Colors'
-import { fieldsFor, tagValues } from '../utils/exerciseSearch'
+import { Radius, Space } from '../constants/Layout'
+import { fieldsFor, tagValues, titleCase } from '../utils/exerciseSearch'
 
 const FIELD_LABELS = {
     weightKg: 'Weight',
@@ -20,9 +22,6 @@ const FIELD_ICONS = {
     distanceMeters: 'trail-sign-outline',
     durationSeconds: 'stopwatch-outline',
 }
-
-const titleCase = (value) =>
-    value.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
 
 /**
  * The how-to page for one exercise, reached from the info button in the picker.
@@ -50,15 +49,15 @@ const ExerciseInfoModal = ({ exercise, onClose }) => {
     const fields = fieldsFor(exercise)
 
     const Chip = ({ label, icon }: { label: string, icon?: any }) => (
-        <View style={[styles.chip, { backgroundColor: theme.uiBackground }]}>
+        <View style={[styles.chip, { backgroundColor: theme.uiBackground, borderColor: theme.line }]}>
             {icon ? <Ionicons name={icon} size={13} color={theme.iconColor} /> : null}
-            <ThemedText style={styles.chipText}>{label}</ThemedText>
+            <ThemedText variant="small" tone="body">{label}</ThemedText>
         </View>
     )
 
     const Section = ({ title, children }) => (
         <View style={styles.section}>
-            <ThemedText style={[styles.sectionLabel, { color: theme.iconColor }]}>{title}</ThemedText>
+            <SectionLabel style={styles.sectionLabel}>{title}</SectionLabel>
             <View style={styles.chipRow}>{children}</View>
         </View>
     )
@@ -68,7 +67,7 @@ const ExerciseInfoModal = ({ exercise, onClose }) => {
             <View style={[styles.container, { backgroundColor: theme.background }]}>
                 <View style={[
                     styles.header,
-                    { paddingTop: insets.top + 8, borderBottomColor: theme.uiBackground },
+                    { paddingTop: insets.top + 8, borderBottomColor: theme.line },
                 ]}>
                     <Pressable
                         onPress={onClose}
@@ -78,8 +77,8 @@ const ExerciseInfoModal = ({ exercise, onClose }) => {
                         accessibilityRole="button"
                         accessibilityLabel="Back to exercise list"
                     >
-                        <Ionicons name="chevron-back" size={26} color={Colors.primary} />
-                        <ThemedText style={styles.backText}>Back</ThemedText>
+                        <Ionicons name="chevron-back" size={24} color={theme.iconColorFocused} />
+                        <ThemedText variant="body" tone="accent" style={styles.backText}>Back</ThemedText>
                     </Pressable>
                 </View>
 
@@ -87,11 +86,11 @@ const ExerciseInfoModal = ({ exercise, onClose }) => {
                     contentContainerStyle={[styles.body, { paddingBottom: insets.bottom + 32 }]}
                     showsVerticalScrollIndicator={false}
                 >
-                    <ThemedText style={styles.name}>{exercise.name}</ThemedText>
+                    <ThemedText variant="heading" tone="title">{exercise.name}</ThemedText>
                     {role ? (
                         <View style={styles.roleRow}>
-                            <View style={[styles.roleDot, { backgroundColor: Colors.primary }]} />
-                            <ThemedText style={[styles.role, { color: theme.iconColor }]}>
+                            <View style={[styles.roleDot, { backgroundColor: theme.iconColorFocused }]} />
+                            <ThemedText variant="small" tone="muted">
                                 {titleCase(role)}
                             </ThemedText>
                         </View>
@@ -103,7 +102,7 @@ const ExerciseInfoModal = ({ exercise, onClose }) => {
                         ) : (
                             <View style={[styles.noVideo, { backgroundColor: theme.uiBackground }]}>
                                 <Ionicons name="videocam-off-outline" size={26} color={theme.iconColor} />
-                                <ThemedText style={[styles.noVideoText, { color: theme.iconColor }]}>
+                                <ThemedText variant="small" tone="muted">
                                     No how-to video for this one yet.
                                 </ThemedText>
                             </View>
@@ -140,7 +139,7 @@ const styles = StyleSheet.create({
     header: {
         paddingHorizontal: 12,
         paddingBottom: 8,
-        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomWidth: 1,
     },
     backBtn: {
         flexDirection: 'row',
@@ -151,18 +150,11 @@ const styles = StyleSheet.create({
         gap: 2,
     },
     backText: {
-        color: Colors.primary,
         fontWeight: '600',
-        fontSize: 17,
     },
     body: {
-        paddingHorizontal: 20,
-        paddingTop: 20,
-    },
-    name: {
-        fontSize: 26,
-        fontWeight: '700',
-        lineHeight: 32,
+        paddingHorizontal: Space.xl,
+        paddingTop: Space.xl,
     },
     roleRow: {
         flexDirection: 'row',
@@ -175,48 +167,36 @@ const styles = StyleSheet.create({
         height: 6,
         borderRadius: 3,
     },
-    role: {
-        fontSize: 14,
-    },
     videoWrap: {
-        marginTop: 20,
+        marginTop: Space.xl,
     },
     noVideo: {
         width: '100%',
         aspectRatio: 16 / 9,
-        borderRadius: 14,
+        borderRadius: Radius.hero,
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 8,
-    },
-    noVideoText: {
-        fontSize: 13,
+        gap: Space.sm,
     },
     section: {
-        marginTop: 24,
+        marginTop: Space.xxl,
     },
     sectionLabel: {
-        fontSize: 12,
-        textTransform: 'uppercase',
-        letterSpacing: 0.8,
-        fontWeight: '600',
-        marginBottom: 10,
+        marginBottom: Space.md,
     },
     chipRow: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: 8,
+        gap: Space.sm,
     },
     chip: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 5,
-        borderRadius: 999,
-        paddingVertical: 8,
-        paddingHorizontal: 13,
-    },
-    chipText: {
-        fontSize: 14,
+        borderWidth: 1,
+        borderRadius: Radius.pill,
+        paddingVertical: Space.sm,
+        paddingHorizontal: Space.md + 1,
     },
 })
 
