@@ -46,21 +46,45 @@ const isMediaFile = (url: string): boolean => {
 }
 
 /**
+ * YouTube's privacy-enhanced embed host, and the closest thing to ad control an
+ * embedded player has.
+ *
+ * `youtube-nocookie.com` serves the same player without setting tracking
+ * cookies until playback starts, which switches off personalised advertising
+ * and the profile-building behind it. **It does not remove ads**, and nothing
+ * else here can either: there is no supported parameter that suppresses them,
+ * and an embed that blocked them would be breaking the terms the clips are
+ * borrowed under. If a client must never see an ad before a demo, the answer is
+ * Zeph's own footage in Firebase Storage - the `file` branch below, which plays
+ * through expo-video on every platform with no third party involved at all.
+ *
+ * What the parameters here can do is stop the player selling the *rest* of
+ * YouTube once the demo finishes, which was the more visible complaint: `rel=0`
+ * keeps the end screen on the same channel, and `iv_load_policy=3` drops
+ * annotation cards over the movement. `modestbranding` is deliberately absent -
+ * it has had no effect since August 2023 and passing it only suggests otherwise.
+ */
+const EMBED_HOST = 'https://www.youtube-nocookie.com/embed'
+
+/**
  * The embeddable player URL for a YouTube how-to, or null if it isn't a YouTube
  * link - the caller falls back rather than showing a broken frame.
  *
  * A `clip` narrows playback to the seconds that actually show the movement,
- * which is what lets a six-minute breakdown serve as a 30-second demo.
+ * which is what lets a six-minute breakdown serve as a 30-second demo. It is
+ * the mechanism the catalog is meant to use to hit the 15-45s house rule in
+ * scripts/videoSources.js, and today nothing in the catalog carries one -
+ * `node scripts/verify-videos.js --long` is the worklist.
  */
 export const embedUrl = (url?: string, clip?: VideoClip): string | null => {
     const id = youtubeId(url)
     if (!id) return null
 
     // `playsinline` stops iOS hijacking playback into its own fullscreen player.
-    const params = ['playsinline=1', 'rel=0']
+    const params = ['playsinline=1', 'rel=0', 'iv_load_policy=3']
     if (clip) params.push(`start=${Math.floor(clip.start)}`, `end=${Math.ceil(clip.end)}`)
 
-    return `https://www.youtube.com/embed/${id}?${params.join('&')}`
+    return `${EMBED_HOST}/${id}?${params.join('&')}`
 }
 
 /**

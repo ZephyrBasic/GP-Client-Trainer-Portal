@@ -101,9 +101,16 @@ const YouTubePlayer = ({ url, clip, style }: {
             play={autoplay}
             // `start`/`end` are how a clip window reaches the native player; the web
             // branch puts the same numbers in the embed URL.
+            // The web branch's equivalents live in the embed URL (see
+            // embedUrl in utils/videoUrl). Two differences, both forced:
+            // `modestbranding` is gone because it has had no effect since
+            // August 2023, and this player cannot use the nocookie host - it
+            // frames YouTube's own iframe API from a third-party origin the
+            // library hosts, which is the one arrangement that plays at all
+            // (see the note above).
             initialPlayerParams={{
                 rel: false,
-                modestbranding: true,
+                iv_load_policy: 3,
                 preventFullScreen: true,
                 start: startAt || undefined,
                 ...(clip ? { end: clip.end } : null),

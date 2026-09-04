@@ -3,6 +3,7 @@
 //
 //   node scripts/verify-videos.js             # coverage report, no network
 //   node scripts/verify-videos.js --missing   # ... and list every exercise with no demo
+//   node scripts/verify-videos.js --long      # list demos that are neither a Short nor clipped - OFFLINE
 //   node scripts/verify-videos.js --oembed    # check every video is live and embeddable - NO API KEY
 //   node scripts/verify-videos.js --online    # also verify each video against the YouTube API
 //   node scripts/verify-videos.js --learn     # print the channel behind each video, to build the allowlist
@@ -24,6 +25,7 @@ const {
     enforceChannels,
     youtubeId,
     isYouTube,
+    isShortsUrl,
     isMediaFile,
     parseIsoDuration,
 } = require('./videoSources')
@@ -51,6 +53,19 @@ const missing = exercises.filter((ex) => !ex.videoUrl)
 const youtube = withVideo.filter((ex) => isYouTube(ex.videoUrl))
 const selfHosted = withVideo.filter((ex) => isMediaFile(ex.videoUrl) && !isYouTube(ex.videoUrl))
 const clipped = withVideo.filter((ex) => ex.clip)
+
+/**
+ * Demos that are probably too long to be watched mid-set: a full YouTube video,
+ * with no clip window trimming it and no /shorts/ in the link to suggest it is
+ * brief on its own.
+ *
+ * Computed offline, which is the point. The real length check needs an API key
+ * (--online), so until now "which demos are too long?" could not be asked at
+ * all without one - and the answer is the re-harvest worklist. It never fails
+ * the run: a two-minute video can still be the right demo, and only a person
+ * watching it can say.
+ */
+const tooLong = youtube.filter((ex) => !ex.clip && !isShortsUrl(ex.videoUrl))
 
 /**
  * The API key, from the environment or from .env.
@@ -278,11 +293,23 @@ const main = async () => {
     const pct = ((withVideo.length / exercises.length) * 100).toFixed(1)
     console.log(`Coverage: ${withVideo.length}/${exercises.length} exercises have a demo (${pct}%)`)
     console.log(`  YouTube: ${youtube.length}   self-hosted: ${selfHosted.length}   clipped: ${clipped.length}`)
+    if (tooLong.length) {
+        console.log(
+            `  ${tooLong.length} are full-length videos with no clip window - ` +
+            'pass --long to list them'
+        )
+    }
     if (!enforceChannels()) {
         console.log('  APPROVED_CHANNELS is empty, so the reputable-source check is off.')
     }
     if (!online) {
         console.log('  (offline: pass --online to check the videos still exist and are the right length)')
+    }
+
+    if (flag('long') && tooLong.length) {
+        console.log(`
+${tooLong.length} full-length demos - trim with a clip window, or re-harvest as a Short:`)
+        for (const ex of tooLong) console.log(`  ${ex.id.padEnd(40)} ${ex.videoUrl}`)
     }
 
     if (flag('missing') && missing.length) {

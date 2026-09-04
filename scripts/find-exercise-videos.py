@@ -218,6 +218,13 @@ def score(candidate, exercise, channel_freq):
     else:
         points -= 40
 
+    # A Short is vertical, wordless and about the movement - which is what a
+    # client wants mid-set - and it carries its own length into the catalog
+    # (see search_youtube). Additive to the duration points above rather than
+    # instead of them: a bad Short is still a bad demo.
+    if candidate.get("isShort"):
+        points += 10
+
     if GOOD_TITLE.search(title):
         points += 15
     if BAD_TITLE.search(title):
@@ -247,9 +254,22 @@ def search(query, count):
     for entry in (info or {}).get("entries") or []:
         if not entry or not entry.get("id"):
             continue
+
+        # A Short keeps its /shorts/ link rather than being flattened to a
+        # youtu.be one. Both play identically - utils/videoUrl.ts pulls the id
+        # out of either - but the link shape is the only record of length that
+        # survives into the catalog, and it is what lets
+        # `verify-videos.js --long` name the demos that still need trimming
+        # without an API key. Flattening every URL threw that away.
+        shorts = "/shorts/" in (entry.get("webpage_url") or "")
         out.append({
             "videoId": entry["id"],
-            "url": f"https://youtu.be/{entry['id']}",
+            "url": (
+                f"https://www.youtube.com/shorts/{entry['id']}"
+                if shorts
+                else f"https://youtu.be/{entry['id']}"
+            ),
+            "isShort": shorts,
             "title": entry.get("title"),
             "duration": entry.get("duration"),
             "channel": entry.get("channel") or entry.get("uploader"),

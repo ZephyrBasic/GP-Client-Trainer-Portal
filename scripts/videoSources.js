@@ -58,6 +58,20 @@ const youtubeId = (url) => {
 
 const isYouTube = (url) => youtubeId(url) !== null
 
+/**
+ * Whether the link is a YouTube Short.
+ *
+ * The only length signal available *offline*. YouTube caps a Short at three
+ * minutes, and the vast majority run under a minute, so a /shorts/ link is
+ * within or near the house rule above without anyone having to ask the API how
+ * long it is - which needs a key, and so cannot run in CI or on a plane.
+ *
+ * A heuristic, and named as one: it says the demo is short, not that it is
+ * good. --online is still what checks the actual duration, and a human is still
+ * what decides the clip shows the movement.
+ */
+const isShortsUrl = (url) => /youtube[.]com\/shorts\//.test(String(url ?? ''))
+
 /** Firebase Storage hides the extension behind percent-encoding and a query. */
 const isMediaFile = (url) => {
     try {
@@ -81,6 +95,7 @@ module.exports = {
     enforceChannels,
     youtubeId,
     isYouTube,
+    isShortsUrl,
     isMediaFile,
     parseIsoDuration,
 }
