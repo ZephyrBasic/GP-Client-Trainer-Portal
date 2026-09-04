@@ -8,6 +8,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
+    "build:web": "expo export -p web && node scripts/fix-web-assets.js",
     "gen:types": "node scripts/generate-exercise-types.js",
     "verify:videos": "node scripts/verify-videos.js"
   },
