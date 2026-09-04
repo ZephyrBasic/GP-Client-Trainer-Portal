@@ -187,9 +187,10 @@ export const startSession = async ({
         date: Timestamp.now(),
         exercises: [],
         // Null, not 0: this Session has not happened yet, so its duration is
-        // unrecorded rather than nothing. completeSession overwrites it from the
-        // timer, and everything that renders a duration already reads it as
-        // `?? 0`, so nothing has to change to accept the absence.
+        // unrecorded rather than nothing. completeSession overwrites both from
+        // the timer, and every reader already treats a missing duration as
+        // unrecorded, so nothing has to change to accept the absence.
+        durationSeconds: null,
         durationMinutes: null,
         notes: '',
         ...prescribedFields(templateId, versionId, templateName),
@@ -215,6 +216,7 @@ export const startSession = async ({
 export const completeSession = async ({
     sessionId,
     exercises,
+    durationSeconds,
     durationMinutes,
     notes,
     date,
@@ -223,10 +225,23 @@ export const completeSession = async ({
     sessionId: string
     exercises: PerformedExercise[]
     /**
-     * Defaulted from the timer, but whatever the Client settled on - and null if
-     * they cleared the box, which says the duration was not recorded rather than
-     * that the workout took no time (see parseDurationInput in utils/elapsed).
+     * How long it took, to the second - what the mm:ss box now holds.
+     *
+     * Written **alongside** `durationMinutes` rather than instead of it, and
+     * that pairing is deliberate rather than lazy. Every Session recorded
+     * before the box accepted seconds has only the minutes, so a reader has to
+     * cope with their absence whatever we do here; writing both means no reader
+     * *had* to change to keep working, and the ones that want the precise
+     * figure ask for it and fall back (see sessionDurationLabel in
+     * utils/elapsed). The two can never disagree because the minutes are
+     * derived from the seconds at the call site, in one line, rather than
+     * typed into a second box.
+     *
+     * Null if the Client cleared the box, which says the duration was not
+     * recorded rather than that the workout took no time.
      */
+    durationSeconds: number | null
+    /** The same duration rounded to whole minutes - see above. */
     durationMinutes: number | null
     notes: string
     /** The day it counts for, which need not be today. */
@@ -248,6 +263,7 @@ export const completeSession = async ({
         completedAt: Timestamp.now(),
         date: Timestamp.fromDate(date),
         exercises,
+        durationSeconds,
         durationMinutes,
         notes,
         ...verdictFields(comparison),
@@ -275,6 +291,7 @@ export const completeSession = async ({
 export const createManualSession = async ({
     clientId,
     exercises,
+    durationSeconds,
     durationMinutes,
     notes,
     date,
@@ -286,6 +303,8 @@ export const createManualSession = async ({
     clientId: string
     exercises: PerformedExercise[]
     /** Typed by hand, and null when left blank - there was no timer to default it from. */
+    durationSeconds: number | null
+    /** The same duration rounded to whole minutes - see completeSession. */
     durationMinutes: number | null
     notes: string
     /** The day it counts for, which is the point: it is not today. */
@@ -302,6 +321,7 @@ export const createManualSession = async ({
         status: 'completed' as SessionStatus,
         date: Timestamp.fromDate(date),
         exercises,
+        durationSeconds,
         durationMinutes,
         notes,
         ...prescribedFields(templateId, versionId, templateName),

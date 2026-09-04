@@ -154,6 +154,61 @@ export const publishTemplateVersion = async ({
 }
 
 /**
+ * A performed Session's Exercises, opened as target Sets for a new Template.
+ *
+ * A Session and a Template Version already hold the same shape
+ * (`ExerciseWithSets`), so this copies rather than converts - but it copies
+ * *deliberately* rather than handing the stored array straight to
+ * `createWorkoutTemplate`. Three reasons, and each of them has a way of biting
+ * later:
+ *
+ * - **Only the four fields a Version stores.** A Session document may carry
+ *   more one day; spreading it whole would quietly version whatever that turns
+ *   out to be.
+ * - **An Exercise with no Sets is dropped.** A Session cannot contain one
+ *   today - completion filters them - but a Template with an Exercise and no
+ *   target Sets prescribes nothing, and this is the one place where that could
+ *   arrive from outside.
+ * - **The measurements are the ones that were performed.** What the Client
+ *   actually lifted becomes what the Template asks for next time, which is the
+ *   whole point of saving one: "do that again". It is not a prescription
+ *   anybody wrote, so nothing about it is compared to anything - it becomes
+ *   this Client's own Template like any other they authored (ADR 0001: there is
+ *   no Program, only Templates).
+ *
+ * Sets are copied by value, so editing the new Template later cannot reach back
+ * into the Session it came from. That matters: a Session is a record of
+ * something that happened and is never rewritten.
+ */
+export const templateExercisesFrom = (exercises: any[] | null | undefined): TemplateExercise[] =>
+    (exercises ?? [])
+        .filter((exercise) => (exercise?.sets?.length ?? 0) > 0)
+        .map((exercise) => ({
+            exerciseId: exercise.exerciseId,
+            name: exercise.name,
+            fields: [...(exercise.fields ?? [])],
+            sets: exercise.sets.map((set) => ({ ...set })),
+        }))
+
+/**
+ * The name to offer for a Template made out of a Session.
+ *
+ * The Exercise a Session led with, which is what a Client calls that workout
+ * when they talk about it - "the deadlift one". A date would be the obvious
+ * default and is the wrong one: a Template outlives the Session it came from
+ * and gets performed for months, so "Workout 4 Sep" ages into a name that says
+ * nothing, while "Conventional Deadlift + 2" still describes it.
+ *
+ * Only ever a suggestion - both callers put it in an editable box - so it has
+ * to be plausible rather than right.
+ */
+export const suggestedTemplateName = (exercises: any[] | null | undefined): string => {
+    const named = (exercises ?? []).filter((exercise) => exercise?.name)
+    if (named.length === 0) return 'My workout'
+    return named.length === 1 ? named[0].name : `${named[0].name} + ${named.length - 1}`
+}
+
+/**
  * Creates a Template and records its first Version, returning the Template id.
  *
  * A plain function rather than something the hook hands back, because authoring

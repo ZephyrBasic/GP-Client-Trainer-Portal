@@ -10,6 +10,7 @@ import ThemedButton from '../../../components/ThemedButton'
 import OfflineBanner from '../../../components/OfflineBanner'
 import Spacer from '../../../components/Spacer'
 import SectionLabel from '../../../components/SectionLabel'
+import DateField from '../../../components/DateField'
 import ExercisePicker from '../../../components/ExercisePicker'
 import ExerciseSetEditor from '../../../components/ExerciseSetEditor'
 import WorkoutPlanPicker from '../../../components/WorkoutPlanPicker'
@@ -21,8 +22,8 @@ import { draftsFrom, useExerciseDraft } from '../../../hooks/useExerciseDraft'
 import { useOffline } from '../../../hooks/useOffline'
 import { createManualSession, useSessions } from '../../../hooks/useSessions'
 import { useTemplateVersion, useWorkoutTemplates } from '../../../hooks/useWorkoutTemplates'
-import { toDateInput, parseDateInput } from '../../../utils/dateInput'
-import { parseDurationInput } from '../../../utils/elapsed'
+import { DATE_INPUT_FORMAT, toDateInput, parseDateInput } from '../../../utils/dateInput'
+import { minutesFromSeconds, parseDurationInput } from '../../../utils/elapsed'
 import { buildExerciseHistory, prefillSetsFor, previousSetSummary } from '../../../utils/exerciseHistory'
 import { targetSummary } from '../../../utils/formatSet'
 import { compareSession, resolveTargets } from '../../../utils/prescription'
@@ -105,7 +106,7 @@ const LogWorkout = () => {
     // Today in the device's own calendar - see utils/dateInput for why that is
     // not the same as today's date in UTC.
     const [date, setDate] = useState(() => toDateInput(new Date()))
-    const [durationMinutes, setDurationMinutes] = useState('')
+    const [duration, setDuration] = useState('')
     const [notes, setNotes] = useState('')
     const [pickerOpen, setPickerOpen] = useState(false)
     const [error, setError] = useState('')
@@ -203,16 +204,16 @@ const LogWorkout = () => {
 
         const parsedDate = parseDateInput(date)
         if (!parsedDate) {
-            setError('Enter a valid date (YYYY-MM-DD).')
+            setError(`Enter a valid date (${DATE_INPUT_FORMAT}).`)
             return
         }
 
         // Held to the same standard as the date above it, rather than coerced:
         // blank means the duration wasn't recorded, and anything else in the box
-        // has to be a real number of minutes.
-        const parsedDuration = parseDurationInput(durationMinutes)
-        if (parsedDuration === undefined) {
-            setError('Enter a duration in minutes, or leave it blank.')
+        // has to be a real length of time.
+        const parsedSeconds = parseDurationInput(duration)
+        if (parsedSeconds === undefined) {
+            setError('Enter a duration as minutes and seconds (4:30), or leave it blank.')
             return
         }
 
@@ -221,7 +222,11 @@ const LogWorkout = () => {
             await createManualSession({
                 clientId: profile.uid,
                 exercises: cleanedExercises,
-                durationMinutes: parsedDuration,
+                // Seconds are what the box now holds; the rounded minutes ride
+                // along beside them so every reader that only knows about
+                // `durationMinutes` keeps working - see completeSession.
+                durationSeconds: parsedSeconds,
+                durationMinutes: parsedSeconds == null ? null : minutesFromSeconds(parsedSeconds),
                 notes: notes.trim(),
                 date: parsedDate,
                 // All three or none, enforced one level down by prescribedFields
@@ -268,18 +273,22 @@ const LogWorkout = () => {
                 {assignments.length > 0 || ownTemplates.length > 0 ? <Spacer height={Space.lg} /> : null}
 
                 <ThemedText variant="meta" tone="muted" style={styles.label}>Date</ThemedText>
-                <ThemedTextInput value={date} onChangeText={setDate} placeholder="YYYY-MM-DD" editable={!saving} />
+                <DateField value={date} onChange={setDate} editable={!saving} />
 
                 <Spacer height={Space.lg} />
-                <ThemedText variant="meta" tone="muted" style={styles.label}>Duration (minutes)</ThemedText>
+                <ThemedText variant="meta" tone="muted" style={styles.label}>Duration</ThemedText>
                 {/* By hand, because no timer ran. Blank saves as unrecorded
                     rather than as a workout that took no time. */}
                 <ThemedTextInput
-                    value={durationMinutes}
-                    onChangeText={setDurationMinutes}
-                    keyboardType="numeric"
+                    value={duration}
+                    onChangeText={setDuration}
+                    placeholder="4:30"
+                    keyboardType="numbers-and-punctuation"
                     editable={!saving}
                 />
+                <ThemedText variant="small" tone="muted" style={styles.hint}>
+                    Minutes and seconds, as 4:30. A plain number is read as minutes.
+                </ThemedText>
 
                 <Spacer height={Space.xl} />
                 <SectionLabel>EXERCISES</SectionLabel>
@@ -395,6 +404,9 @@ const styles = StyleSheet.create({
     },
     label: {
         marginBottom: Space.sm - 2,
+    },
+    hint: {
+        marginTop: Space.xs + 2,
     },
     addExercisePill: {
         minHeight: 44,

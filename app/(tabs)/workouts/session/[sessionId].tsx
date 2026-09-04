@@ -9,6 +9,8 @@ import ThemedText from '../../../../components/ThemedText'
 import ThemedTextInput from '../../../../components/ThemedTextInput'
 import ThemedButton from '../../../../components/ThemedButton'
 import ThemedCard from '../../../../components/ThemedCard'
+import Checkbox from '../../../../components/Checkbox'
+import DateField from '../../../../components/DateField'
 import OfflineBanner from '../../../../components/OfflineBanner'
 import ProgressBar from '../../../../components/ProgressBar'
 import Spacer from '../../../../components/Spacer'
@@ -21,11 +23,17 @@ import { useAssignment } from '../../../../hooks/useAssignments'
 import { draftsFrom, useExerciseDraft } from '../../../../hooks/useExerciseDraft'
 import { useOffline } from '../../../../hooks/useOffline'
 import { completeSession, isActiveSession, useSession } from '../../../../hooks/useSessions'
-import { useTemplateVersion } from '../../../../hooks/useWorkoutTemplates'
-import { toDateInput, parseDateInput } from '../../../../utils/dateInput'
+import {
+    createWorkoutTemplate,
+    suggestedTemplateName,
+    templateExercisesFrom,
+    useTemplateVersion,
+} from '../../../../hooks/useWorkoutTemplates'
+import { DATE_INPUT_FORMAT, toDateInput, parseDateInput } from '../../../../utils/dateInput'
 import { compareSession, resolveTargets } from '../../../../utils/prescription'
 import {
     elapsedSecondsBetween,
+    formatDurationInput,
     formatElapsed,
     minutesFromSeconds,
     parseDurationInput,
@@ -172,11 +180,17 @@ const LiveSession = () => {
     const [planApplied, setPlanApplied] = useState(false)
     const [pickerOpen, setPickerOpen] = useState(false)
     const [finishing, setFinishing] = useState(false)
-    const [durationMinutes, setDurationMinutes] = useState('')
+    const [duration, setDuration] = useState('')
     const [date, setDate] = useState('')
     const [notes, setNotes] = useState('')
     const [error, setError] = useState('')
     const [saving, setSaving] = useState(false)
+    // Offered only on a Self-Directed Session (see the finish card below): a
+    // Session performed against a plan already has a Template, and saving a
+    // second copy of it under the Client's own name is how one workout becomes
+    // two that drift apart.
+    const [saveAsTemplate, setSaveAsTemplate] = useState(false)
+    const [templateName, setTemplateName] = useState('')
 
     // The clock. The interval moves `now` forward and nothing else: elapsed is
     // always (now - startedAt), so a tick lost to a backgrounded app, a throttled
@@ -312,12 +326,21 @@ const LiveSession = () => {
     const totalChecked = exercises.reduce((total, ex) => total + checkedCount(ex), 0)
     const totalSets = exercises.reduce((total, ex) => total + ex.sets.length, 0)
 
+    // Only a Session with no plan can become one. Read off the Session document
+    // rather than off `targets`, which is also null when a prescribed Version
+    // simply never reached the phone - offering to save that as a new Template
+    // would let a dropped read quietly fork the Trainer's workout.
+    const selfDirected = Boolean(session) && !session.templateId
+
     const openFinish = () => {
         setError('')
-        setDurationMinutes(String(minutesFromSeconds(elapsedSeconds)))
+        setDuration(formatDurationInput(elapsedSeconds))
         // The day it started, not the day it ends. A Session begun at 23:50 was
         // Tuesday's training however long it ran.
         setDate(toDateInput(session?.startedAt?.toDate?.() ?? new Date()))
+        // Named from what they actually did, and only once - reopening the card
+        // must not overwrite a name they have already typed.
+        setTemplateName((prev) => prev || suggestedTemplateName(exercises))
         setFinishing(true)
     }
 
@@ -348,7 +371,7 @@ const LiveSession = () => {
 
         const parsedDate = parseDateInput(date)
         if (!parsedDate) {
-            setError('Enter a valid date (YYYY-MM-DD).')
+            setError(`Enter a valid date (${DATE_INPUT_FORMAT}).`)
             return
         }
 
@@ -356,9 +379,19 @@ const LiveSession = () => {
         // saves as null - the duration wasn't recorded - rather than being
         // coerced to a 0-minute workout, which is a fact about training that
         // never happened.
-        const parsedDuration = parseDurationInput(durationMinutes)
-        if (parsedDuration === undefined) {
-            setError('Enter a duration in minutes, or leave it blank.')
+        const parsedSeconds = parseDurationInput(duration)
+        if (parsedSeconds === undefined) {
+            setError('Enter a duration as minutes and seconds (4:30), or leave it blank.')
+            return
+        }
+
+        // Checked before the Session is written, not after: a Template needs a
+        // name, and discovering that afterwards would mean the workout is
+        // already saved and this screen has already navigated away from it.
+        const wantsTemplate = selfDirected && saveAsTemplate
+        const trimmedTemplateName = templateName.trim()
+        if (wantsTemplate && !trimmedTemplateName) {
+            setError('Give the template a name, or untick "Save this as a template".')
             return
         }
 
@@ -367,7 +400,11 @@ const LiveSession = () => {
             await completeSession({
                 sessionId,
                 exercises: performed,
-                durationMinutes: parsedDuration,
+                // Seconds are what the box holds; the rounded minutes ride
+                // along so readers that only know `durationMinutes` keep
+                // working (see completeSession).
+                durationSeconds: parsedSeconds,
+                durationMinutes: parsedSeconds == null ? null : minutesFromSeconds(parsedSeconds),
                 notes: notes.trim(),
                 date: parsedDate,
                 // Judged once, here, and never again (ADR 0002). `targets` is
@@ -377,6 +414,29 @@ const LiveSession = () => {
                 // to compare against rather than nothing to say.
                 comparison: compareSession(performed, targets),
             })
+
+            // Second, and separately, because the two are not one operation.
+            // The Session is the record and it is now safely written; the
+            // Template is a convenience made out of it. A failure here - a
+            // connection that dropped between the two writes - must not read as
+            // "your workout wasn't saved", so it is reported on its own terms
+            // and the Client is still taken to the Session that did save.
+            //
+            // Not a batch for the same reason it is not one in
+            // createWorkoutTemplate: the version-create rule resolves its
+            // parent Template with get(), which cannot see a sibling write.
+            if (wantsTemplate) {
+                try {
+                    await createWorkoutTemplate({
+                        authorId: session.clientId,
+                        name: trimmedTemplateName,
+                        exercises: templateExercisesFrom(performed),
+                    })
+                } catch (err) {
+                    console.warn('[session] saved, but the template was not:', err)
+                }
+            }
+
             clearLiveSessionDraft(sessionId)
             // Replace, so the back gesture returns to the workout list rather
             // than to a live screen for a Session that is over. `saving` is
@@ -551,24 +611,29 @@ const LiveSession = () => {
                             </ThemedText>
 
                             <Spacer height={16} />
-                            <ThemedText variant="meta" tone="muted" style={styles.label}>Duration (minutes)</ThemedText>
+                            <ThemedText variant="meta" tone="muted" style={styles.label}>Duration</ThemedText>
                             {/* Defaulted from the timer and editable, because a phone
-                                left running through lunch should not ruin the record. */}
+                                left running through lunch should not ruin the record.
+                                Filled in the clock's own mm:ss so the figure offered
+                                here is character-for-character the one the Client has
+                                been watching in the header. */}
                             <ThemedTextInput
-                                value={durationMinutes}
-                                onChangeText={setDurationMinutes}
-                                keyboardType="numeric"
+                                value={duration}
+                                onChangeText={setDuration}
+                                placeholder="4:30"
+                                keyboardType="numbers-and-punctuation"
                                 editable={!saving}
                             />
 
                             <Spacer height={16} />
-                            <ThemedText variant="meta" tone="muted" style={styles.label}>Counts for</ThemedText>
-                            <ThemedTextInput
-                                value={date}
-                                onChangeText={setDate}
-                                placeholder="YYYY-MM-DD"
-                                editable={!saving}
-                            />
+                            {/* "Date", not "Counts for". The old label was
+                                explaining a rule - that a Session begun at
+                                23:50 counts for the day it started - and a
+                                form label is the wrong place to teach one:
+                                the box is prefilled correctly already, so
+                                nobody has to know. */}
+                            <ThemedText variant="meta" tone="muted" style={styles.label}>Date</ThemedText>
+                            <DateField value={date} onChange={setDate} editable={!saving} />
 
                             <Spacer height={16} />
                             <ThemedText variant="meta" tone="muted" style={styles.label}>Notes</ThemedText>
@@ -581,6 +646,52 @@ const LiveSession = () => {
                                 style={styles.notesInput}
                                 editable={!saving}
                             />
+
+                            {/* Only for a Session with no plan. One that ran a
+                                Template already has one, and the Client's
+                                answer to "do that again" is to start it again
+                                rather than to fork it. */}
+                            {selfDirected ? (
+                                <>
+                                    <Spacer height={16} />
+                                    <View style={[styles.templateRow, { borderColor: theme.line }]}>
+                                        <Checkbox
+                                            value={saveAsTemplate}
+                                            onPress={() => setSaveAsTemplate((prev) => !prev)}
+                                            disabled={saving}
+                                        />
+                                        <Pressable
+                                            onPress={() => setSaveAsTemplate((prev) => !prev)}
+                                            disabled={saving}
+                                            style={styles.templateLabel}
+                                        >
+                                            <ThemedText variant="body" tone="title">
+                                                Save this as a template
+                                            </ThemedText>
+                                            <ThemedText variant="small" tone="muted">
+                                                Keeps what you just did as a workout you can start again.
+                                            </ThemedText>
+                                        </Pressable>
+                                    </View>
+
+                                    {/* The name box appears only once the box is
+                                        ticked. An always-visible field would
+                                        read as required on a card whose whole
+                                        job is saving the Session. */}
+                                    {saveAsTemplate ? (
+                                        <>
+                                            <Spacer height={10} />
+                                            <ThemedTextInput
+                                                value={templateName}
+                                                onChangeText={setTemplateName}
+                                                placeholder="Name this workout"
+                                                autoCapitalize="words"
+                                                editable={!saving}
+                                            />
+                                        </>
+                                    ) : null}
+                                </>
+                            ) : null}
 
                             <Spacer height={16} />
                             {/* Said plainly before the button, not discovered
@@ -718,6 +829,19 @@ const styles = StyleSheet.create({
     },
     label: {
         marginBottom: 6,
+    },
+    templateRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: Space.md,
+        borderTopWidth: 1,
+        paddingTop: Space.md,
+    },
+    // The label is a tap target too - a 30px circle is a small thing to aim
+    // for mid-workout, and the words beside it are the obvious second one.
+    templateLabel: {
+        flex: 1,
+        gap: 2,
     },
     notesInput: {
         minHeight: 80,

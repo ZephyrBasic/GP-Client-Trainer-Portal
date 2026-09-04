@@ -7,6 +7,7 @@ import VerdictBadge, { SessionKindChip } from './VerdictBadge'
 import { Colors } from '../constants/Colors'
 import { Space } from '../constants/Layout'
 import { shortDateLabel } from '../utils/dateInput'
+import { sessionDurationLabel } from '../utils/elapsed'
 
 /**
  * One performed Session in a history list.
@@ -60,7 +61,7 @@ const WorkoutListItem = ({
     const theme = Colors[colorScheme] ?? Colors.light
     const exerciseCount = workout.exercises?.length ?? 0
     const dateLabel = workout.date?.toDate ? shortDateLabel(workout.date.toDate()) : 'Unknown date'
-    const duration = workout.durationMinutes
+    const duration = sessionDurationLabel(workout)
 
     const card = (
         <ThemedCard style={styles.card}>
@@ -73,7 +74,7 @@ const WorkoutListItem = ({
                         {dateLabel} · {exerciseCount} exercise{exerciseCount === 1 ? '' : 's'}
                         {/* Absent rather than zero: a duration nobody recorded is
                             not a workout that took no time. */}
-                        {duration != null ? ` · ${duration} min` : ''}
+                        {duration ? ` · ${duration}` : ''}
                     </ThemedText>
                 </View>
                 {/* One or the other, never both and never neither: a

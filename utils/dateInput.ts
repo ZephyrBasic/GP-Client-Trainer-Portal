@@ -1,5 +1,11 @@
 /**
- * The day a Session counts for, as a YYYY-MM-DD text box holds it.
+ * The day a Session counts for, as a DD-MM-YYYY text box holds it.
+ *
+ * Day-first because that is how this app's Clients write a date - the project
+ * is Australian, and 04-09-2026 read as the 9th of April is the kind of error
+ * nobody notices until a week's training is filed in the wrong month. The
+ * stored value is a Timestamp either way; this format is only ever what the box
+ * shows and what it accepts back.
  *
  * Both directions go through the **local** calendar, deliberately. The obvious
  * `new Date().toISOString().slice(0, 10)` is UTC, so it offers yesterday's date
@@ -16,9 +22,20 @@
 
 import { pad } from './pad'
 
-/** The date as the input holds it: YYYY-MM-DD, in the device's own calendar. */
+/** The shape the box shows and accepts, named once so the placeholder cannot drift from the parser. */
+export const DATE_INPUT_FORMAT = 'DD-MM-YYYY'
+
+/** The date as the input holds it: DD-MM-YYYY, in the device's own calendar. */
 export const toDateInput = (date: Date): string =>
-    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+    `${pad(date.getDate())}-${pad(date.getMonth() + 1)}-${date.getFullYear()}`
+
+/**
+ * "Friday 4 September" - the calendar's own heading for the day currently
+ * chosen, spelled out rather than repeated as digits directly under the box
+ * that already shows them. It is the read-back that catches a typo.
+ */
+export const longDateLabel = (date: Date): string =>
+    date.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' })
 
 /**
  * "29 Aug" - the Signal history row's date, read in the device's own calendar
@@ -38,9 +55,22 @@ export const shortDateLabel = (date: Date): string =>
  * accepts a good deal that was never a date at all.
  */
 export const parseDateInput = (value: string): Date | null => {
-    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec((value ?? '').trim())
+    // Separator-tolerant on the way in - 4/9/2026 and 04-09-2026 are the same
+    // date, and a box that rejects the slash a Client's phone keyboard offers
+    // first is a box that reads as broken. The day and month accept one digit
+    // for the same reason; `toDateInput` always writes two.
+    const match = /^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/.exec((value ?? '').trim())
     if (!match) return null
 
-    const parsed = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
-    return Number.isNaN(parsed.getTime()) ? null : parsed
+    const [, day, month, year] = match.map(Number)
+    const parsed = new Date(year, month - 1, day)
+    if (Number.isNaN(parsed.getTime())) return null
+
+    // `new Date(2026, 1, 31)` is the 3rd of March, silently. Reading the parts
+    // back is what makes "31-02-2026" a rejected date rather than a surprising
+    // one - the same strictness the YYYY-MM-DD regex used to get for free from
+    // its fixed widths.
+    return parsed.getDate() === day && parsed.getMonth() === month - 1 && parsed.getFullYear() === year
+        ? parsed
+        : null
 }
