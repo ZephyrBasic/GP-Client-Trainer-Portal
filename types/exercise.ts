@@ -116,10 +116,6 @@ export interface CustomExerciseRecord {
  */
 export type AnyExerciseRecord = ExerciseRecord | CustomExerciseRecord
 
-/** Narrows to a trainer-authored record. */
-export const isCustomExercise = (exercise: AnyExerciseRecord): exercise is CustomExerciseRecord =>
-    (exercise as CustomExerciseRecord).isCustom === true
-
 /**
  * Reads one facet's values off a record's tags.
  *

@@ -7,7 +7,9 @@ import SectionLabel from './SectionLabel'
 import { Space } from '../constants/Layout'
 import type { WeeklyCompletion } from '../utils/weeklyCompletion'
 
-export type WeeklyBreakdownItem = {
+// Private: it is the shape of one prop on this card and nothing outside it
+// has ever named the type.
+type WeeklyBreakdownItem = {
     /** The Template's name, denormalised by the caller so this card needs no read of its own. */
     name: string
     done: number

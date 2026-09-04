@@ -169,11 +169,11 @@ const ExerciseSetEditor = ({
         <ThemedCard>
             <View style={styles.headerRow}>
                 <View style={styles.nameWrap}>
-                    <ThemedText title={true} style={styles.name}>
+                    <ThemedText variant="cardTitle" tone="title" style={styles.name}>
                         {name}
                     </ThemedText>
                     {hint ? (
-                        <ThemedText meta={true} style={styles.hint}>
+                        <ThemedText variant="meta" tone="muted" style={styles.hint}>
                             {hint}
                         </ThemedText>
                     ) : null}
@@ -193,7 +193,7 @@ const ExerciseSetEditor = ({
                         headings sit above the boxes they name. */}
                     <View style={styles.lead} />
                     {fields.map((field) => (
-                        <ThemedText key={field} meta={true} style={styles.columnLabel}>
+                        <ThemedText key={field} variant="meta" tone="muted" style={styles.columnLabel}>
                             {FIELD_LABELS[field]}
                         </ThemedText>
                     ))}
@@ -203,7 +203,7 @@ const ExerciseSetEditor = ({
                 {sets.map((set, setIndex) => (
                     <View key={setIndex} style={styles.row}>
                         <View style={styles.lead}>
-                            <ThemedText meta={true} style={styles.setNumber}>
+                            <ThemedText variant="meta" tone="muted" style={styles.setNumber}>
                                 {setIndex + 1}
                             </ThemedText>
                         </View>

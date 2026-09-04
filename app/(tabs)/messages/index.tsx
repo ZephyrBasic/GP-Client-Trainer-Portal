@@ -48,7 +48,7 @@ const TrainerChatList = ({ trainerId, router }) => {
                         }
                     >
                         <ThemedCard>
-                            <ThemedText title={true} style={styles.name}>
+                            <ThemedText variant="cardTitle" tone="title" style={styles.name}>
                                 {item.client.name}
                             </ThemedText>
                             <ThemedText numberOfLines={1} style={styles.preview}>

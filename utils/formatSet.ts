@@ -53,12 +53,15 @@ export const targetSummary = (sets) => {
     return summary && `Target: ${summary}`
 }
 
-export const formatDuration = (seconds) => {
+// Both of these are private: a Set's duration and distance are only ever
+// rendered through formatSet above, and exporting them invited a second
+// spelling of the same unit somewhere else.
+const formatDuration = (seconds) => {
     if (seconds < 60) return `${seconds}s`
     const minutes = Math.floor(seconds / 60)
     const rest = seconds % 60
     return rest ? `${minutes}m ${rest}s` : `${minutes}m`
 }
 
-export const formatDistance = (metres) =>
+const formatDistance = (metres) =>
     metres >= 1000 ? `${(metres / 1000).toFixed(metres % 1000 === 0 ? 0 : 2)} km` : `${metres} m`

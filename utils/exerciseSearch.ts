@@ -62,10 +62,6 @@ export const buildIndex = (exercises) =>
 // custom exercises are indexed separately by the caller and passed in as `extra`.
 const INDEX = buildIndex(EXERCISES)
 
-const BY_ID = new Map(EXERCISES.map((exercise) => [exercise.id, exercise]))
-
-export const getExerciseById = (id) => BY_ID.get(id) ?? null
-
 export const allExercises = EXERCISES
 
 /**
@@ -139,11 +135,6 @@ export const tagValues = (exercise, facet) => {
         .filter((tag) => tag.startsWith(prefix))
         .map((tag) => tag.slice(prefix.length))
 }
-
-// The job an exercise does in a session - what the picker groups and labels by.
-export const roleOf = (exercise) => tagValues(exercise, 'role')[0] ?? null
-
-export const hasTag = (exercise, tag) => (exercise?.tags ?? []).includes(tag)
 
 // A tag value or a facet name, read for a person: 'lower-back' -> 'Lower Back'.
 // Shared by the picker's facet sheet and ExerciseInfoModal, which both turned

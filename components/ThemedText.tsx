@@ -34,38 +34,26 @@ const toneColor = (theme: (typeof Colors)['dark'], tone: TextTone) => {
  * screen title in the danger tone during a destructive confirm is still the
  * `title` variant.
  *
- * `title` and `meta` are the two boolean props this component shipped with
- * before Signal, and they stay - about thirty screens pass them, and none of
- * those screens has been touched yet. Both alias onto the token system rather
- * than being a separate code path: `title` is `variant="cardTitle"
- * tone="title"`, `meta` is `variant="meta" tone="muted"`. An explicit
- * `variant` or `tone` wins over either boolean, so a screen can be migrated
- * one prop at a time without the two ever fighting.
+ * There were two boolean props here as well - `title` and `meta`, from before
+ * Signal - kept while the redesign migrated the screens that passed them. It
+ * finished, and the last five call sites are now spelled in the tokens like
+ * everything else, so the aliases are gone: two ways to say `variant="meta"
+ * tone="muted"` is one more than the design system needs.
  */
 const ThemedText = ({
     style,
-    title = false,
-    meta = false,
-    variant,
-    tone,
+    variant = 'body',
+    tone = 'body',
     ...props
 }: TextProps & {
-    title?: boolean
-    meta?: boolean
     variant?: TextVariant
     tone?: TextTone
 }) => {
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
 
-    const resolvedVariant: TextVariant = variant ?? (title ? 'cardTitle' : meta ? 'meta' : 'body')
-    const resolvedTone: TextTone = tone ?? (title ? 'title' : meta ? 'muted' : 'body')
-
     return (
-        <Text
-            style={[Type[resolvedVariant], { color: toneColor(theme, resolvedTone) }, style]}
-            {...props}
-        />
+        <Text style={[Type[variant], { color: toneColor(theme, tone) }, style]} {...props} />
     )
 }
 export default ThemedText
