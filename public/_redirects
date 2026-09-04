@@ -1,7 +1,0 @@
-# Cloudflare Pages SPA fallback. `expo export -p web` emits a single index.html
-# (app.json sets no web.output, so the export is a client-rendered SPA), which
-# means every route below the root - /workouts/templates, /clients/[id] - exists
-# only once expo-router boots. Without this line a refresh or a shared deep link
-# asks Pages for a file that was never written and gets a 404. Files in public/
-# are copied to the export root, so this ships in dist/ untouched.
-/*    /index.html    200
