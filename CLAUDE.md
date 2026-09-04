@@ -24,20 +24,20 @@ and shipping a build.
 
 ### Known divergences between the glossary and the code
 
-`CONTEXT.md` is authoritative and the code has not caught up. Both of these are deliberate — don't
-"fix" either side to match the other without a decision:
+`CONTEXT.md` is authoritative and the code has not caught up. This one is deliberate — don't "fix"
+either side to match the other without a decision:
 
-- **Work Volume** is defined per-Exercise and never summed across Exercises, but
-  `utils/workoutStats.ts` still totals across them: `volumeForWorkout` for the per-Session figure on
-  the Trainer's Client review screen. That predates the term and is left as shipped on purpose.
-  `components/WorkoutSummaryCard.tsx`, which used the same file to show a Client's this-week and
-  all-time totals, is gone as of phase 12 (Signal) - not because the divergence was resolved, but
-  because Signal's Today and History draw no cross-session summary at all.
 - **Session** is the domain term for a performed workout. The collection and its hook now match
   (`sessions`, `hooks/useSessions.ts`), but the **routes deliberately do not**: the Workouts tab
   (`app/(tabs)/workouts/`) is named for the tab, not for the collection, and now holds both a
   Client's session history and the Trainer's `templates/` authoring routes. Renaming the folder
   would produce `sessions/templates/`, which is wrong. URL segments stay `workouts`.
+
+The **Work Volume** divergence that used to sit above this is resolved. `utils/workoutStats.ts`
+summed Work Volume across Exercises, which CONTEXT.md is explicit that the term does not mean; that
+arithmetic fed one summary card and one figure on the Trainer's review screen, and phase 12 (Signal)
+removed both screens without removing the code. It is now deleted down to `sessionsThisWeek`, so
+the glossary and the code agree again — see the module comment before growing a summary back.
 
 ## What this is
 
@@ -55,9 +55,19 @@ npm start                # expo start (all platforms)
 npm run web              # expo start --web — the usual dev loop (port 8081, see .claude/launch.json)
 npm run ios / android
 
+npm run build:web        # expo export -p web, then scripts/fix-web-assets.js — what Pages must run
 firebase deploy --only firestore:rules     # after editing firestore.rules
 firebase deploy --only storage             # after editing storage.rules
 ```
+
+**`npm run build:web` is the deploy build, not `expo export` on its own.** Cloudflare Pages skips
+`node_modules` when it uploads a build output, and `expo export` names every asset by its path from
+the project root — so all four font files and the Ionicons glyph file land under
+`dist/assets/node_modules/…` and are never uploaded. Nothing 404s (with no top-level `404.html`,
+Pages answers an unmatched path with `index.html`), so the fonts come back as 200 `text/html` and
+the whole web app silently renders in the system serif with tofu boxes for icons.
+`scripts/fix-web-assets.js` moves that directory to `assets/pkg/` and rewrites the bundle's
+references; `--check` fails an export that still needs it.
 
 Exercise catalog and its tooling:
 
