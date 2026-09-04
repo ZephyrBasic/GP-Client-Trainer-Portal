@@ -305,7 +305,7 @@ const AssignTemplate = () => {
                                             >
                                                 {customised > 0
                                                     ? `Own target loads on ${customised} exercise${customised === 1 ? '' : 's'} →`
-                                                    : 'Set their own target loads →'}
+                                                    : 'Set their target loads →'}
                                             </ThemedText>
                                         </Pressable>
                                         {confirming ? null : (

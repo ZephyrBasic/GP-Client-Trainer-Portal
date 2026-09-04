@@ -81,7 +81,16 @@ const styles = StyleSheet.create({
     btn: {
         padding: Space.md,
         borderWidth: 1,
+        // Both axes. `alignItems` alone centred the label horizontally and left
+        // it stacked from the top, which is invisible on a button sized by its
+        // own padding - every button here but one - and glaring on the live
+        // Session's FINISH, which sets a fixed height to match the back button
+        // beside it and zeroes the padding to do it. Centring belongs here
+        // rather than on that one caller: a button that does not centre its own
+        // label is the surprising thing, and the next fixed-height button would
+        // have hit this too.
         alignItems: 'center',
+        justifyContent: 'center',
         width: '100%',
     },
     filled: {
