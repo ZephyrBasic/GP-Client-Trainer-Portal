@@ -45,6 +45,20 @@ export const emptySetDraft = (fields: SetField[]): SetDraft =>
     fields.reduce((acc, field) => ({ ...acc, [field]: '' }), {})
 
 /**
+ * The row "+ Add set" opens: the one above it, copied.
+ *
+ * Only the measurements the Exercise declares are carried across, so a copied
+ * row can never smuggle in a field its Exercise doesn't measure - the same
+ * guarantee `emptySetDraft` gives, which is what this falls back to when there
+ * is no previous row (a freshly picked Exercise) or the previous row is blank
+ * in every field. Copying blank boxes onto blank boxes is the same as opening
+ * blank ones, so the fallback costs nothing and keeps the "no previous row"
+ * case from needing its own branch at every call site.
+ */
+export const repeatSetDraft = (previous: SetDraft | undefined, fields: SetField[]): SetDraft =>
+    fields.reduce((acc, field) => ({ ...acc, [field]: previous?.[field] ?? '' }), {})
+
+/**
  * Opens a stored Set for editing. An absent measurement becomes an empty box
  * rather than "0", so a bodyweight movement doesn't gain a weight the moment
  * someone looks at it.

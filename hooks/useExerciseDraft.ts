@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import type { AnyExerciseRecord, SetField } from '../types/exercise'
 import { fieldsFor } from '../utils/exerciseSearch'
-import { emptySetDraft, setDraftFrom } from '../utils/setDraft'
+import { emptySetDraft, repeatSetDraft, setDraftFrom } from '../utils/setDraft'
 import type { ExerciseWithSets, SetDraft } from '../utils/setDraft'
 
 /**
@@ -120,6 +120,25 @@ export const useExerciseDraft = (initial: ExerciseDraft[] = [], newRow?: NewRow)
             sets: ex.sets.map((set, j) => (j === setIndex ? { ...set, [field]: value } : set)),
         }))
 
+    // A new Set opens as a copy of the one above it rather than as empty boxes.
+    // Sets within an Exercise repeat far more often than they differ - five at
+    // the same load is the ordinary case - so the blank row was asking for the
+    // same three numbers to be retyped four times, mid-workout, on a phone.
+    // Carrying them forward makes the common case no typing at all and the
+    // uncommon one exactly as much typing as before.
+    //
+    // Copied from the *last* row rather than from any target, on every screen
+    // that adds Sets: authoring a Template repeats the load the author just
+    // set, and a Client adding a sixth Set mid-Session repeats what they
+    // actually just lifted, which is a better guess than the prescription they
+    // may already have departed from. A first row on a freshly picked Exercise
+    // is still `emptySetDraft` (see pickExercise) - there is nothing above it
+    // to copy.
+    //
+    // It is a *default*, not a claim: every field stays editable, and the live
+    // Session's new row still arrives unticked, so a copied number is only ever
+    // recorded once the Client ticks it off.
+    //
     // `checked` is parallel to `sets`, so adding or dropping a Set has to carry
     // it - otherwise the ticks slide onto the wrong rows. It is only rewritten
     // when the row already has one: a Template row must not grow a checkbox
@@ -128,7 +147,7 @@ export const useExerciseDraft = (initial: ExerciseDraft[] = [], newRow?: NewRow)
     const addSet = (exIndex: number) =>
         mapExercise(exIndex, (ex) => ({
             ...ex,
-            sets: [...ex.sets, emptySetDraft(ex.fields)],
+            sets: [...ex.sets, repeatSetDraft(ex.sets[ex.sets.length - 1], ex.fields)],
             ...(ex.checked ? { checked: [...ex.checked, false] } : null),
         }))
 
