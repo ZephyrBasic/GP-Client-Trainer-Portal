@@ -31,6 +31,25 @@ import { clearLiveSessionDraft } from '../../utils/liveSessionDraft'
 import { sessionsThisWeek } from '../../utils/workoutStats'
 
 /**
+ * A Trainer's name with the honorific in front of it, said once.
+ *
+ * "PT" is ours to add, not theirs to type - but nothing stops a Trainer typing
+ * it anyway, and the seeded fixture accounts are literally named "PT Zephyr"
+ * and "PT Patrick", so prefixing unconditionally rendered "PT PT Patrick" in
+ * both places this screen names them. Adding the prefix only when it isn't
+ * already there fixes those without asking anyone to rename an account, and
+ * keeps working for a Trainer who signs up as plain "Patrick".
+ *
+ * Deliberately narrow: it matches the honorific alone at the start of the
+ * name, with or without dots, and leaves everything else alone. A Trainer
+ * genuinely called "Pat" keeps their name.
+ */
+const PT_PREFIX = /^p\.?\s*t\.?\s+/i
+
+const trainerLabel = (name?: string | null): string | null =>
+    name ? `PT ${name.replace(PT_PREFIX, '')}` : null
+
+/**
  * The raised hero: whichever Assignment is furthest behind its Target
  * Frequency this week, expressed as a ratio of done-to-target and nothing
  * else. Ordering only - nothing here is ever "overdue" (ADR 0001), so a
@@ -196,12 +215,9 @@ const Today = () => {
     // would read as a very oddly named trainer rather than an unknown one.
     const trainerPillLabel = trainerLoading
         ? 'Loading...'
-        : trainerName
-          ? `PT ${trainerName}`
-          : trainerOffline
-            ? 'Unavailable offline'
-            : 'Your trainer'
-    const heroFromLabel = trainerName ? `PT ${trainerName}` : null
+        : trainerLabel(trainerName) ??
+          (trainerOffline ? 'Unavailable offline' : 'Your trainer')
+    const heroFromLabel = trainerLabel(trainerName)
 
     const [starting, setStarting] = useState(false)
     const [discarding, setDiscarding] = useState(false)
