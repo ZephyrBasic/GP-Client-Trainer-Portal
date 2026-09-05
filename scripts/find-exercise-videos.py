@@ -48,9 +48,13 @@ ROOT = Path(__file__).resolve().parent.parent
 CATALOG = ROOT / "constants" / "exercises.json"
 OUT = ROOT / "constants" / "videoCandidates.json"
 
-# The house rule from scripts/videoSources.js. A candidate inside this window
+# The house rule from scripts/videoSources.js. A candidate at or under this
 # plays whole; a longer one needs a hand-authored clip window, so it ranks below.
-CLIP_MIN, CLIP_MAX = 15, 45
+#
+# There is deliberately no minimum. The old rule floored candidates at 15s and
+# penalised anything shorter as "too short to show the movement", which is not
+# true - a calf raise is fully demonstrated in eight seconds. See docs/adr/0006.
+DEMO_MAX = 60
 
 # Beyond this a video is a lecture or a full workout, not a demo of one movement.
 MAX_USABLE = 900
@@ -207,23 +211,14 @@ def score(candidate, exercise, channel_freq):
 
     if duration is None:
         points -= 25                              # live stream or premiere
-    elif CLIP_MIN <= duration <= CLIP_MAX:
+    elif duration <= DEMO_MAX:
         points += 35                              # plays whole, no clip needed
-    elif duration < CLIP_MIN:
-        points -= 15                              # too short to show the movement
     elif duration <= 180:
-        points += 12                              # easy to find 30s inside
+        points += 12                              # easy to find a minute inside
     elif duration <= MAX_USABLE:
         points -= 5                               # usable but needs hunting
     else:
         points -= 40
-
-    # A Short is vertical, wordless and about the movement - which is what a
-    # client wants mid-set - and it carries its own length into the catalog
-    # (see search_youtube). Additive to the duration points above rather than
-    # instead of them: a bad Short is still a bad demo.
-    if candidate.get("isShort"):
-        points += 10
 
     if GOOD_TITLE.search(title):
         points += 15
@@ -255,21 +250,24 @@ def search(query, count):
         if not entry or not entry.get("id"):
             continue
 
-        # A Short keeps its /shorts/ link rather than being flattened to a
-        # youtu.be one. Both play identically - utils/videoUrl.ts pulls the id
-        # out of either - but the link shape is the only record of length that
-        # survives into the catalog, and it is what lets
-        # `verify-videos.js --long` name the demos that still need trimming
-        # without an API key. Flattening every URL threw that away.
-        shorts = "/shorts/" in (entry.get("webpage_url") or "")
+        # No Shorts detection here, deliberately. This used to read
+        #     shorts = "/shorts/" in (entry.get("webpage_url") or "")
+        # which never once evaluated true: under extract_flat, yt-dlp leaves
+        # `webpage_url` as None and always reports `url` in watch?v= form,
+        # whatever the video is. So `isShort` was permanently False, the +10
+        # ranking bonus for a Short was dead code, and no /shorts/ link was ever
+        # written - which is precisely why the catalog ended up with 308
+        # full-length demos and a single hand-added Short.
+        #
+        # It was not worth repairing. Shorts turn out to be unreachable from
+        # ytsearch at all: 0 of 63 under-60s candidates across three movements
+        # were true Shorts, including from explicit "#shorts" queries, because
+        # YouTube serves them in a separate search shelf the flat extractor does
+        # not read. Length is what the house rule actually cares about, and
+        # `duration` below is reliable and gets recorded. See docs/adr/0006.
         out.append({
             "videoId": entry["id"],
-            "url": (
-                f"https://www.youtube.com/shorts/{entry['id']}"
-                if shorts
-                else f"https://youtu.be/{entry['id']}"
-            ),
-            "isShort": shorts,
+            "url": f"https://youtu.be/{entry['id']}",
             "title": entry.get("title"),
             "duration": entry.get("duration"),
             "channel": entry.get("channel") or entry.get("uploader"),
@@ -379,7 +377,7 @@ def main():
                     continue
                 seen.add(c["videoId"])
                 c["score"] = score(c, exercise, channel_freq)
-                c["fitsWindow"] = c["duration"] is not None and CLIP_MIN <= c["duration"] <= CLIP_MAX
+                c["fitsWindow"] = c["duration"] is not None and 0 < c["duration"] <= DEMO_MAX
                 unique.append(c)
             row["candidates"] = sorted(unique, key=lambda c: -c["score"])
 
@@ -389,7 +387,7 @@ def main():
         tmp = OUT.with_suffix(".json.tmp")
         tmp.write_text(json.dumps({
             "generatedBy": "scripts/find-exercise-videos.py",
-            "clipWindowSeconds": [CLIP_MIN, CLIP_MAX],
+            "demoMaxSeconds": DEMO_MAX,
             "note": "Staging only - unreviewed search results. Promote with scripts/promote-videos.js.",
             "exercises": ordered,
         }, indent=2) + "\n", encoding="utf-8")
@@ -421,7 +419,7 @@ def main():
 
     print(f"\n{len(ordered)} exercises written to {OUT.relative_to(ROOT)}")
     print(f"  with at least one candidate:      {with_any}")
-    print(f"  with one inside the {CLIP_MIN}-{CLIP_MAX}s window: {with_fit}")
+    print(f"  with one at or under {DEMO_MAX}s:            {with_fit}")
     if failed:
         print(f"  searches that errored ({len(failed)}): {', '.join(failed[:10])}")
     top = sorted(channel_freq.items(), key=lambda kv: -kv[1])[:12]

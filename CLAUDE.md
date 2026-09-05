@@ -78,6 +78,7 @@ node scripts/validate-exercises.js --stats # ... plus facet coverage
 npm run gen:types                          # after editing scripts/exerciseVocab.js
 
 npm run verify:videos                      # how-to demo coverage; offline
+npm run verify:videos -- --long            # ... demos over 60s, or of unknown length; offline
 npm run verify:videos -- --oembed          # ... live/embeddable check, no API key
 npm run verify:videos -- --online          # ... duration + channel checks (needs YOUTUBE_API_KEY)
 npm run verify:videos -- --learn           # print each video's channel, to seed APPROVED_CHANNELS
@@ -85,7 +86,19 @@ npm run verify:videos -- --learn           # print each video's channel, to seed
 python scripts/find-exercise-videos.py     # search YouTube -> constants/videoCandidates.json (gitignored)
 node scripts/promote-videos.js --dry       # preview which candidates enter the catalog
 node scripts/promote-videos.js             # ... and write them in
+
+node scripts/review-catalog.js             # the human review pass: opens a local page
+node scripts/review-catalog.js --all       # ... revisiting records already decided
 ```
+
+**`review-catalog.js` is where a demo is chosen, not `promote-videos.js`.** The
+harvester ranks and `promote-videos.js` seeds a best guess, but no score can tell whether a clip
+shows the movement, or whether a record's name and tags are *right* rather than merely well-formed.
+The review page plays each demo, offers the ranked alternatives, and writes the verdict into the
+catalog as it is made — progress is saved per record, so it is resumable across sittings. Verdicts
+live in `.claude/review-state.json` (disposable); everything that outlives the pass is in the
+catalog, and git is the undo. The demo house rule and why it is a ceiling with no floor are in
+`docs/adr/0006`.
 
 Against the live Firebase project, with the Admin SDK. These touch real data — **Zephyr runs
 these, not the assistant**. Credentials come from `secrets/service-account.json`, pointed at by

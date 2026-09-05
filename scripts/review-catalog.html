@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Exercise catalog review</title>
+<style>
+  :root {
+    --bg: #14161a;
+    --panel: #1c1f26;
+    --panel-2: #232733;
+    --line: #2e333f;
+    --text: #e6e9ef;
+    --dim: #949cad;
+    --accent: #4ade80;
+    --warn: #fbbf24;
+    --bad: #f87171;
+    --link: #7dd3fc;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  header {
+    display: flex; align-items: center; gap: 16px;
+    padding: 10px 18px; border-bottom: 1px solid var(--line); background: var(--panel);
+    position: sticky; top: 0; z-index: 5;
+  }
+  header h1 { font-size: 14px; font-weight: 600; margin: 0; letter-spacing: .02em; }
+  .bar { flex: 1; height: 6px; background: var(--panel-2); border-radius: 99px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .2s; }
+  .counts { color: var(--dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  main { display: grid; grid-template-columns: minmax(0,1.25fr) minmax(360px,1fr); gap: 18px; padding: 18px; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+
+  .stage { background: #000; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .stage .frame { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; }
+  .stage iframe, .stage video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .stage .none {
+    position: absolute; inset: 0; display: grid; place-content: center;
+    color: var(--dim); text-align: center; padding: 20px;
+  }
+  .vmeta { display: flex; gap: 10px; align-items: baseline; padding: 10px 12px; background: var(--panel); border-top: 1px solid var(--line); }
+  .vmeta .t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .vmeta a { color: var(--link); text-decoration: none; }
+
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+  .card h2 { margin: 0 0 4px; font-size: 20px; }
+  .slug { color: var(--dim); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; }
+
+  .pill {
+    display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 12px;
+    background: var(--panel-2); border: 1px solid var(--line); margin: 2px 4px 2px 0;
+  }
+  .pill.ok  { color: var(--accent); border-color: #2f6f4a; }
+  .pill.warn{ color: var(--warn);   border-color: #6b5620; }
+  .pill.bad { color: var(--bad);    border-color: #6f3434; }
+
+  .flag { border-left: 3px solid var(--warn); background: #241f14; padding: 10px 12px; border-radius: 0 8px 8px 0; margin-top: 10px; }
+  .flag b { color: var(--warn); }
+  .flag ul { margin: 6px 0 0; padding-left: 18px; }
+
+  .cands { max-height: 210px; overflow-y: auto; border: 1px solid var(--line); border-radius: 8px; }
+  .cand { display: flex; gap: 8px; padding: 6px 10px; border-bottom: 1px solid var(--line); cursor: pointer; align-items: baseline; }
+  .cand:last-child { border-bottom: 0; }
+  .cand:hover { background: var(--panel-2); }
+  .cand.sel { background: #1d3326; }
+  .cand .d { color: var(--dim); font-variant-numeric: tabular-nums; width: 44px; flex: none; }
+  .cand .n { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cand.over .d { color: var(--bad); }
+
+  kbd {
+    background: var(--panel-2); border: 1px solid var(--line); border-bottom-width: 2px;
+    border-radius: 4px; padding: 1px 6px; font: 12px ui-monospace, Consolas, monospace;
+  }
+  .keys { display: flex; flex-wrap: wrap; gap: 12px; color: var(--dim); padding: 0 18px 24px; }
+
+  .editor { display: none; }
+  .editor.on { display: block; }
+  .editor input[type=text] {
+    width: 100%; background: var(--panel-2); border: 1px solid var(--line); color: var(--text);
+    border-radius: 6px; padding: 8px 10px; font-size: 15px;
+  }
+  .facet { margin-top: 10px; }
+  .facet > div:first-child { color: var(--dim); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 4px; }
+  .chip {
+    display: inline-block; padding: 3px 9px; margin: 2px 4px 2px 0; border-radius: 99px;
+    background: var(--panel-2); border: 1px solid var(--line); font-size: 12px; cursor: pointer; user-select: none;
+  }
+  .chip.on { background: #1d3326; border-color: #2f6f4a; color: var(--accent); }
+  .row { display: flex; gap: 8px; margin-top: 12px; }
+  button {
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 6px; padding: 7px 12px; cursor: pointer; font-size: 13px;
+  }
+  button.primary { background: #1d3326; border-color: #2f6f4a; color: var(--accent); }
+  button.danger  { background: #2b1a1a; border-color: #6f3434; color: var(--bad); }
+  .done { text-align: center; padding: 80px 20px; color: var(--dim); }
+  .toast {
+    position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px;
+    padding: 8px 14px; opacity: 0; transition: opacity .18s; pointer-events: none;
+  }
+  .toast.on { opacity: 1; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Catalog review</h1>
+  <div class="bar"><i id="progress"></i></div>
+  <div class="counts" id="counts">loading…</div>
+</header>
+
+<main id="main"></main>
+<div class="keys" id="keys"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = (id) => document.getElementById(id)
+let S = null          // server payload
+let queue = []        // records still in play, in catalog order
+let pos = 0           // where we are in `queue`
+let pick = 0          // which candidate is showing for the current record
+let clip = null       // { start, end } while trimming the current candidate
+let editing = false
+let armedDelete = false
+
+const YT = /(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/))([A-Za-z0-9_-]{6,})/
+const ytId = (url) => (String(url || '').match(YT) || [])[1] || null
+const isMedia = (url) => /\.(mp4|m4v|mov|webm)(\?|$)/i.test(String(url || ''))
+
+const toast = (msg) => {
+  const t = $('toast'); t.textContent = msg; t.classList.add('on')
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 1400)
+}
+
+async function load () {
+  S = await (await fetch('/api/state')).json()
+  queue = S.queue.slice()
+  // Resume where the last sitting stopped: the first record with no verdict.
+  // With --all or --skipped every record in the queue is in play, so start at
+  // the top. findIndex returns -1 when everything is decided, which must land
+  // past the end to show the done screen - clamping it to 0 instead put the
+  // reviewer back on record 1 of a finished pass.
+  const next = queue.findIndex((r) => !r.decision)
+  pos = S.reviewAll ? 0 : (next === -1 ? queue.length : next)
+  render()
+}
+
+const decidedCount = () => queue.filter((r) => r.decision).length
+
+function currentCandidate () {
+  const r = queue[pos]
+  if (!r || !r.candidates.length) return null
+  return r.candidates[Math.min(pick, r.candidates.length - 1)] || null
+}
+
+function videoHtml (c) {
+  if (!c) return '<div class="none">No demo, and no candidate found.<br>Accept to leave it without one.</div>'
+  const id = ytId(c.url)
+  if (id) {
+    const p = new URLSearchParams({
+      autoplay: '1', mute: '1', loop: '1', playlist: id,
+      rel: '0', modestbranding: '1', playsinline: '1',
+    })
+    // The clip window previews as you set it, so the number you save is one you
+    // have actually watched rather than one you estimated from the scrubber.
+    if (clip) { p.set('start', String(clip.start)); p.set('end', String(clip.end)) }
+    // Muted, because a browser refuses to autoplay with sound - and a form demo
+    // does not need any. Looping, so a short clip repeats while you look at it.
+    return `<iframe src="https://www.youtube-nocookie.com/embed/${id}?${p}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`
+  }
+  if (isMedia(c.url)) return `<video src="${c.url}" autoplay muted loop controls playsinline></video>`
+  return '<div class="none">Not a playable link.</div>'
+}
+
+/** The effective length the validator will judge: the window if set, else the video. */
+function effective (c) {
+  if (clip) return clip.end - clip.start
+  return c && c.duration != null ? c.duration : null
+}
+
+function lenPill (c) {
+  if (!c) return ''
+  const eff = effective(c)
+  if (eff == null) return '<span class="pill warn">length unknown</span>'
+  const over = eff > S.maxSeconds
+  const label = clip ? `${eff}s clipped` : `${eff}s`
+  return `<span class="pill ${over ? 'bad' : 'ok'}">${label}${over ? ` — over ${S.maxSeconds}s` : ''}</span>`
+}
+
+function render () {
+  const total = queue.length
+  const done = decidedCount()
+  $('progress').style.width = total ? `${(done / total) * 100}%` : '0%'
+  $('counts').textContent = `${done} / ${total} decided`
+  $('keys').innerHTML = [
+    ['A / Enter', 'accept'], ['J / →', 'next demo'], ['K / ←', 'previous demo'],
+    ['E', 'edit'], ['S / Space', 'skip'], ['X', 'no demo'], ['D D', 'delete record'],
+    ['B', 'back'], ['N', 'forward'],
+  ].map(([k, v]) => `<span><kbd>${k}</kbd> ${v}</span>`).join('')
+
+  if (pos >= queue.length) {
+    $('main').innerHTML = `<div class="done" style="grid-column:1/-1">
+      <h2>All ${total} records decided.</h2>
+      <p>Run <code>node scripts/validate-exercises.js</code> and <code>node scripts/verify-videos.js</code>,
+      then commit.</p>
+      <p>Re-open with <code>--all</code> to go through them again.</p></div>`
+    return
+  }
+
+  const r = queue[pos]
+  const ex = r.exercise
+  const c = currentCandidate()
+
+  const tagsByFacet = {}
+  for (const t of ex.tags) {
+    const [f, ...rest] = t.split(':')
+    ;(tagsByFacet[f] ||= []).push(rest.join(':'))
+  }
+
+  $('main').innerHTML = `
+    <div>
+      <div class="stage">
+        <div class="frame">${videoHtml(c)}</div>
+        <div class="vmeta">
+          <div class="t">${c ? escape_(c.title || '(untitled)') : '—'}</div>
+          ${lenPill(c)}
+          ${c ? `<a href="${c.url}" target="_blank" rel="noreferrer">open ↗</a>` : ''}
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <b>Demo ${r.candidates.length ? pick + 1 : 0} of ${r.candidates.length}</b>
+          <span class="slug">${c && c.channel ? escape_(c.channel) : ''}${c && c.current ? ' — currently in the catalog' : ''}</span>
+        </div>
+        <div class="cands" style="margin-top:8px">
+          ${r.candidates.map((x, i) => `
+            <div class="cand ${i === pick ? 'sel' : ''} ${x.duration != null && x.duration > S.maxSeconds ? 'over' : ''}" data-i="${i}">
+              <span class="d">${x.duration == null ? '?' : x.duration + 's'}</span>
+              <span class="n">${escape_(x.title || x.url)}</span>
+            </div>`).join('') || '<div class="cand"><span class="n">no candidates harvested</span></div>'}
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2 id="nameShow">${escape_(ex.name)}</h2>
+        <div class="slug">${ex.id}</div>
+        <div style="margin-top:10px">
+          ${ex.fields.map((f) => `<span class="pill ok">${f}</span>`).join('')}
+        </div>
+        <div style="margin-top:6px">
+          ${Object.entries(tagsByFacet).map(([f, vs]) =>
+            vs.map((v) => `<span class="pill">${f}:${v}</span>`).join('')).join('')}
+        </div>
+        ${r.flags ? `<div class="flag"><b>Flagged</b><ul>${
+          (r.flags.notes || []).map((n) => `<li>${escape_(n)}</li>`).join('')
+        }</ul></div>` : ''}
+        ${r.decision ? `<div style="margin-top:10px" class="slug">already ${r.decision.verdict}</div>` : ''}
+      </div>
+
+      <div class="card editor" id="editor">
+        <div class="slug">NAME</div>
+        <input type="text" id="nameEdit" value="${escape_(ex.name)}">
+        <div class="facet"><div>FIELDS</div><div id="fieldChips">
+          ${S.fields.map((f) => `<span class="chip ${ex.fields.includes(f) ? 'on' : ''}" data-f="${f}">${f}</span>`).join('')}
+        </div></div>
+        ${Object.entries(S.facets).map(([facet, values]) => `
+          <div class="facet"><div>${facet}</div><div data-facet="${facet}">
+            ${values.map((v) => `<span class="chip ${ex.tags.includes(facet + ':' + v) ? 'on' : ''}" data-tag="${facet}:${v}">${v}</span>`).join('')}
+          </div></div>`).join('')}
+        <div class="row">
+          <button class="primary" id="saveEdit">Save &amp; accept</button>
+          <button id="cancelEdit">Cancel</button>
+        </div>
+      </div>
+
+      ${(() => {
+        const eff = effective(c)
+        const needs = c && eff != null && eff > S.maxSeconds
+        if (!needs && !clip) return ''
+        const st = clip ? clip.start : 0
+        const en = clip ? clip.end : Math.min(S.maxSeconds, c.duration || S.maxSeconds)
+        return `<div class="card">
+          <div class="slug">CLIP WINDOW — this demo is longer than ${S.maxSeconds}s</div>
+          <div class="row" style="align-items:center">
+            <input type="text" id="clipStart" value="${st}" style="width:80px" inputmode="numeric">
+            <span class="slug">to</span>
+            <input type="text" id="clipEnd" value="${en}" style="width:80px" inputmode="numeric">
+            <button id="bClip">Preview</button>
+            ${clip ? '<button id="bClipOff">Clear</button>' : ''}
+          </div>
+        </div>`
+      })()}
+
+      <div class="card">
+        <div class="row" style="margin:0;flex-wrap:wrap">
+          <button class="primary" id="bAccept">Accept</button>
+          <button id="bSkip">Skip</button>
+          <button id="bEdit">Edit</button>
+          <button id="bNoDemo">No demo</button>
+          <button class="danger" id="bDelete">Delete</button>
+        </div>
+      </div>
+    </div>`
+
+  $('editor').classList.toggle('on', editing)
+
+  document.querySelectorAll('.cand[data-i]').forEach((el) => {
+    el.onclick = () => { pick = Number(el.dataset.i); clip = null; render() }
+  })
+  document.querySelectorAll('#fieldChips .chip, [data-facet] .chip').forEach((el) => {
+    el.onclick = () => el.classList.toggle('on')
+  })
+  $('bAccept').onclick = () => accept()
+  $('bSkip').onclick = () => send('skipped')
+  $('bEdit').onclick = () => { editing = !editing; render() }
+  $('bNoDemo').onclick = () => acceptNoDemo()
+  $('bDelete').onclick = () => tryDelete()
+  $('saveEdit').onclick = () => accept(true)
+  $('cancelEdit').onclick = () => { editing = false; render() }
+
+  if ($('bClip')) {
+    $('bClip').onclick = () => {
+      const start = parseInt($('clipStart').value, 10)
+      const end = parseInt($('clipEnd').value, 10)
+      if (!Number.isInteger(start) || !Number.isInteger(end) || end <= start) {
+        return toast('Clip needs whole seconds, end after start')
+      }
+      if (end - start > S.maxSeconds) return toast(`That window is ${end - start}s, over ${S.maxSeconds}s`)
+      clip = { start, end }
+      render()
+    }
+  }
+  if ($('bClipOff')) $('bClipOff').onclick = () => { clip = null; render() }
+}
+
+const escape_ = (s) => String(s ?? '').replace(/[&<>"]/g, (ch) =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch])
+
+function readEditor () {
+  if (!editing) return {}
+  const fields = [...document.querySelectorAll('#fieldChips .chip.on')].map((e) => e.dataset.f)
+  const tags = [...document.querySelectorAll('[data-facet] .chip.on')].map((e) => e.dataset.tag)
+  // Canonical field order, so the record does not fail validation on a reorder
+  // the reviewer never intended to make.
+  const ordered = S.fields.filter((f) => fields.includes(f))
+  return { name: $('nameEdit').value, fields: ordered, tags }
+}
+
+async function accept (fromEditor) {
+  const r = queue[pos]
+  const c = currentCandidate()
+  const eff = effective(c)
+  // Refuse here rather than letting validate-exercises.js fail the commit later,
+  // when the reviewer is no longer looking at the video and cannot judge it.
+  if (c && eff != null && eff > S.maxSeconds) {
+    return toast(`${eff}s is over ${S.maxSeconds}s — set a clip window, or press X for no demo`)
+  }
+  const body = {
+    id: r.exercise.id,
+    verdict: 'accepted',
+    videoUrl: c ? c.url : null,
+    durationSeconds: c && c.duration != null ? c.duration : null,
+    clip,
+    ...(fromEditor ? readEditor() : {}),
+  }
+  await post(body)
+}
+
+/**
+ * Accept the record with no demo at all, on purpose.
+ *
+ * Distinct from skipping: a skip says "I have not decided", this says "this
+ * record should not have a video". Several of the 317 are activities rather
+ * than movements - Run, Swim, Cycling - where footage teaches nothing.
+ */
+async function acceptNoDemo () {
+  await post({ id: queue[pos].exercise.id, verdict: 'accepted', videoUrl: null })
+}
+
+async function send (verdict) {
+  await post({ id: queue[pos].exercise.id, verdict })
+}
+
+async function tryDelete () {
+  if (!armedDelete) {
+    armedDelete = true
+    toast('Press D again to delete this record')
+    setTimeout(() => { armedDelete = false }, 2500)
+    return
+  }
+  armedDelete = false
+  const id = queue[pos].exercise.id
+  await post({ id, verdict: 'deleted' }, true)
+}
+
+async function post (body, removes) {
+  const res = await (await fetch('/api/decide', {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body),
+  })).json()
+  if (!res.ok) { toast('Failed: ' + res.error); return }
+
+  if (removes) {
+    queue.splice(pos, 1)
+    toast('Deleted ' + body.id)
+  } else {
+    const r = queue[pos]
+    r.decision = { verdict: body.verdict }
+    if (body.verdict === 'accepted') {
+      if (body.videoUrl) r.exercise.videoUrl = body.videoUrl
+      if (body.name) r.exercise.name = body.name
+      if (body.fields) r.exercise.fields = body.fields
+      if (body.tags) r.exercise.tags = body.tags
+    }
+    advance()
+  }
+  editing = false
+  pick = 0
+  clip = null
+  render()
+}
+
+function advance () {
+  // Skip past records already decided, so a resumed sitting does not walk the
+  // reviewer back through work they have finished.
+  let i = pos + 1
+  if (!S.reviewAll) while (i < queue.length && queue[i].decision) i++
+  pos = i
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') {
+    if (e.key === 'Enter') { accept(true); }
+    if (e.key === 'Escape') { editing = false; render() }
+    return
+  }
+  const r = queue[pos]
+  if (!r) return
+  const n = r.candidates.length
+  const k = e.key.toLowerCase()
+
+  if (k === 'a' || e.key === 'Enter') { e.preventDefault(); accept(editing) }
+  else if (k === 'j' || e.key === 'ArrowRight') { if (n) { pick = (pick + 1) % n; clip = null; render() } }
+  else if (k === 'k' || e.key === 'ArrowLeft') { if (n) { pick = (pick - 1 + n) % n; clip = null; render() } }
+  else if (k === 'x') { acceptNoDemo() }
+  else if (k === 's' || e.key === ' ') { e.preventDefault(); send('skipped') }
+  else if (k === 'e') { editing = !editing; render() }
+  else if (k === 'd') { tryDelete() }
+  else if (k === 'b') { pos = Math.max(0, pos - 1); pick = 0; clip = null; editing = false; render() }
+  else if (k === 'n') { pos = Math.min(queue.length, pos + 1); pick = 0; clip = null; editing = false; render() }
+})
+
+load()
+</script>
+</body>
+</html>

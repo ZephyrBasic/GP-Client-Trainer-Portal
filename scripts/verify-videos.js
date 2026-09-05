@@ -3,7 +3,7 @@
 //
 //   node scripts/verify-videos.js             # coverage report, no network
 //   node scripts/verify-videos.js --missing   # ... and list every exercise with no demo
-//   node scripts/verify-videos.js --long      # list demos that are neither a Short nor clipped - OFFLINE
+//   node scripts/verify-videos.js --long      # list demos over 60s, or of unknown length - OFFLINE
 //   node scripts/verify-videos.js --oembed    # check every video is live and embeddable - NO API KEY
 //   node scripts/verify-videos.js --online    # also verify each video against the YouTube API
 //   node scripts/verify-videos.js --learn     # print the channel behind each video, to build the allowlist
@@ -20,14 +20,14 @@ const fs = require('fs')
 const path = require('path')
 
 const {
-    CLIP_SECONDS,
+    DEMO_SECONDS,
     APPROVED_CHANNELS,
     enforceChannels,
     youtubeId,
     isYouTube,
-    isShortsUrl,
     isMediaFile,
     parseIsoDuration,
+    effectiveSeconds,
 } = require('./videoSources')
 
 const args = process.argv.slice(2)
@@ -55,17 +55,22 @@ const selfHosted = withVideo.filter((ex) => isMediaFile(ex.videoUrl) && !isYouTu
 const clipped = withVideo.filter((ex) => ex.clip)
 
 /**
- * Demos that are probably too long to be watched mid-set: a full YouTube video,
- * with no clip window trimming it and no /shorts/ in the link to suggest it is
- * brief on its own.
+ * Demos that run longer than the house rule, and demos whose length nobody has
+ * ever established. Two different problems, so they are counted separately.
  *
- * Computed offline, which is the point. The real length check needs an API key
- * (--online), so until now "which demos are too long?" could not be asked at
- * all without one - and the answer is the re-harvest worklist. It never fails
- * the run: a two-minute video can still be the right demo, and only a person
- * watching it can say.
+ * Both computed offline, which is the point: "which demos are too long?" is the
+ * re-harvest worklist, and it used to be unanswerable without an API key. It
+ * still never fails the run - a long video can be the right demo once someone
+ * trims it, and only a person watching it can say.
+ *
+ * `unknownLength` is the migration state. 309 records were harvested before
+ * durationSeconds existed, so their length is genuinely not known here; saying
+ * so is honest, where the old code silently passed any /shorts/ link and
+ * silently flagged every other one regardless of how long it actually ran.
  */
-const tooLong = youtube.filter((ex) => !ex.clip && !isShortsUrl(ex.videoUrl))
+const measured = youtube.filter((ex) => effectiveSeconds(ex) !== null)
+const tooLong = measured.filter((ex) => effectiveSeconds(ex) > DEMO_SECONDS.max)
+const unknownLength = youtube.filter((ex) => effectiveSeconds(ex) === null)
 
 /**
  * The API key, from the environment or from .env.
@@ -246,10 +251,20 @@ const main = async () => {
                 if (ex.clip && ex.clip.end > duration) {
                     note(ex.id, `clip ends at ${ex.clip.end}s but the video is only ${duration}s long`)
                 }
-                const effective = ex.clip ? ex.clip.end - ex.clip.start : duration
-                if (effective < CLIP_SECONDS.min || effective > CLIP_SECONDS.max) {
+                // The catalog's recorded length against the one the API reports.
+                // A mismatch means durationSeconds was mistyped or the videoUrl
+                // was swapped by hand without updating it, which would leave the
+                // offline check confidently enforcing the wrong number.
+                if (!ex.clip && typeof ex.durationSeconds === 'number' &&
+                    ex.durationSeconds !== duration) {
                     note(ex.id,
-                        `plays ${effective}s, outside the ${CLIP_SECONDS.min}-${CLIP_SECONDS.max}s window` +
+                        `durationSeconds says ${ex.durationSeconds}s but the video runs ${duration}s`)
+                }
+
+                const effective = ex.clip ? ex.clip.end - ex.clip.start : duration
+                if (effective > DEMO_SECONDS.max) {
+                    note(ex.id,
+                        `plays ${effective}s, over the ${DEMO_SECONDS.max}s house rule` +
                         (ex.clip ? '' : ` - add a clip window to trim it`))
                 }
             }
@@ -295,7 +310,12 @@ const main = async () => {
     console.log(`  YouTube: ${youtube.length}   self-hosted: ${selfHosted.length}   clipped: ${clipped.length}`)
     if (tooLong.length) {
         console.log(
-            `  ${tooLong.length} are full-length videos with no clip window - ` +
+            `  ${tooLong.length} run over the ${DEMO_SECONDS.max}s house rule - pass --long to list them`
+        )
+    }
+    if (unknownLength.length) {
+        console.log(
+            `  ${unknownLength.length} have no recorded durationSeconds, so their length is unknown - ` +
             'pass --long to list them'
         )
     }
@@ -306,10 +326,19 @@ const main = async () => {
         console.log('  (offline: pass --online to check the videos still exist and are the right length)')
     }
 
-    if (flag('long') && tooLong.length) {
-        console.log(`
-${tooLong.length} full-length demos - trim with a clip window, or re-harvest as a Short:`)
-        for (const ex of tooLong) console.log(`  ${ex.id.padEnd(40)} ${ex.videoUrl}`)
+    if (flag('long')) {
+        if (tooLong.length) {
+            console.log(`
+${tooLong.length} demos run over ${DEMO_SECONDS.max}s - trim with a clip window, or re-harvest:`)
+            for (const ex of tooLong) {
+                console.log(`  ${ex.id.padEnd(38)} ${String(effectiveSeconds(ex)) + 's'} ${ex.videoUrl}`)
+            }
+        }
+        if (unknownLength.length) {
+            console.log(`
+${unknownLength.length} demos of unknown length - re-harvest to record durationSeconds:`)
+            for (const ex of unknownLength) console.log(`  ${ex.id.padEnd(40)} ${ex.videoUrl}`)
+        }
     }
 
     if (flag('missing') && missing.length) {

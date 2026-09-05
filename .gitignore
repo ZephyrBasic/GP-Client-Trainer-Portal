@@ -57,6 +57,12 @@ secrets/
 .claude/skills/
 Next Steps List.txt
 
+# the catalog review pass's working files: which records are decided, and the
+# notes shown beside them. One pass's scaffolding - every decision that outlives
+# it is written into constants/exercises.json. See docs/adr/0006.
+.claude/review-state.json
+.claude/exercise-flags.json
+
 # harvester output, not a constant: find-exercise-videos.py writes it and
 # promote-videos.js reads it. 1.4 MB of intermediate, regenerated on demand.
 constants/videoCandidates.json

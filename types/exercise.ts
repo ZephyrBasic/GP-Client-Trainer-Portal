@@ -23,14 +23,14 @@ export type { Equipment, ExerciseTag, Facet, Modality, Muscle, Pattern, Role, Se
  */
 export interface VideoClip {
     start: number
-    /** Exclusive end. `end - start` must fall inside the 15-45s house rule. */
+    /** Exclusive end. `end - start` must not exceed the 60s house rule. */
     end: number
 }
 
 /**
  * A record in the bundled catalog.
  *
- * The six keys below are the whole schema: validate-exercises.js rejects any
+ * The seven keys below are the whole schema: validate-exercises.js rejects any
  * other key outright, which is why this is an exact shape rather than an
  * extensible one. Notably absent, and absent on purpose: `typicalSets` /
  * `typicalReps` (a set is prefilled from that client's own last performance,
@@ -75,6 +75,19 @@ export interface ExerciseRecord {
      * borrowed clip with Zeph's own footage is a one-field edit.
      */
     videoUrl?: string
+
+    /**
+     * How long `videoUrl` runs, in whole seconds.
+     *
+     * Recorded rather than inferred. yt-dlp already learns it during a harvest
+     * and used to discard it, which left the offline length check with nothing
+     * to go on but whether the link said `/shorts/` - a URL shape YouTube
+     * allows up to three minutes, so a demo could run 2m50s and pass every
+     * check that did not need an API key. See docs/adr/0006.
+     *
+     * Absent on records that predate the field: unknown length, not zero.
+     */
+    durationSeconds?: number
 
     /**
      * Which seconds of `videoUrl` to play, when the demo is buried in a longer
