@@ -12,7 +12,7 @@ const fs = require('fs')
 const path = require('path')
 
 const { FIELDS, FACETS } = require('./exerciseVocab')
-const { CLIP_SECONDS, isYouTube, isMediaFile } = require('./videoSources')
+const { DEMO_SECONDS, isYouTube, isMediaFile, effectiveSeconds } = require('./videoSources')
 
 const args = process.argv.slice(2)
 const showStats = args.includes('--stats')
@@ -138,6 +138,24 @@ for (const [i, ex] of exercises.entries()) {
         }
     }
 
+    // --- durationSeconds --------------------------------------------------
+    // How long `videoUrl` actually runs, learned from yt-dlp at harvest time and
+    // written into the record so the house rule is enforceable offline.
+    //
+    // Before this existed the only offline length signal was whether the link
+    // said /shorts/, which YouTube caps at three minutes - so a 2m50s demo
+    // passed every check we could run without an API key. See docs/adr/0006.
+    //
+    // Its absence is not a fault: 309 records predate the field and are simply
+    // of unknown length. Naming them is verify-videos.js's job, which owns the
+    // worklist; this file stays schema-only so it can gate a commit.
+    if (ex.durationSeconds !== undefined) {
+        if (!Number.isInteger(ex.durationSeconds) || ex.durationSeconds <= 0) {
+            fail(id, `durationSeconds must be a whole number of seconds > 0, got ${JSON.stringify(ex.durationSeconds)}`)
+        }
+        if (ex.videoUrl === undefined) fail(id, 'durationSeconds without a videoUrl to measure')
+    }
+
     if (ex.clip !== undefined) {
         const { start, end } = ex.clip ?? {}
         const whole = (n) => typeof n === 'number' && Number.isInteger(n) && n >= 0
@@ -150,14 +168,23 @@ for (const [i, ex] of exercises.entries()) {
             fail(id, 'clip.start and clip.end must be whole seconds >= 0')
         } else if (end <= start) {
             fail(id, `clip.end (${end}) must be after clip.start (${start})`)
-        } else if (end - start < CLIP_SECONDS.min || end - start > CLIP_SECONDS.max) {
-            fail(id, `clip runs ${end - start}s, outside the ${CLIP_SECONDS.min}-${CLIP_SECONDS.max}s window`)
+        } else if (end - start > DEMO_SECONDS.max) {
+            fail(id, `clip runs ${end - start}s, over the ${DEMO_SECONDS.max}s house rule`)
         }
 
         if (ex.videoUrl === undefined) fail(id, 'clip without a videoUrl to clip')
         // Self-hosted footage is trimmed before upload, so a window here would be
         // a second, contradictable way of saying the same thing.
         else if (!isYouTube(ex.videoUrl)) fail(id, 'clip only applies to a YouTube videoUrl')
+    }
+
+    // What a client actually watches: the clip window if there is one, the whole
+    // video if there is not. A long video is still allowed - but only with a clip
+    // window trimming it, which is the difference between a demo and a lecture.
+    const effective = effectiveSeconds(ex)
+    if (effective !== null && effective > DEMO_SECONDS.max) {
+        fail(id, `demo plays ${effective}s, over the ${DEMO_SECONDS.max}s house rule` +
+            (ex.clip ? '' : ' - trim it with a clip window, or pick a shorter demo'))
     }
 
     // --- no v1 leftovers ------------------------------------------------
@@ -168,7 +195,7 @@ for (const [i, ex] of exercises.entries()) {
     for (const dead of ['type', 'category', 'typicalSets', 'typicalReps', 'aliases']) {
         if (dead in ex) fail(id, `v1 field "${dead}" still present`)
     }
-    const known = new Set(['id', 'name', 'fields', 'tags', 'videoUrl', 'clip'])
+    const known = new Set(['id', 'name', 'fields', 'tags', 'videoUrl', 'durationSeconds', 'clip'])
     for (const k of Object.keys(ex)) if (!known.has(k)) fail(id, `unknown property "${k}"`)
 }
 

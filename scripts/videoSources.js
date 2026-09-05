@@ -4,13 +4,21 @@
 // Plain .js with no imports so it runs under bare node, like everything in here.
 
 /**
- * The house rule on length: long enough to show the movement, short enough that
- * a client watches it mid-session instead of skipping it.
+ * The house rule on length: short enough that a client watches it mid-session
+ * instead of skipping it.
  *
  * Measured on *effective* length - a clip window's `end - start` if it has one,
  * the video's full duration if it doesn't.
+ *
+ * There is deliberately no minimum. The old rule floored this at 15s and the
+ * harvester penalised anything under it as "too short to show the movement",
+ * which is false: a calf raise is fully demonstrated in eight seconds, and the
+ * floor was rejecting the tightest clips on the strength of a guess about
+ * length rather than about content. Whether a demo shows enough is a judgement
+ * a person makes while watching it, and scripts/review-catalog.js is where
+ * they make it. See docs/adr/0006.
  */
-const CLIP_SECONDS = { min: 15, max: 45 }
+const DEMO_SECONDS = { max: 60 }
 
 /**
  * Channels whose coaching Zeph has watched and vouches for, keyed by YouTube
@@ -61,16 +69,35 @@ const isYouTube = (url) => youtubeId(url) !== null
 /**
  * Whether the link is a YouTube Short.
  *
- * The only length signal available *offline*. YouTube caps a Short at three
- * minutes, and the vast majority run under a minute, so a /shorts/ link is
- * within or near the house rule above without anyone having to ask the API how
- * long it is - which needs a key, and so cannot run in CI or on a plane.
+ * No longer a length signal. It used to be the only one available offline, and
+ * it was a bad one: YouTube caps a Short at three *minutes*, so a 2m50s clip
+ * satisfied it while running nearly three times the house rule, and no offline
+ * check could ever have noticed. Records now carry the real `durationSeconds`,
+ * learned from yt-dlp at harvest time and written into the catalog, so length
+ * is checked against the actual number.
  *
- * A heuristic, and named as one: it says the demo is short, not that it is
- * good. --online is still what checks the actual duration, and a human is still
- * what decides the clip shows the movement.
+ * What it still says, and all it says, is that the demo is shaped like a Short -
+ * vertical, wordless, one movement - which is what makes it worth ranking up
+ * during a harvest.
  */
 const isShortsUrl = (url) => /youtube[.]com\/shorts\//.test(String(url ?? ''))
+
+/**
+ * How many seconds of video a client actually watches, or null if unknown.
+ *
+ * A clip window's span when the record has one, the video's own duration when
+ * it doesn't. Shared rather than reimplemented because validate-exercises.js,
+ * verify-videos.js and review-catalog.js all have to agree on it - three
+ * slightly different answers to "how long is this demo" is how the 15-45s rule
+ * came to be enforced in two places and checked in neither.
+ *
+ * null means the record predates `durationSeconds` and has never been through a
+ * harvest. That is reported as unknown, never as a pass.
+ */
+const effectiveSeconds = (exercise) => {
+    if (exercise?.clip) return exercise.clip.end - exercise.clip.start
+    return typeof exercise?.durationSeconds === 'number' ? exercise.durationSeconds : null
+}
 
 /** Firebase Storage hides the extension behind percent-encoding and a query. */
 const isMediaFile = (url) => {
@@ -90,7 +117,7 @@ const parseIsoDuration = (iso) => {
 }
 
 module.exports = {
-    CLIP_SECONDS,
+    DEMO_SECONDS,
     APPROVED_CHANNELS,
     enforceChannels,
     youtubeId,
@@ -98,4 +125,5 @@ module.exports = {
     isShortsUrl,
     isMediaFile,
     parseIsoDuration,
+    effectiveSeconds,
 }

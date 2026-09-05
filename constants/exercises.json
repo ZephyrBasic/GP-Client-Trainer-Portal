@@ -12,7 +12,8 @@
       "role:core",
       "equipment:ab-wheel"
     ],
-    "videoUrl": "https://youtu.be/vncVOEtMhpk"
+    "videoUrl": "https://youtu.be/XgRaSMfR0Pc",
+    "durationSeconds": 17
   },
   {
     "id": "abduction-machine",
@@ -29,7 +30,8 @@
       "role:isolation",
       "equipment:machine"
     ],
-    "videoUrl": "https://youtu.be/H98IP8rARy4"
+    "videoUrl": "https://youtu.be/H98IP8rARy4",
+    "durationSeconds": 26
   },
   {
     "id": "active-passive-hang",
@@ -46,7 +48,8 @@
       "role:warmup",
       "equipment:pull-up-bar"
     ],
-    "videoUrl": "https://youtu.be/kjCNzZUD1Tw"
+    "videoUrl": "https://youtu.be/kjCNzZUD1Tw",
+    "durationSeconds": 23
   },
   {
     "id": "adduction-machine",
@@ -62,7 +65,8 @@
       "role:isolation",
       "equipment:machine"
     ],
-    "videoUrl": "https://youtu.be/CjAVezAggkI"
+    "videoUrl": "https://youtu.be/CjAVezAggkI",
+    "durationSeconds": 16
   },
   {
     "id": "ankle-mobility",
@@ -76,8 +80,7 @@
       "modality:mobility",
       "role:warmup",
       "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/oya7G1djWyQ"
+    ]
   },
   {
     "id": "arnold-press",
@@ -95,7 +98,8 @@
       "role:accessory",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/jeJttN2EWCo"
+    "videoUrl": "https://youtu.be/jeJttN2EWCo",
+    "durationSeconds": 24
   },
   {
     "id": "assault-bike",
@@ -111,7 +115,8 @@
       "role:conditioning",
       "equipment:assault-bike"
     ],
-    "videoUrl": "https://youtu.be/EhJuzeBs7BU"
+    "videoUrl": "https://youtu.be/EhJuzeBs7BU",
+    "durationSeconds": 34
   },
   {
     "id": "assisted-pullup-machine",
@@ -129,7 +134,8 @@
       "role:compound",
       "equipment:machine"
     ],
-    "videoUrl": "https://youtu.be/DOr_uTC3Ftg"
+    "videoUrl": "https://youtu.be/BOqrRMjxkj8",
+    "durationSeconds": 11
   },
   {
     "id": "atg-split-squat",
@@ -148,7 +154,8 @@
       "role:accessory",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/py0ovq2AIEw"
+    "videoUrl": "https://youtu.be/py0ovq2AIEw",
+    "durationSeconds": 26
   },
   {
     "id": "back-bend",
@@ -162,25 +169,7 @@
       "modality:mobility",
       "role:warmup",
       "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/CG70TJR-qPE"
-  },
-  {
-    "id": "back-bridge-knee-lift",
-    "name": "Back Bridge Knee Lift",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:glutes",
-      "muscle:abs",
-      "muscle:lower-back",
-      "pattern:anti-extension",
-      "modality:mobility",
-      "role:core",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/R6bSzz69E_o"
+    ]
   },
   {
     "id": "back-extension",
@@ -198,7 +187,8 @@
       "role:accessory",
       "equipment:machine"
     ],
-    "videoUrl": "https://youtu.be/4sla2xidkD0"
+    "videoUrl": "https://youtu.be/ENXyYltB7CM",
+    "durationSeconds": 37
   },
   {
     "id": "back-squat",
@@ -216,21 +206,8 @@
       "role:compound",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/rrJIyZGlK8c"
-  },
-  {
-    "id": "banded-complex",
-    "name": "Banded Complex",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:full-body",
-      "modality:mobility",
-      "role:potentiation",
-      "equipment:band"
-    ],
-    "videoUrl": "https://youtu.be/hmqIPJyAspk"
+    "videoUrl": "https://youtu.be/-bJIpOq-LWk",
+    "durationSeconds": 12
   },
   {
     "id": "banded-hamstring-stretch",
@@ -244,23 +221,8 @@
       "role:cooldown",
       "equipment:band"
     ],
-    "videoUrl": "https://youtu.be/Il1L75v6gq0"
-  },
-  {
-    "id": "banded-hip-abduction",
-    "name": "Banded Hip Abduction",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:abductors",
-      "muscle:glutes",
-      "pattern:isolation",
-      "modality:resistance",
-      "role:prehab",
-      "equipment:band"
-    ],
-    "videoUrl": "https://youtu.be/DU6W5rVb7zA"
+    "videoUrl": "https://youtu.be/aYQtCs57vnE",
+    "durationSeconds": 39
   },
   {
     "id": "banded-lat-prayer-stretch",
@@ -275,23 +237,8 @@
       "role:cooldown",
       "equipment:band"
     ],
-    "videoUrl": "https://youtu.be/WSb1UQ3BCHg"
-  },
-  {
-    "id": "banded-overhead-touch",
-    "name": "Banded Overhead Touch",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:front-delts",
-      "muscle:rotator-cuff",
-      "pattern:vertical-push",
-      "modality:mobility",
-      "role:warmup",
-      "equipment:band"
-    ],
-    "videoUrl": "https://youtu.be/ixUjFEkeHfk"
+    "videoUrl": "https://youtu.be/YyY303oANJ8",
+    "durationSeconds": 16
   },
   {
     "id": "banded-pull-apart",
@@ -307,7 +254,8 @@
       "role:prehab",
       "equipment:band"
     ],
-    "videoUrl": "https://youtu.be/MnDpmNYUjbc"
+    "videoUrl": "https://youtu.be/pASXdGKh-nc",
+    "durationSeconds": 12
   },
   {
     "id": "banded-pullup",
@@ -324,7 +272,8 @@
       "role:compound",
       "equipment:band"
     ],
-    "videoUrl": "https://youtu.be/4yE-XGDWJPg"
+    "videoUrl": "https://youtu.be/4yE-XGDWJPg",
+    "durationSeconds": 43
   },
   {
     "id": "banded-punch",
@@ -342,7 +291,8 @@
       "role:conditioning",
       "equipment:band"
     ],
-    "videoUrl": "https://youtu.be/yF9M_lcNnN8"
+    "videoUrl": "https://youtu.be/LE804AV8pV0",
+    "durationSeconds": 14
   },
   {
     "id": "banded-row",
@@ -358,7 +308,8 @@
       "role:accessory",
       "equipment:band"
     ],
-    "videoUrl": "https://youtu.be/JP2xq33lNF0"
+    "videoUrl": "https://youtu.be/j7ABJGauUEk",
+    "durationSeconds": 13
   },
   {
     "id": "bb-bench-press",
@@ -376,7 +327,8 @@
       "role:compound",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/CjHIKDQ4RQo"
+    "videoUrl": "https://youtu.be/CjHIKDQ4RQo",
+    "durationSeconds": 16
   },
   {
     "id": "bb-bicep-curl",
@@ -392,7 +344,8 @@
       "role:isolation",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/ZQWL7omZh94"
+    "videoUrl": "https://youtu.be/N5x5M1x1Gd0",
+    "durationSeconds": 11
   },
   {
     "id": "bb-hip-thrust",
@@ -409,7 +362,8 @@
       "role:compound",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/aweBS7K71l8"
+    "videoUrl": "https://youtu.be/5S8SApGU_Lk",
+    "durationSeconds": 16
   },
   {
     "id": "bb-row",
@@ -427,7 +381,8 @@
       "role:compound",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/6FZHJGzMFEc"
+    "videoUrl": "https://youtu.be/9Gf-Ourup_k",
+    "durationSeconds": 11
   },
   {
     "id": "battle-rope",
@@ -443,25 +398,8 @@
       "role:conditioning",
       "equipment:battle-rope"
     ],
-    "videoUrl": "https://youtu.be/i_8xMMD7Z3c"
-  },
-  {
-    "id": "bear-crawl",
-    "name": "Bear Crawl",
-    "fields": [
-      "distanceMeters",
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:abs",
-      "muscle:full-body",
-      "pattern:anti-rotation",
-      "pattern:gait",
-      "modality:resistance",
-      "role:conditioning",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/U3Y58Kyw7Xw"
+    "videoUrl": "https://youtu.be/DfuvSn73Up4",
+    "durationSeconds": 27
   },
   {
     "id": "behind-head-strict-press",
@@ -479,24 +417,8 @@
       "role:accessory",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/IoNod91DYgo"
-  },
-  {
-    "id": "belt-squat",
-    "name": "Belt Squat",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:quads",
-      "muscle:glutes",
-      "pattern:squat",
-      "modality:resistance",
-      "role:compound",
-      "equipment:machine"
-    ],
-    "videoUrl": "https://youtu.be/gtg-2UxCsUU"
+    "videoUrl": "https://youtu.be/Rwgib-LhVFE",
+    "durationSeconds": 22
   },
   {
     "id": "bicep-curl",
@@ -511,8 +433,7 @@
       "modality:resistance",
       "role:isolation",
       "equipment:dumbbell"
-    ],
-    "videoUrl": "https://youtu.be/cBSD6mQIPQk"
+    ]
   },
   {
     "id": "bicycle-crunch",
@@ -528,7 +449,8 @@
       "role:core",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/wnuLak2onoA"
+    "videoUrl": "https://youtu.be/wnuLak2onoA",
+    "durationSeconds": 21
   },
   {
     "id": "bodyweight-squat",
@@ -544,7 +466,8 @@
       "role:warmup",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/l83R5PblSMA"
+    "videoUrl": "https://youtu.be/l83R5PblSMA",
+    "durationSeconds": 17
   },
   {
     "id": "box-jump",
@@ -561,7 +484,8 @@
       "role:power",
       "equipment:box"
     ],
-    "videoUrl": "https://youtu.be/G-bxQY57mKc"
+    "videoUrl": "https://youtu.be/LeiLzSU3OXE",
+    "durationSeconds": 23
   },
   {
     "id": "box-squat",
@@ -578,21 +502,8 @@
       "role:compound",
       "equipment:box"
     ],
-    "videoUrl": "https://youtu.be/rMEPHwNhQfo"
-  },
-  {
-    "id": "boxing-cardio",
-    "name": "Boxing Cardio",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:full-body",
-      "muscle:front-delts",
-      "modality:cardio",
-      "role:conditioning",
-      "equipment:none"
-    ]
+    "videoUrl": "https://youtu.be/rMEPHwNhQfo",
+    "durationSeconds": 22
   },
   {
     "id": "broad-jump",
@@ -609,7 +520,8 @@
       "role:power",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/c6Etg7bpFfI"
+    "videoUrl": "https://youtu.be/c6Etg7bpFfI",
+    "durationSeconds": 16
   },
   {
     "id": "bulgarian-split-squat",
@@ -627,22 +539,8 @@
       "role:compound",
       "equipment:bench"
     ],
-    "videoUrl": "https://youtu.be/hbw7hdyOpq0"
-  },
-  {
-    "id": "burpee",
-    "name": "Burpee",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:full-body",
-      "pattern:jump",
-      "modality:cardio",
-      "role:conditioning",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/CTV6_A56iD8"
+    "videoUrl": "https://youtu.be/Fmjj7wFJWRE",
+    "durationSeconds": 20
   },
   {
     "id": "cable-crunch",
@@ -658,7 +556,8 @@
       "role:core",
       "equipment:cable"
     ],
-    "videoUrl": "https://youtu.be/ToJeyhydUxU"
+    "videoUrl": "https://youtu.be/b9FJ4hIK3pI",
+    "durationSeconds": 46
   },
   {
     "id": "cable-curl",
@@ -674,7 +573,8 @@
       "role:isolation",
       "equipment:cable"
     ],
-    "videoUrl": "https://youtu.be/YmrlN_wJso4"
+    "videoUrl": "https://youtu.be/opFVuRi_3b8",
+    "durationSeconds": 14
   },
   {
     "id": "cable-glute-kickback",
@@ -690,7 +590,8 @@
       "role:isolation",
       "equipment:cable"
     ],
-    "videoUrl": "https://youtu.be/dU1R-AHW4IM"
+    "videoUrl": "https://youtu.be/kBClX5iOtfA",
+    "durationSeconds": 22
   },
   {
     "id": "cable-lateral-raise",
@@ -706,7 +607,8 @@
       "role:isolation",
       "equipment:cable"
     ],
-    "videoUrl": "https://youtu.be/zpbm-xRHB6k"
+    "videoUrl": "https://youtu.be/zpbm-xRHB6k",
+    "durationSeconds": 23
   },
   {
     "id": "cable-pull-through",
@@ -723,7 +625,8 @@
       "role:accessory",
       "equipment:cable"
     ],
-    "videoUrl": "https://youtu.be/zT4HfQmmYsI"
+    "videoUrl": "https://youtu.be/NEDrQPoITMc",
+    "durationSeconds": 19
   },
   {
     "id": "cable-woodchop",
@@ -740,7 +643,8 @@
       "role:core",
       "equipment:cable"
     ],
-    "videoUrl": "https://youtu.be/gcGNypjIQDo"
+    "videoUrl": "https://youtu.be/Gwcf4TOj1hc",
+    "durationSeconds": 20
   },
   {
     "id": "calf-raise",
@@ -755,22 +659,7 @@
       "modality:resistance",
       "role:isolation",
       "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/eMTy3qylqnE"
-  },
-  {
-    "id": "calf-stretch",
-    "name": "Calf Stretch",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:calves",
-      "modality:stretch",
-      "role:cooldown",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/LntxVU3jpgo"
+    ]
   },
   {
     "id": "cat-cow",
@@ -785,7 +674,8 @@
       "role:warmup",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/LIVJZZyZ2qM"
+    "videoUrl": "https://youtu.be/LIVJZZyZ2qM",
+    "durationSeconds": 15
   },
   {
     "id": "chaos-loaded-carry",
@@ -804,7 +694,8 @@
       "role:accessory",
       "equipment:band"
     ],
-    "videoUrl": "https://youtu.be/rbVMpfhW8OM"
+    "videoUrl": "https://youtu.be/yzkJl0jDSIo",
+    "durationSeconds": 22
   },
   {
     "id": "chest-fly",
@@ -820,7 +711,8 @@
       "role:isolation",
       "equipment:cable"
     ],
-    "videoUrl": "https://youtu.be/4mfLHnFL0Uw"
+    "videoUrl": "https://youtu.be/kMmV0thhwnA",
+    "durationSeconds": 16
   },
   {
     "id": "chest-press-machine",
@@ -837,7 +729,8 @@
       "role:compound",
       "equipment:machine"
     ],
-    "videoUrl": "https://youtu.be/NIDP5T6enEM"
+    "videoUrl": "https://youtu.be/0Wa9CfRXUkA",
+    "durationSeconds": 12
   },
   {
     "id": "chest-to-wall",
@@ -853,7 +746,8 @@
       "role:accessory",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/Xs8oTTFBZ-o"
+    "videoUrl": "https://youtu.be/JFzqzRNEnt0",
+    "durationSeconds": 19
   },
   {
     "id": "chest-supported-row",
@@ -871,7 +765,8 @@
       "role:compound",
       "equipment:bench"
     ],
-    "videoUrl": "https://youtu.be/9zkP4Cd_cz0"
+    "videoUrl": "https://youtu.be/0-DXJiceG-0",
+    "durationSeconds": 15
   },
   {
     "id": "childs-pose",
@@ -886,24 +781,8 @@
       "role:cooldown",
       "equipment:yoga-mat"
     ],
-    "videoUrl": "https://youtu.be/fRjHYAA0nrk"
-  },
-  {
-    "id": "chin-up",
-    "name": "Chin-up",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:lats",
-      "muscle:biceps",
-      "pattern:vertical-pull",
-      "modality:resistance",
-      "role:compound",
-      "equipment:pull-up-bar"
-    ],
-    "videoUrl": "https://youtu.be/mRy9m2Q9_1I"
+    "videoUrl": "https://youtu.be/kH12QrSGedM",
+    "durationSeconds": 49
   },
   {
     "id": "clamshell",
@@ -918,8 +797,7 @@
       "modality:resistance",
       "role:prehab",
       "equipment:band"
-    ],
-    "videoUrl": "https://youtu.be/U0cutD9UPTA"
+    ]
   },
   {
     "id": "close-grip-bench-press",
@@ -936,23 +814,8 @@
       "role:compound",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/1cFDN5aSKtw"
-  },
-  {
-    "id": "concentration-curl",
-    "name": "Concentration Curl",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:biceps",
-      "pattern:isolation",
-      "modality:resistance",
-      "role:isolation",
-      "equipment:dumbbell"
-    ],
-    "videoUrl": "https://youtu.be/dRFqSjKuEKQ"
+    "videoUrl": "https://youtu.be/DzA2xZhDGeo",
+    "durationSeconds": 16
   },
   {
     "id": "conventional-deadlift",
@@ -971,7 +834,8 @@
       "role:compound",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/GxsLrTzyGUU"
+    "videoUrl": "https://youtu.be/GxsLrTzyGUU",
+    "durationSeconds": 53
   },
   {
     "id": "copenhagen-plank",
@@ -987,7 +851,8 @@
       "role:prehab",
       "equipment:bench"
     ],
-    "videoUrl": "https://youtu.be/HOmsC6HEiFU"
+    "videoUrl": "https://youtu.be/VfjAmomtVa0",
+    "durationSeconds": 44
   },
   {
     "id": "cossack-squat",
@@ -1005,7 +870,8 @@
       "role:accessory",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/iPZNB5GsOnM"
+    "videoUrl": "https://youtu.be/iPZNB5GsOnM",
+    "durationSeconds": 16
   },
   {
     "id": "couch-stretch",
@@ -1020,7 +886,8 @@
       "role:cooldown",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/NpmS6Fx1WLo"
+    "videoUrl": "https://youtu.be/NpmS6Fx1WLo",
+    "durationSeconds": 26
   },
   {
     "id": "crunch",
@@ -1035,7 +902,8 @@
       "role:core",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/MKmrqcoCZ-M"
+    "videoUrl": "https://youtu.be/qZq9bNk1owk",
+    "durationSeconds": 33
   },
   {
     "id": "cuban-rotation",
@@ -1052,7 +920,8 @@
       "role:prehab",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/QXlEe-Jep1w"
+    "videoUrl": "https://youtu.be/QXlEe-Jep1w",
+    "durationSeconds": 15
   },
   {
     "id": "curtsy-lunge",
@@ -1070,41 +939,8 @@
       "role:accessory",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/avP5Lwul5Lk"
-  },
-  {
-    "id": "cycling",
-    "name": "Cycling",
-    "fields": [
-      "distanceMeters",
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:quads",
-      "muscle:glutes",
-      "modality:cardio",
-      "role:conditioning",
-      "equipment:none"
-    ],
-    "videoUrl": "https://youtu.be/hPcR6MQ5dJo"
-  },
-  {
-    "id": "deadball-shoulder-over",
-    "name": "Deadball Shoulder Over",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:side-delts",
-      "muscle:abs",
-      "muscle:full-body",
-      "pattern:throw",
-      "modality:resistance",
-      "role:power",
-      "equipment:slam-ball"
-    ],
-    "videoUrl": "https://youtu.be/xEW1she_sVo"
+    "videoUrl": "https://youtu.be/h-JJzoLXg7w",
+    "durationSeconds": 14
   },
   {
     "id": "deadbug",
@@ -1119,7 +955,8 @@
       "role:core",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/3r1dSVg9HHw"
+    "videoUrl": "https://youtu.be/jbWmbhElf3Q",
+    "durationSeconds": 15
   },
   {
     "id": "deadlift-iso-hold",
@@ -1137,7 +974,8 @@
       "role:potentiation",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/VPUt0p65bWY"
+    "videoUrl": "https://youtu.be/LV7hsgJYshU",
+    "durationSeconds": 18
   },
   {
     "id": "decline-bench-press",
@@ -1154,7 +992,8 @@
       "role:accessory",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/PYtLMSL_oeM"
+    "videoUrl": "https://youtu.be/XP-Gc02eUFI",
+    "durationSeconds": 43
   },
   {
     "id": "deep-squat-hold",
@@ -1171,7 +1010,8 @@
       "role:warmup",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/CFVurupkiUQ"
+    "videoUrl": "https://youtu.be/D3zYzIlbjXM",
+    "durationSeconds": 24
   },
   {
     "id": "deficit-calf-raise",
@@ -1187,7 +1027,8 @@
       "role:prehab",
       "equipment:plate"
     ],
-    "videoUrl": "https://youtu.be/iOiofcmo4is"
+    "videoUrl": "https://youtu.be/iOiofcmo4is",
+    "durationSeconds": 31
   },
   {
     "id": "deficit-drop",
@@ -1203,54 +1044,8 @@
       "role:potentiation",
       "equipment:box"
     ],
-    "videoUrl": "https://youtu.be/uX5Do03-Q9M"
-  },
-  {
-    "id": "deficit-protracted-pushup",
-    "name": "Deficit Protracted Pushup",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:chest",
-      "muscle:upper-back",
-      "pattern:horizontal-push",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/6jtlag9V7fk"
-  },
-  {
-    "id": "deficit-tibialis-raise",
-    "name": "Deficit Tibialis Raise",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:tibialis",
-      "pattern:isolation",
-      "modality:resistance",
-      "role:prehab",
-      "equipment:plate"
-    ],
-    "videoUrl": "https://youtu.be/ZtD2cO9__pI"
-  },
-  {
-    "id": "diagonal-stretch",
-    "name": "Diagonal Stretch",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:obliques",
-      "muscle:lats",
-      "modality:stretch",
-      "role:cooldown",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/r04vW0djFSo"
+    "videoUrl": "https://youtu.be/FRyaQCmFDLA",
+    "durationSeconds": 18
   },
   {
     "id": "diamond-pushup",
@@ -1266,7 +1061,8 @@
       "role:accessory",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/wtRMc8sGE0c"
+    "videoUrl": "https://youtu.be/K8bKxVcwjrk",
+    "durationSeconds": 21
   },
   {
     "id": "dip",
@@ -1283,8 +1079,7 @@
       "modality:resistance",
       "role:compound",
       "equipment:dip-bar"
-    ],
-    "videoUrl": "https://youtu.be/TrJVszDm7ik"
+    ]
   },
   {
     "id": "dip-machine",
@@ -1300,69 +1095,7 @@
       "modality:resistance",
       "role:accessory",
       "equipment:machine"
-    ],
-    "videoUrl": "https://youtu.be/pMarNxAvHPc"
-  },
-  {
-    "id": "donkey-calf-raise",
-    "name": "Donkey Calf Raise",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:calves",
-      "pattern:isolation",
-      "modality:resistance",
-      "role:isolation",
-      "equipment:machine"
-    ],
-    "videoUrl": "https://youtu.be/kJYYzesfICQ"
-  },
-  {
-    "id": "donkey-kick",
-    "name": "Donkey Kick",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:glutes",
-      "pattern:isolation",
-      "modality:resistance",
-      "role:isolation",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/EtSJ8rwm5M8"
-  },
-  {
-    "id": "doorway-chest-stretch",
-    "name": "Doorway Chest Stretch",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:chest",
-      "muscle:front-delts",
-      "modality:stretch",
-      "role:cooldown",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/8wiZpixdHPU"
-  },
-  {
-    "id": "dorsiflexion-raise",
-    "name": "Dorsiflexion Raise",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:tibialis",
-      "pattern:isolation",
-      "modality:resistance",
-      "role:prehab",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/jfY3ZfMNGjI"
+    ]
   },
   {
     "id": "db-bench-press",
@@ -1380,7 +1113,8 @@
       "role:compound",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/O7ECGhZj_Hc"
+    "videoUrl": "https://youtu.be/ZaDlbm8E8Tg",
+    "durationSeconds": 12
   },
   {
     "id": "db-clean",
@@ -1398,7 +1132,8 @@
       "role:power",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/uCeNCZFk34c"
+    "videoUrl": "https://youtu.be/F6-7W1WaT4k",
+    "durationSeconds": 14
   },
   {
     "id": "db-ohp",
@@ -1414,8 +1149,7 @@
       "modality:resistance",
       "role:compound",
       "equipment:dumbbell"
-    ],
-    "videoUrl": "https://youtu.be/Did01dFR3Lk"
+    ]
   },
   {
     "id": "db-pullover",
@@ -1432,7 +1166,8 @@
       "role:accessory",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/jQjWlIwG4sI"
+    "videoUrl": "https://youtu.be/jQjWlIwG4sI",
+    "durationSeconds": 15
   },
   {
     "id": "db-push-press",
@@ -1449,8 +1184,7 @@
       "modality:resistance",
       "role:power",
       "equipment:dumbbell"
-    ],
-    "videoUrl": "https://youtu.be/vuaYVK8xyqo"
+    ]
   },
   {
     "id": "db-renegade-row",
@@ -1469,7 +1203,8 @@
       "role:accessory",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/aSDrWJgyz8c"
+    "videoUrl": "https://youtu.be/Q28cLuweLv4",
+    "durationSeconds": 13
   },
   {
     "id": "db-rdl",
@@ -1486,7 +1221,8 @@
       "role:accessory",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/Cf3CaHui43A"
+    "videoUrl": "https://youtu.be/xAL7lHwj30E",
+    "durationSeconds": 16
   },
   {
     "id": "db-row",
@@ -1503,24 +1239,8 @@
       "role:compound",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/ucDBHimY6oI"
-  },
-  {
-    "id": "db-shoulder-over",
-    "name": "Dumbbell Shoulder Over",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:side-delts",
-      "muscle:abs",
-      "pattern:rotation",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:dumbbell"
-    ],
-    "videoUrl": "https://youtu.be/rO_iEImwHyo"
+    "videoUrl": "https://youtu.be/DMo3HJoawrU",
+    "durationSeconds": 14
   },
   {
     "id": "dynamic-leg-swing",
@@ -1534,8 +1254,7 @@
       "modality:mobility",
       "role:warmup",
       "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/ihsH785vBq0"
+    ]
   },
   {
     "id": "eccentric-pullup",
@@ -1552,7 +1271,8 @@
       "role:accessory",
       "equipment:pull-up-bar"
     ],
-    "videoUrl": "https://youtu.be/P_BlLZAMjsw"
+    "videoUrl": "https://youtu.be/P_BlLZAMjsw",
+    "durationSeconds": 15
   },
   {
     "id": "eccentric-pushup",
@@ -1568,24 +1288,8 @@
       "role:accessory",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/QN8zjLQGhEo"
-  },
-  {
-    "id": "elbows-in-chest-press",
-    "name": "Elbows-In Chest Press",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:chest",
-      "muscle:triceps",
-      "pattern:horizontal-push",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:machine"
-    ],
-    "videoUrl": "https://youtu.be/lRo9zZ7EwpM"
+    "videoUrl": "https://youtu.be/Olkjnp6-2Rs",
+    "durationSeconds": 14
   },
   {
     "id": "elephant-walk",
@@ -1600,25 +1304,8 @@
       "role:warmup",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/fnih_6w_JjA"
-  },
-  {
-    "id": "elevated-deadlift",
-    "name": "Elevated Deadlift",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:hamstrings",
-      "muscle:glutes",
-      "muscle:lower-back",
-      "pattern:hinge",
-      "modality:resistance",
-      "role:compound",
-      "equipment:barbell"
-    ],
-    "videoUrl": "https://youtu.be/-rAXI0up3Zs"
+    "videoUrl": "https://youtu.be/F7FIFxpdDCI",
+    "durationSeconds": 56
   },
   {
     "id": "elevated-pushup",
@@ -1634,25 +1321,8 @@
       "role:accessory",
       "equipment:box"
     ],
-    "videoUrl": "https://youtu.be/pgZROxLBdiI"
-  },
-  {
-    "id": "elevated-split-squat",
-    "name": "Elevated Split Squat",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:quads",
-      "muscle:glutes",
-      "pattern:lunge",
-      "pattern:single-leg",
-      "modality:resistance",
-      "role:compound",
-      "equipment:box"
-    ],
-    "videoUrl": "https://youtu.be/dkeId9Pit5w"
+    "videoUrl": "https://youtu.be/PEdut6wSQTs",
+    "durationSeconds": 12
   },
   {
     "id": "elliptical",
@@ -1669,7 +1339,8 @@
       "role:conditioning",
       "equipment:elliptical"
     ],
-    "videoUrl": "https://youtu.be/3pCdU1XkNm8"
+    "videoUrl": "https://youtu.be/RakIFxUmSpA",
+    "durationSeconds": 57
   },
   {
     "id": "external-rotation",
@@ -1686,7 +1357,8 @@
       "role:prehab",
       "equipment:band"
     ],
-    "videoUrl": "https://youtu.be/4tpl-huz060"
+    "videoUrl": "https://youtu.be/ybNV36DoRfY",
+    "durationSeconds": 40
   },
   {
     "id": "face-pull",
@@ -1704,7 +1376,8 @@
       "role:prehab",
       "equipment:cable"
     ],
-    "videoUrl": "https://youtu.be/eTCBSFlCJ_s"
+    "videoUrl": "https://youtu.be/eTCBSFlCJ_s",
+    "durationSeconds": 26
   },
   {
     "id": "farmers-carry",
@@ -1722,56 +1395,8 @@
       "role:accessory",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/8OtwXwrJizk"
-  },
-  {
-    "id": "feet-elevated-hip-thrust",
-    "name": "Feet-Elevated Hip Thrust",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:glutes",
-      "muscle:hamstrings",
-      "pattern:hinge",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:bench"
-    ],
-    "videoUrl": "https://youtu.be/imL3mZaEiDg"
-  },
-  {
-    "id": "feet-elevated-scap-pushup",
-    "name": "Feet-Elevated Scapular Pushup",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:upper-back",
-      "pattern:horizontal-push",
-      "modality:mobility",
-      "role:prehab",
-      "equipment:box"
-    ],
-    "videoUrl": "https://youtu.be/v2kRozsNC5s"
-  },
-  {
-    "id": "floor-press",
-    "name": "Floor Press",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:chest",
-      "muscle:triceps",
-      "pattern:horizontal-push",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:barbell"
-    ],
-    "videoUrl": "https://youtu.be/9vYCwtHkWgI"
+    "videoUrl": "https://youtu.be/8OtwXwrJizk",
+    "durationSeconds": 16
   },
   {
     "id": "flutter-kick",
@@ -1787,21 +1412,8 @@
       "role:core",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/makJKOu-8ds"
-  },
-  {
-    "id": "foam-roller-core-stretch",
-    "name": "Foam Roller Core Stretch",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:abs",
-      "muscle:lower-back",
-      "modality:stretch",
-      "role:cooldown",
-      "equipment:foam-roller"
-    ]
+    "videoUrl": "https://youtu.be/ZEjloSZwXqI",
+    "durationSeconds": 22
   },
   {
     "id": "frog-pump",
@@ -1816,7 +1428,8 @@
       "role:isolation",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/wklI-e2WpFQ"
+    "videoUrl": "https://youtu.be/wklI-e2WpFQ",
+    "durationSeconds": 17
   },
   {
     "id": "front-raise",
@@ -1832,7 +1445,8 @@
       "role:isolation",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/DOkR3ce3t40"
+    "videoUrl": "https://youtu.be/hRJ6tR5-if0",
+    "durationSeconds": 12
   },
   {
     "id": "front-row",
@@ -1850,7 +1464,8 @@
       "role:accessory",
       "equipment:kettlebell"
     ],
-    "videoUrl": "https://youtu.be/JDmQ7dWTW1E"
+    "videoUrl": "https://youtu.be/ypOX1ve3ZCY",
+    "durationSeconds": 14
   },
   {
     "id": "front-squat",
@@ -1868,23 +1483,8 @@
       "role:compound",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/nmUof3vszxM"
-  },
-  {
-    "id": "fdrs",
-    "name": "Full Depth Resting Squat",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:quads",
-      "muscle:glutes",
-      "muscle:adductors",
-      "pattern:squat",
-      "modality:mobility",
-      "role:warmup",
-      "equipment:bodyweight"
-    ]
+    "videoUrl": "https://youtu.be/Q1Ypb8ZNzI4",
+    "durationSeconds": 14
   },
   {
     "id": "glute-bridge",
@@ -1900,7 +1500,8 @@
       "role:warmup",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/tqp5XQPpTxY"
+    "videoUrl": "https://youtu.be/tqp5XQPpTxY",
+    "durationSeconds": 21
   },
   {
     "id": "glute-ham-raise",
@@ -1917,7 +1518,8 @@
       "role:accessory",
       "equipment:machine"
     ],
-    "videoUrl": "https://youtu.be/6GLKFga1KOI"
+    "videoUrl": "https://youtu.be/SBGYSfoqyfU",
+    "durationSeconds": 8
   },
   {
     "id": "goat-stretch",
@@ -1932,7 +1534,8 @@
       "role:warmup",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/e6pe_LlBEaQ"
+    "videoUrl": "https://youtu.be/o2EojBoXZL8",
+    "durationSeconds": 14
   },
   {
     "id": "goblet-box-squat",
@@ -1949,7 +1552,8 @@
       "role:compound",
       "equipment:box"
     ],
-    "videoUrl": "https://youtu.be/mIJub2k6YNg"
+    "videoUrl": "https://youtu.be/bfEntuWR9po",
+    "durationSeconds": 17
   },
   {
     "id": "goblet-squat",
@@ -1966,7 +1570,8 @@
       "role:compound",
       "equipment:kettlebell"
     ],
-    "videoUrl": "https://youtu.be/MWHIs0zxkCU"
+    "videoUrl": "https://youtu.be/MWHIs0zxkCU",
+    "durationSeconds": 28
   },
   {
     "id": "good-morning",
@@ -1984,23 +1589,8 @@
       "role:accessory",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/nWyx81AfTos"
-  },
-  {
-    "id": "farmers-walk-grip-hold",
-    "name": "Grip Hold",
-    "fields": [
-      "weightKg",
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:forearms",
-      "pattern:carry",
-      "modality:isometric",
-      "role:accessory",
-      "equipment:dumbbell"
-    ],
-    "videoUrl": "https://youtu.be/KvWWR4nUGuA"
+    "videoUrl": "https://youtu.be/nWyx81AfTos",
+    "durationSeconds": 16
   },
   {
     "id": "hack-squat",
@@ -2017,23 +1607,8 @@
       "role:compound",
       "equipment:machine"
     ],
-    "videoUrl": "https://youtu.be/scs5XcsZuc8"
-  },
-  {
-    "id": "half-pushup-hold",
-    "name": "Half Pushup Hold",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:chest",
-      "muscle:triceps",
-      "muscle:abs",
-      "modality:isometric",
-      "role:potentiation",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/Fh8QVn_GPjk"
+    "videoUrl": "https://youtu.be/scs5XcsZuc8",
+    "durationSeconds": 25
   },
   {
     "id": "hammer-curl",
@@ -2050,23 +1625,8 @@
       "role:isolation",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/CFBZ4jN1CMI"
-  },
-  {
-    "id": "hamstring-march",
-    "name": "Hamstring March",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:hamstrings",
-      "muscle:glutes",
-      "pattern:isolation",
-      "modality:resistance",
-      "role:prehab",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/r9IzVARbKCM"
+    "videoUrl": "https://youtu.be/CFBZ4jN1CMI",
+    "durationSeconds": 19
   },
   {
     "id": "hamstring-walkout",
@@ -2082,7 +1642,8 @@
       "role:prehab",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/jQ9BcglfyVo"
+    "videoUrl": "https://youtu.be/jQ9BcglfyVo",
+    "durationSeconds": 17
   },
   {
     "id": "hanging-knee-raise",
@@ -2098,39 +1659,8 @@
       "role:core",
       "equipment:pull-up-bar"
     ],
-    "videoUrl": "https://youtu.be/m8gKUhhbZTk"
-  },
-  {
-    "id": "hanging-leg-raise",
-    "name": "Hanging Leg Raise",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:abs",
-      "muscle:hip-flexors",
-      "pattern:anti-extension",
-      "modality:resistance",
-      "role:core",
-      "equipment:pull-up-bar"
-    ],
-    "videoUrl": "https://youtu.be/6nbQeJXSui0"
-  },
-  {
-    "id": "hanging-leg-tuck",
-    "name": "Hanging Leg Tuck",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:abs",
-      "muscle:hip-flexors",
-      "pattern:anti-extension",
-      "modality:resistance",
-      "role:core",
-      "equipment:pull-up-bar"
-    ],
-    "videoUrl": "https://youtu.be/JR9OrxOUTcw"
+    "videoUrl": "https://youtu.be/O7iDA3ory-w",
+    "durationSeconds": 12
   },
   {
     "id": "hill-sprint",
@@ -2150,20 +1680,6 @@
     ]
   },
   {
-    "id": "hip-flexor-stretch",
-    "name": "Hip Flexor Stretch",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:hip-flexors",
-      "modality:stretch",
-      "role:cooldown",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/ljCDEb_MIto"
-  },
-  {
     "id": "piriformis-stretch",
     "name": "Piriformis Stretch",
     "fields": [
@@ -2175,25 +1691,7 @@
       "modality:stretch",
       "role:cooldown",
       "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/mT-3b4rgRzg"
-  },
-  {
-    "id": "hip-thrust",
-    "name": "Hip Thrust",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:glutes",
-      "muscle:hamstrings",
-      "pattern:hinge",
-      "modality:resistance",
-      "role:compound",
-      "equipment:bench"
-    ],
-    "videoUrl": "https://youtu.be/xzR8Pq_iaz4"
+    ]
   },
   {
     "id": "hollow-body-hold",
@@ -2208,24 +1706,8 @@
       "role:core",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/Gkh7ZF_lcGw"
-  },
-  {
-    "id": "horizontal-row",
-    "name": "Horizontal Row",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:upper-back",
-      "muscle:lats",
-      "pattern:horizontal-pull",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:machine"
-    ],
-    "videoUrl": "https://youtu.be/1ro8Y8o0Q9c"
+    "videoUrl": "https://youtu.be/EsnM8eBtazU",
+    "durationSeconds": 9
   },
   {
     "id": "incline-bb-bench-press",
@@ -2243,24 +1725,8 @@
       "role:compound",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/DutO2wEtqaw"
-  },
-  {
-    "id": "incline-bench-machine",
-    "name": "Incline Bench Machine",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:chest",
-      "muscle:front-delts",
-      "pattern:horizontal-push",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:machine"
-    ],
-    "videoUrl": "https://youtu.be/I_dcachDaRI"
+    "videoUrl": "https://youtu.be/PZ7waXzAzZc",
+    "durationSeconds": 10
   },
   {
     "id": "incline-db-curl",
@@ -2276,7 +1742,8 @@
       "role:isolation",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/aG7CXiKxepw"
+    "videoUrl": "https://youtu.be/aG7CXiKxepw",
+    "durationSeconds": 16
   },
   {
     "id": "incline-db-press",
@@ -2294,7 +1761,8 @@
       "role:compound",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/jMQA3XtJSgo"
+    "videoUrl": "https://youtu.be/5CECBjd7HLQ",
+    "durationSeconds": 12
   },
   {
     "id": "incline-treadmill",
@@ -2311,8 +1779,7 @@
       "modality:cardio",
       "role:conditioning",
       "equipment:treadmill"
-    ],
-    "videoUrl": "https://youtu.be/DbS93DbiWv8"
+    ]
   },
   {
     "id": "interval-run",
@@ -2329,8 +1796,7 @@
       "modality:cardio",
       "role:conditioning",
       "equipment:none"
-    ],
-    "videoUrl": "https://youtu.be/HFUz5qazxn0"
+    ]
   },
   {
     "id": "isometric-heel-floating-split-squat",
@@ -2347,7 +1813,8 @@
       "role:potentiation",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/dxE41q3wPi8"
+    "videoUrl": "https://youtu.be/01Z-cZfx62E",
+    "durationSeconds": 33
   },
   {
     "id": "jefferson-curl",
@@ -2364,24 +1831,8 @@
       "role:accessory",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/7GBBkA60Yu8"
-  },
-  {
-    "id": "jog",
-    "name": "Jog",
-    "fields": [
-      "distanceMeters",
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:quads",
-      "muscle:calves",
-      "pattern:gait",
-      "modality:cardio",
-      "role:conditioning",
-      "equipment:none"
-    ],
-    "videoUrl": "https://youtu.be/k2L97eKS5qk"
+    "videoUrl": "https://youtu.be/7GBBkA60Yu8",
+    "durationSeconds": 22
   },
   {
     "id": "jump-rope",
@@ -2397,8 +1848,7 @@
       "modality:cardio",
       "role:conditioning",
       "equipment:jump-rope"
-    ],
-    "videoUrl": "https://youtu.be/u3zgHI8QnqE"
+    ]
   },
   {
     "id": "jump-squat",
@@ -2416,7 +1866,8 @@
       "role:power",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/0pTBkUPuMkk"
+    "videoUrl": "https://youtu.be/0pTBkUPuMkk",
+    "durationSeconds": 34
   },
   {
     "id": "kb-clean",
@@ -2433,8 +1884,7 @@
       "modality:resistance",
       "role:power",
       "equipment:kettlebell"
-    ],
-    "videoUrl": "https://youtu.be/fGKMchSmj7c"
+    ]
   },
   {
     "id": "kb-clean-and-press",
@@ -2453,25 +1903,8 @@
       "role:power",
       "equipment:kettlebell"
     ],
-    "videoUrl": "https://youtu.be/w61J5F-rFP8"
-  },
-  {
-    "id": "kb-deadlift",
-    "name": "Kettlebell Deadlift",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:hamstrings",
-      "muscle:glutes",
-      "muscle:lower-back",
-      "pattern:hinge",
-      "modality:resistance",
-      "role:compound",
-      "equipment:kettlebell"
-    ],
-    "videoUrl": "https://youtu.be/l6gDwf3xC6s"
+    "videoUrl": "https://youtu.be/w61J5F-rFP8",
+    "durationSeconds": 33
   },
   {
     "id": "kb-foot-raise",
@@ -2488,7 +1921,8 @@
       "role:prehab",
       "equipment:kettlebell"
     ],
-    "videoUrl": "https://youtu.be/1uzcs7mx5ik"
+    "videoUrl": "https://youtu.be/_4khpbG5rfg",
+    "durationSeconds": 49
   },
   {
     "id": "kb-halo",
@@ -2505,26 +1939,8 @@
       "role:warmup",
       "equipment:kettlebell"
     ],
-    "videoUrl": "https://youtu.be/wJcmanVh5EE"
-  },
-  {
-    "id": "kb-lateral-run",
-    "name": "Kettlebell Lateral Run",
-    "fields": [
-      "weightKg",
-      "distanceMeters"
-    ],
-    "tags": [
-      "muscle:abductors",
-      "muscle:quads",
-      "muscle:abs",
-      "pattern:gait",
-      "pattern:carry",
-      "modality:resistance",
-      "role:conditioning",
-      "equipment:kettlebell"
-    ],
-    "videoUrl": "https://youtu.be/twPS-rz5ji4"
+    "videoUrl": "https://youtu.be/wJcmanVh5EE",
+    "durationSeconds": 22
   },
   {
     "id": "kb-push-press",
@@ -2542,24 +1958,8 @@
       "role:power",
       "equipment:kettlebell"
     ],
-    "videoUrl": "https://youtu.be/CCqru4q9RK0"
-  },
-  {
-    "id": "kb-rdl",
-    "name": "Kettlebell Romanian Deadlift",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:hamstrings",
-      "muscle:glutes",
-      "pattern:hinge",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:kettlebell"
-    ],
-    "videoUrl": "https://youtu.be/mVSgE9S0G4w"
+    "videoUrl": "https://youtu.be/CCqru4q9RK0",
+    "durationSeconds": 15
   },
   {
     "id": "kb-swing",
@@ -2577,25 +1977,8 @@
       "role:power",
       "equipment:kettlebell"
     ],
-    "videoUrl": "https://youtu.be/1cVT3ee9mgU"
-  },
-  {
-    "id": "landmine-clean",
-    "name": "Landmine Clean",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:glutes",
-      "muscle:traps",
-      "muscle:full-body",
-      "pattern:hinge",
-      "modality:resistance",
-      "role:power",
-      "equipment:landmine"
-    ],
-    "videoUrl": "https://youtu.be/bZRXZZXOEdQ"
+    "videoUrl": "https://youtu.be/RU88iqRVunk",
+    "durationSeconds": 32
   },
   {
     "id": "landmine-clean-and-press",
@@ -2614,7 +1997,8 @@
       "role:power",
       "equipment:landmine"
     ],
-    "videoUrl": "https://youtu.be/bZRXZZXOEdQ"
+    "videoUrl": "https://youtu.be/bZRXZZXOEdQ",
+    "durationSeconds": 18
   },
   {
     "id": "landmine-press",
@@ -2632,7 +2016,8 @@
       "role:compound",
       "equipment:landmine"
     ],
-    "videoUrl": "https://youtu.be/sjTytMaBsdQ"
+    "videoUrl": "https://youtu.be/t9GuiNQo1O4",
+    "durationSeconds": 16
   },
   {
     "id": "landmine-row",
@@ -2649,7 +2034,8 @@
       "role:accessory",
       "equipment:landmine"
     ],
-    "videoUrl": "https://youtu.be/JlE7fzmGToY"
+    "videoUrl": "https://youtu.be/hYo72r8Ivso",
+    "durationSeconds": 11
   },
   {
     "id": "landmine-squat",
@@ -2666,7 +2052,8 @@
       "role:compound",
       "equipment:landmine"
     ],
-    "videoUrl": "https://youtu.be/7eu_mtKFqQ0"
+    "videoUrl": "https://youtu.be/YxaXaZxVcDU",
+    "durationSeconds": 13
   },
   {
     "id": "lat-pulldown",
@@ -2683,56 +2070,7 @@
       "modality:resistance",
       "role:compound",
       "equipment:cable"
-    ],
-    "videoUrl": "https://youtu.be/trZQjegcRx0"
-  },
-  {
-    "id": "lat-stretch",
-    "name": "Lat Stretch",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:lats",
-      "modality:stretch",
-      "role:cooldown",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/jXB-gTLFDp8"
-  },
-  {
-    "id": "lateral-band-walk",
-    "name": "Lateral Band Walk",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:abductors",
-      "muscle:glutes",
-      "pattern:isolation",
-      "modality:resistance",
-      "role:prehab",
-      "equipment:band"
-    ],
-    "videoUrl": "https://youtu.be/wn9IpSl3WbQ"
-  },
-  {
-    "id": "lateral-run",
-    "name": "Lateral Run",
-    "fields": [
-      "distanceMeters",
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:abductors",
-      "muscle:quads",
-      "muscle:calves",
-      "pattern:gait",
-      "modality:plyometric",
-      "role:conditioning",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/Guzq7mMGLjs"
+    ]
   },
   {
     "id": "leg-extension",
@@ -2748,7 +2086,8 @@
       "role:isolation",
       "equipment:machine"
     ],
-    "videoUrl": "https://youtu.be/qYxo9ZFvHQE"
+    "videoUrl": "https://youtu.be/4ZDm5EbiFI8",
+    "durationSeconds": 14
   },
   {
     "id": "leg-press",
@@ -2765,23 +2104,8 @@
       "role:compound",
       "equipment:machine"
     ],
-    "videoUrl": "https://youtu.be/qCR9bN3G1t4"
-  },
-  {
-    "id": "leg-press-calf-raise",
-    "name": "Leg Press Calf Raise",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:calves",
-      "pattern:isolation",
-      "modality:resistance",
-      "role:isolation",
-      "equipment:machine"
-    ],
-    "videoUrl": "https://youtu.be/_opMKu44-js"
+    "videoUrl": "https://youtu.be/qCR9bN3G1t4",
+    "durationSeconds": 16
   },
   {
     "id": "loaded-butterfly-stretch",
@@ -2796,7 +2120,8 @@
       "role:accessory",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/iPOE8svH22c"
+    "videoUrl": "https://youtu.be/198oXaJGaQk",
+    "durationSeconds": 35
   },
   {
     "id": "loaded-carry",
@@ -2814,42 +2139,8 @@
       "role:accessory",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/_DZ8loL0Qtc"
-  },
-  {
-    "id": "low-incline-db-press",
-    "name": "Low Incline Dumbbell Press",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:chest",
-      "muscle:front-delts",
-      "muscle:triceps",
-      "pattern:horizontal-push",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:dumbbell"
-    ],
-    "videoUrl": "https://youtu.be/krniYFRYXTo"
-  },
-  {
-    "id": "lunge-into-leg-thru",
-    "name": "Lunge into Leg-Thru",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:quads",
-      "muscle:glutes",
-      "muscle:hip-flexors",
-      "pattern:lunge",
-      "modality:mobility",
-      "role:warmup",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/2MYR_DNF7VM"
+    "videoUrl": "https://youtu.be/_DZ8loL0Qtc",
+    "durationSeconds": 43
   },
   {
     "id": "lunging-complex",
@@ -2866,36 +2157,8 @@
       "role:warmup",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/HpArvdk-5SY"
-  },
-  {
-    "id": "lunging-mobilisation",
-    "name": "Lunging Mobilisation",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:hip-flexors",
-      "muscle:quads",
-      "pattern:lunge",
-      "modality:mobility",
-      "role:warmup",
-      "equipment:bodyweight"
-    ]
-  },
-  {
-    "id": "max-glute-squeeze",
-    "name": "Max Glute Squeeze",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:glutes",
-      "modality:isometric",
-      "role:potentiation",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/JxuSyMRQ8Nk"
+    "videoUrl": "https://youtu.be/-zUIadPYC2s",
+    "durationSeconds": 57
   },
   {
     "id": "meadows-row",
@@ -2912,7 +2175,8 @@
       "role:accessory",
       "equipment:landmine"
     ],
-    "videoUrl": "https://youtu.be/nu18XcNle-Y"
+    "videoUrl": "https://youtu.be/18ygbNj5ibs",
+    "durationSeconds": 50
   },
   {
     "id": "medicine-ball-rotational-throw",
@@ -2930,7 +2194,8 @@
       "role:power",
       "equipment:medicine-ball"
     ],
-    "videoUrl": "https://youtu.be/o9BC7lgN1bo"
+    "videoUrl": "https://youtu.be/o9BC7lgN1bo",
+    "durationSeconds": 45
   },
   {
     "id": "medicine-ball-slam",
@@ -2948,7 +2213,8 @@
       "role:power",
       "equipment:slam-ball"
     ],
-    "videoUrl": "https://youtu.be/hMlNIyd6l2w"
+    "videoUrl": "https://youtu.be/DMrxbUgoZTg",
+    "durationSeconds": 16
   },
   {
     "id": "mountain-climber",
@@ -2964,24 +2230,8 @@
       "role:conditioning",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/hq_0YlyfqGM"
-  },
-  {
-    "id": "neutral-grip-pulldown",
-    "name": "Neutral-Grip Lat Pulldown",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:lats",
-      "muscle:biceps",
-      "pattern:vertical-pull",
-      "modality:resistance",
-      "role:compound",
-      "equipment:cable"
-    ],
-    "videoUrl": "https://youtu.be/T6vyPEeNZJ8"
+    "videoUrl": "https://youtu.be/wQq3ybaLZeA",
+    "durationSeconds": 45
   },
   {
     "id": "nordic-eccentric",
@@ -2996,22 +2246,8 @@
       "role:prehab",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/7CAbW5s3CTo"
-  },
-  {
-    "id": "one-arm-stand",
-    "name": "One Arm Stand",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:front-delts",
-      "muscle:abs",
-      "modality:balance",
-      "role:accessory",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/bdKQzby2a9c"
+    "videoUrl": "https://youtu.be/Iahggxm0nK0",
+    "durationSeconds": 33
   },
   {
     "id": "overcoming-isometric-pull",
@@ -3020,33 +2256,14 @@
       "durationSeconds"
     ],
     "tags": [
-      "muscle:lower-back",
-      "muscle:hamstrings",
-      "muscle:traps",
+      "muscle:full-body",
       "pattern:hinge",
       "modality:isometric",
       "role:potentiation",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/BX9TL22SUGI"
-  },
-  {
-    "id": "overhead-carry",
-    "name": "Overhead Carry",
-    "fields": [
-      "weightKg",
-      "distanceMeters"
-    ],
-    "tags": [
-      "muscle:front-delts",
-      "muscle:abs",
-      "muscle:traps",
-      "pattern:carry",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:kettlebell"
-    ],
-    "videoUrl": "https://youtu.be/54POVWkWjEs"
+    "videoUrl": "https://youtu.be/mWEc1Rfw-3g",
+    "durationSeconds": 33
   },
   {
     "id": "overhead-db-tricep-extension",
@@ -3062,22 +2279,8 @@
       "role:isolation",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/7h3lG2WnLXg"
-  },
-  {
-    "id": "overhead-mobility",
-    "name": "Overhead Mobility",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:lats",
-      "muscle:front-delts",
-      "modality:mobility",
-      "role:warmup",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/WZGUAVNeaT4"
+    "videoUrl": "https://youtu.be/a9oPnZReIRE",
+    "durationSeconds": 12
   },
   {
     "id": "ohp",
@@ -3095,7 +2298,8 @@
       "role:compound",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/ZXpdJOLNoWw"
+    "videoUrl": "https://youtu.be/cGnhixvC8uA",
+    "durationSeconds": 12
   },
   {
     "id": "ohp-in-lunge",
@@ -3113,40 +2317,7 @@
       "modality:balance",
       "role:accessory",
       "equipment:dumbbell"
-    ],
-    "videoUrl": "https://youtu.be/glPYsPi3Qsw"
-  },
-  {
-    "id": "overhead-superman-iso-hold",
-    "name": "Overhead Superman Iso Hold",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:lower-back",
-      "muscle:lats",
-      "muscle:glutes",
-      "pattern:anti-extension",
-      "modality:isometric",
-      "role:core",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/F71j0tCV9Xo"
-  },
-  {
-    "id": "overhead-tricep-stretch",
-    "name": "Overhead Tricep Stretch",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:triceps",
-      "muscle:lats",
-      "modality:stretch",
-      "role:cooldown",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/cPTrm13hSSo"
+    ]
   },
   {
     "id": "pallof-press",
@@ -3163,7 +2334,8 @@
       "role:core",
       "equipment:cable"
     ],
-    "videoUrl": "https://youtu.be/7u4H250Oc-A"
+    "videoUrl": "https://youtu.be/HXrLaqNIkTs",
+    "durationSeconds": 11
   },
   {
     "id": "pallof-press-in-lunge",
@@ -3182,72 +2354,8 @@
       "role:core",
       "equipment:cable"
     ],
-    "videoUrl": "https://youtu.be/PlpE9e5WjQ0"
-  },
-  {
-    "id": "parallette-hold",
-    "name": "Parallette Hold",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:abs",
-      "muscle:front-delts",
-      "muscle:triceps",
-      "modality:isometric",
-      "role:core",
-      "equipment:dip-bar"
-    ],
-    "videoUrl": "https://youtu.be/_vPttkLHZMw"
-  },
-  {
-    "id": "parallette-hollow-body-hold",
-    "name": "Parallette Hollow Body Hold",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:abs",
-      "muscle:front-delts",
-      "pattern:anti-extension",
-      "modality:isometric",
-      "role:core",
-      "equipment:dip-bar"
-    ],
-    "videoUrl": "https://youtu.be/8L-kEMG-aLI"
-  },
-  {
-    "id": "passive-hang",
-    "name": "Passive Hang",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:lats",
-      "muscle:forearms",
-      "pattern:hang",
-      "modality:mobility",
-      "role:cooldown",
-      "equipment:pull-up-bar"
-    ],
-    "videoUrl": "https://youtu.be/kjCNzZUD1Tw"
-  },
-  {
-    "id": "pause-goblet-squat",
-    "name": "Pause Goblet Squat",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:quads",
-      "muscle:glutes",
-      "pattern:squat",
-      "modality:resistance",
-      "role:compound",
-      "equipment:kettlebell"
-    ],
-    "videoUrl": "https://youtu.be/7qQVjogaiJY"
+    "videoUrl": "https://youtu.be/PlpE9e5WjQ0",
+    "durationSeconds": 29
   },
   {
     "id": "pec-deck",
@@ -3263,11 +2371,12 @@
       "role:isolation",
       "equipment:machine"
     ],
-    "videoUrl": "https://youtu.be/ze4JaQCcGLg"
+    "videoUrl": "https://youtu.be/O-OBCfyh9Fw",
+    "durationSeconds": 13
   },
   {
     "id": "pec-fly-crossover",
-    "name": "Pec Fly Crossover",
+    "name": "Pec Fly",
     "fields": [
       "weightKg",
       "reps"
@@ -3279,39 +2388,8 @@
       "role:isolation",
       "equipment:cable"
     ],
-    "videoUrl": "https://youtu.be/yAlBAhxr8ic"
-  },
-  {
-    "id": "pelvic-tilt",
-    "name": "Pelvic Tilt",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:abs",
-      "muscle:lower-back",
-      "modality:mobility",
-      "role:warmup",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/44D6Xc2Fkek"
-  },
-  {
-    "id": "pendlay-row",
-    "name": "Pendlay Row",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:upper-back",
-      "muscle:lats",
-      "pattern:horizontal-pull",
-      "modality:resistance",
-      "role:compound",
-      "equipment:barbell"
-    ],
-    "videoUrl": "https://youtu.be/C_p-s66KBpg"
+    "videoUrl": "https://youtu.be/hhruLxo9yZU",
+    "durationSeconds": 12
   },
   {
     "id": "pike-pushup",
@@ -3327,23 +2405,8 @@
       "role:compound",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/XckEEwa1BPI"
-  },
-  {
-    "id": "planche-lean",
-    "name": "Planche Lean",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:front-delts",
-      "muscle:abs",
-      "pattern:anti-extension",
-      "modality:isometric",
-      "role:accessory",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/3CltFxibIu0"
+    "videoUrl": "https://youtu.be/XckEEwa1BPI",
+    "durationSeconds": 17
   },
   {
     "id": "planche-lean-pushup",
@@ -3360,7 +2423,8 @@
       "role:accessory",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/i33vHrgElkE"
+    "videoUrl": "https://youtu.be/jPIMn5W-6wc",
+    "durationSeconds": 28
   },
   {
     "id": "plank",
@@ -3374,8 +2438,7 @@
       "modality:isometric",
       "role:core",
       "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/QpOgJLqeo14"
+    ]
   },
   {
     "id": "pogo-jump",
@@ -3391,7 +2454,8 @@
       "role:power",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/j0nl5dWuqN4"
+    "videoUrl": "https://youtu.be/iU-TKr4YesM",
+    "durationSeconds": 18
   },
   {
     "id": "power-clean",
@@ -3409,7 +2473,8 @@
       "role:power",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/e8TpDdMYq4Y"
+    "videoUrl": "https://youtu.be/e8TpDdMYq4Y",
+    "durationSeconds": 15
   },
   {
     "id": "preacher-curl",
@@ -3425,7 +2490,8 @@
       "role:isolation",
       "equipment:ez-bar"
     ],
-    "videoUrl": "https://youtu.be/ucq-w1JR5gU"
+    "videoUrl": "https://youtu.be/sxA__DoLsgo",
+    "durationSeconds": 15
   },
   {
     "id": "prone-leg-curl",
@@ -3441,7 +2507,8 @@
       "role:isolation",
       "equipment:machine"
     ],
-    "videoUrl": "https://youtu.be/d06xo7ArHU0"
+    "videoUrl": "https://youtu.be/5xR8tvg4-yM",
+    "durationSeconds": 39
   },
   {
     "id": "pullup",
@@ -3458,24 +2525,7 @@
       "modality:resistance",
       "role:compound",
       "equipment:pull-up-bar"
-    ],
-    "videoUrl": "https://youtu.be/sIvJTfGxdFo"
-  },
-  {
-    "id": "pullup-iso-eccentric",
-    "name": "Pull-up Iso-Eccentric",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:lats",
-      "muscle:upper-back",
-      "pattern:vertical-pull",
-      "modality:isometric",
-      "role:accessory",
-      "equipment:pull-up-bar"
-    ],
-    "videoUrl": "https://youtu.be/zNBDpPdodRA"
+    ]
   },
   {
     "id": "push-jerk",
@@ -3493,7 +2543,8 @@
       "role:power",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/-sltnWIZlyo"
+    "videoUrl": "https://youtu.be/-sltnWIZlyo",
+    "durationSeconds": 34
   },
   {
     "id": "pushup",
@@ -3511,7 +2562,8 @@
       "role:compound",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/lsRAK6cr5kY"
+    "videoUrl": "https://youtu.be/WDIpL0pjun0",
+    "durationSeconds": 14
   },
   {
     "id": "rear-delt-fly",
@@ -3528,7 +2580,8 @@
       "role:isolation",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/nlkF7_2O_Lw"
+    "videoUrl": "https://youtu.be/3gJXpfwg_go",
+    "durationSeconds": 10
   },
   {
     "id": "rear-delt-machine",
@@ -3545,23 +2598,8 @@
       "role:isolation",
       "equipment:machine"
     ],
-    "videoUrl": "https://youtu.be/VoscK_FHNbw"
-  },
-  {
-    "id": "recumbent-bike",
-    "name": "Recumbent Bike",
-    "fields": [
-      "distanceMeters",
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:quads",
-      "muscle:glutes",
-      "modality:cardio",
-      "role:conditioning",
-      "equipment:stationary-bike"
-    ],
-    "videoUrl": "https://youtu.be/ckJRUKyJ8cI"
+    "videoUrl": "https://youtu.be/VoscK_FHNbw",
+    "durationSeconds": 16
   },
   {
     "id": "reverse-crunch",
@@ -3577,7 +2615,8 @@
       "role:core",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/XY8KzdDcMFg"
+    "videoUrl": "https://youtu.be/XY8KzdDcMFg",
+    "durationSeconds": 21
   },
   {
     "id": "reverse-curl",
@@ -3594,25 +2633,8 @@
       "role:isolation",
       "equipment:ez-bar"
     ],
-    "videoUrl": "https://youtu.be/kPXvDlFNb3s"
-  },
-  {
-    "id": "reverse-hyper",
-    "name": "Reverse Hyperextension",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:glutes",
-      "muscle:lower-back",
-      "muscle:hamstrings",
-      "pattern:hinge",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:machine"
-    ],
-    "videoUrl": "https://youtu.be/MT0U96RqkhM"
+    "videoUrl": "https://youtu.be/kPXvDlFNb3s",
+    "durationSeconds": 41
   },
   {
     "id": "ring-pushup",
@@ -3628,7 +2650,8 @@
       "role:accessory",
       "equipment:rings"
     ],
-    "videoUrl": "https://youtu.be/m4PClV2vYvQ"
+    "videoUrl": "https://youtu.be/4tuwUu0Z46s",
+    "durationSeconds": 11
   },
   {
     "id": "ring-row",
@@ -3645,7 +2668,8 @@
       "role:compound",
       "equipment:rings"
     ],
-    "videoUrl": "https://youtu.be/4g8CM9pV4X4"
+    "videoUrl": "https://youtu.be/B90sF7dbP04",
+    "durationSeconds": 11
   },
   {
     "id": "rdl",
@@ -3663,7 +2687,8 @@
       "role:compound",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/xgusDooVfKU"
+    "videoUrl": "https://youtu.be/8qGJZ4QPNi8",
+    "durationSeconds": 15
   },
   {
     "id": "rope-tricep-pushdown",
@@ -3679,7 +2704,8 @@
       "role:isolation",
       "equipment:cable"
     ],
-    "videoUrl": "https://youtu.be/-xa-6cQaZKY"
+    "videoUrl": "https://youtu.be/-xa-6cQaZKY",
+    "durationSeconds": 12
   },
   {
     "id": "rowing-machine",
@@ -3697,41 +2723,8 @@
       "role:conditioning",
       "equipment:rower"
     ],
-    "videoUrl": "https://youtu.be/6_eLpWiNijE"
-  },
-  {
-    "id": "run",
-    "name": "Run",
-    "fields": [
-      "distanceMeters",
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:quads",
-      "muscle:hamstrings",
-      "muscle:calves",
-      "pattern:gait",
-      "modality:cardio",
-      "role:conditioning",
-      "equipment:none"
-    ],
-    "videoUrl": "https://youtu.be/Ly-Zh-rXeh4"
-  },
-  {
-    "id": "run-walk-progression",
-    "name": "Run-Walk Progression",
-    "fields": [
-      "distanceMeters",
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:quads",
-      "muscle:calves",
-      "pattern:gait",
-      "modality:cardio",
-      "role:conditioning",
-      "equipment:none"
-    ]
+    "videoUrl": "https://youtu.be/6_eLpWiNijE",
+    "durationSeconds": 60
   },
   {
     "id": "russian-twist",
@@ -3747,8 +2740,7 @@
       "modality:resistance",
       "role:core",
       "equipment:medicine-ball"
-    ],
-    "videoUrl": "https://youtu.be/DLpMtMZnpy0"
+    ]
   },
   {
     "id": "scapular-pullup",
@@ -3765,7 +2757,8 @@
       "role:potentiation",
       "equipment:pull-up-bar"
     ],
-    "videoUrl": "https://youtu.be/pE8PJsWEV7k"
+    "videoUrl": "https://youtu.be/pE8PJsWEV7k",
+    "durationSeconds": 23
   },
   {
     "id": "scap-pushup",
@@ -3781,7 +2774,8 @@
       "role:prehab",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/huGj4aBk9C4"
+    "videoUrl": "https://youtu.be/huGj4aBk9C4",
+    "durationSeconds": 16
   },
   {
     "id": "seated-cable-row",
@@ -3799,7 +2793,8 @@
       "role:compound",
       "equipment:cable"
     ],
-    "videoUrl": "https://youtu.be/lJoozxC0Rns"
+    "videoUrl": "https://youtu.be/lJoozxC0Rns",
+    "durationSeconds": 16
   },
   {
     "id": "seated-calf-raise",
@@ -3815,7 +2810,8 @@
       "role:isolation",
       "equipment:machine"
     ],
-    "videoUrl": "https://youtu.be/HSGjUouQZCQ"
+    "videoUrl": "https://youtu.be/_LxQH4o7COk",
+    "durationSeconds": 56
   },
   {
     "id": "seated-db-ohp",
@@ -3832,7 +2828,8 @@
       "role:compound",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/poD_-zaG9hk"
+    "videoUrl": "https://youtu.be/HzIiNhHhhtA",
+    "durationSeconds": 13
   },
   {
     "id": "seated-leg-curl",
@@ -3848,38 +2845,24 @@
       "role:isolation",
       "equipment:machine"
     ],
-    "videoUrl": "https://youtu.be/_qwLdYywo_A"
+    "videoUrl": "https://youtu.be/Orxowest56U",
+    "durationSeconds": 11
   },
   {
     "id": "seated-row-machine",
-    "name": "Seated Row Machine",
+    "name": "Row Machine",
     "fields": [
       "weightKg",
       "reps"
     ],
     "tags": [
-      "muscle:upper-back",
       "muscle:lats",
+      "muscle:upper-back",
       "pattern:horizontal-pull",
       "modality:resistance",
       "role:compound",
       "equipment:machine"
-    ],
-    "videoUrl": "https://youtu.be/lRAHFFwBvOg"
-  },
-  {
-    "id": "shivasana",
-    "name": "Shivasana",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:full-body",
-      "modality:yoga",
-      "role:cooldown",
-      "equipment:yoga-mat"
-    ],
-    "videoUrl": "https://youtu.be/uJfqYf2dJoU"
+    ]
   },
   {
     "id": "shoulder-dislocate",
@@ -3895,7 +2878,8 @@
       "role:warmup",
       "equipment:band"
     ],
-    "videoUrl": "https://youtu.be/Annb0cpxwzM"
+    "videoUrl": "https://youtu.be/SL8VAYpmpCQ",
+    "durationSeconds": 20
   },
   {
     "id": "shoulder-opener",
@@ -3910,7 +2894,8 @@
       "role:warmup",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/FDAXo3zLty8"
+    "videoUrl": "https://youtu.be/FDAXo3zLty8",
+    "durationSeconds": 31
   },
   {
     "id": "shoulder-press-machine",
@@ -3927,11 +2912,12 @@
       "role:compound",
       "equipment:machine"
     ],
-    "videoUrl": "https://youtu.be/Yq_Tj3yb5Bc"
+    "videoUrl": "https://youtu.be/GcY6TZxfS0k",
+    "durationSeconds": 11
   },
   {
     "id": "shrug",
-    "name": "Shrug",
+    "name": "Dumbell Shrug",
     "fields": [
       "weightKg",
       "reps"
@@ -3943,11 +2929,12 @@
       "role:isolation",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/uN5rwCivJXc"
+    "videoUrl": "https://youtu.be/SX1FE0URdv8",
+    "durationSeconds": 40
   },
   {
     "id": "side-delt-raise",
-    "name": "Side Delt Raise",
+    "name": "Lateral Raise",
     "fields": [
       "weightKg",
       "reps"
@@ -3959,7 +2946,8 @@
       "role:isolation",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/3VcKaXpzqRo"
+    "videoUrl": "https://youtu.be/XPPfnSEATJA",
+    "durationSeconds": 19
   },
   {
     "id": "side-glute-leg-raise",
@@ -3975,7 +2963,8 @@
       "role:prehab",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/6b1hu6iSqok"
+    "videoUrl": "https://youtu.be/-70DIyrLBfs",
+    "durationSeconds": 55
   },
   {
     "id": "side-lunge",
@@ -3993,7 +2982,8 @@
       "role:accessory",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/R8jArZG2J6Q"
+    "videoUrl": "https://youtu.be/gKcUhmLbEIY",
+    "durationSeconds": 52
   },
   {
     "id": "side-plank",
@@ -4008,8 +2998,7 @@
       "modality:isometric",
       "role:core",
       "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/iNbH7_edNI8"
+    ]
   },
   {
     "id": "side-plank-band-row",
@@ -4026,24 +3015,8 @@
       "role:accessory",
       "equipment:band"
     ],
-    "videoUrl": "https://youtu.be/3fG3pytj__I"
-  },
-  {
-    "id": "sa-cross-body-pulldown",
-    "name": "Single-Arm Cross-Body Pulldown",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:lats",
-      "muscle:obliques",
-      "pattern:vertical-pull",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:cable"
-    ],
-    "videoUrl": "https://youtu.be/tGXsAtxVsaE"
+    "videoUrl": "https://youtu.be/3fG3pytj__I",
+    "durationSeconds": 16
   },
   {
     "id": "sa-db-row",
@@ -4060,7 +3033,8 @@
       "role:accessory",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/dFzUjzfih7k"
+    "videoUrl": "https://youtu.be/ZRSGpBUVcNw",
+    "durationSeconds": 11
   },
   {
     "id": "sa-horizontal-row",
@@ -4077,7 +3051,8 @@
       "role:accessory",
       "equipment:machine"
     ],
-    "videoUrl": "https://youtu.be/p4ktYrGfLjg"
+    "videoUrl": "https://youtu.be/V5iJm3d6fgo",
+    "durationSeconds": 45
   },
   {
     "id": "sa-kb-split-stance-deadlift",
@@ -4096,24 +3071,8 @@
       "role:accessory",
       "equipment:kettlebell"
     ],
-    "videoUrl": "https://youtu.be/0qYUHZOVKus"
-  },
-  {
-    "id": "sa-kb-supported-row",
-    "name": "Single-Arm Kettlebell Supported Row",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:lats",
-      "muscle:upper-back",
-      "pattern:horizontal-pull",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:kettlebell"
-    ],
-    "videoUrl": "https://youtu.be/8gg400ddt-g"
+    "videoUrl": "https://youtu.be/0qYUHZOVKus",
+    "durationSeconds": 15
   },
   {
     "id": "sa-lat-pulldown",
@@ -4130,7 +3089,8 @@
       "role:accessory",
       "equipment:cable"
     ],
-    "videoUrl": "https://youtu.be/XbZgoSNJXm4"
+    "videoUrl": "https://youtu.be/PTmdK_N9iTI",
+    "durationSeconds": 47
   },
   {
     "id": "sa-ohp",
@@ -4149,75 +3109,8 @@
       "role:accessory",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/156_Z9969FQ"
-  },
-  {
-    "id": "sa-push-press",
-    "name": "Single-Arm Push Press",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:front-delts",
-      "muscle:triceps",
-      "muscle:obliques",
-      "pattern:vertical-push",
-      "modality:resistance",
-      "role:power",
-      "equipment:kettlebell"
-    ],
-    "videoUrl": "https://youtu.be/gjr-QAdsq4o"
-  },
-  {
-    "id": "sa-shoulder-press-machine",
-    "name": "Single-Arm Shoulder Press Machine",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:front-delts",
-      "muscle:triceps",
-      "pattern:vertical-push",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:machine"
-    ],
-    "videoUrl": "https://youtu.be/L9VlR9yq904"
-  },
-  {
-    "id": "sa-sm-push-away",
-    "name": "Single-Arm Smith Machine Push Away",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:chest",
-      "muscle:front-delts",
-      "pattern:horizontal-push",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:smith-machine"
-    ]
-  },
-  {
-    "id": "sa-supported-db-row",
-    "name": "Single-Arm Supported Dumbbell Row",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:lats",
-      "muscle:upper-back",
-      "pattern:horizontal-pull",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:bench"
-    ],
-    "videoUrl": "https://youtu.be/P4GlsA07y58"
+    "videoUrl": "https://youtu.be/156_Z9969FQ",
+    "durationSeconds": 17
   },
   {
     "id": "sl-leg-curl",
@@ -4234,7 +3127,8 @@
       "role:isolation",
       "equipment:machine"
     ],
-    "videoUrl": "https://youtu.be/0aTuGuYYm2A"
+    "videoUrl": "https://youtu.be/Qsc45sDpvbM",
+    "durationSeconds": 53
   },
   {
     "id": "sl-glute-bridge",
@@ -4251,7 +3145,8 @@
       "role:prehab",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/sVfp4LN9niA"
+    "videoUrl": "https://youtu.be/sVfp4LN9niA",
+    "durationSeconds": 20
   },
   {
     "id": "sl-rdl",
@@ -4269,7 +3164,8 @@
       "role:accessory",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/pJewPISyHjw"
+    "videoUrl": "https://youtu.be/pJewPISyHjw",
+    "durationSeconds": 19
   },
   {
     "id": "sl-rdl-to-knee-drive",
@@ -4288,7 +3184,8 @@
       "role:accessory",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/vI2S68dY2q8"
+    "videoUrl": "https://youtu.be/vI2S68dY2q8",
+    "durationSeconds": 17
   },
   {
     "id": "sissy-squat",
@@ -4303,23 +3200,8 @@
       "role:isolation",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/VUiFlZ2FsKA"
-  },
-  {
-    "id": "sit-up",
-    "name": "Sit-up",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:abs",
-      "muscle:hip-flexors",
-      "pattern:anti-extension",
-      "modality:resistance",
-      "role:core",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/onaQ0v_J5uU"
+    "videoUrl": "https://youtu.be/FTmbNjUu7CI",
+    "durationSeconds": 27
   },
   {
     "id": "ski-erg",
@@ -4336,8 +3218,7 @@
       "modality:cardio",
       "role:conditioning",
       "equipment:ski-erg"
-    ],
-    "videoUrl": "https://youtu.be/B0lIgT5PHc8"
+    ]
   },
   {
     "id": "skull-crusher",
@@ -4353,25 +3234,8 @@
       "role:isolation",
       "equipment:ez-bar"
     ],
-    "videoUrl": "https://youtu.be/kcvdV0LkhUk"
-  },
-  {
-    "id": "sled-drag",
-    "name": "Sled Drag",
-    "fields": [
-      "weightKg",
-      "distanceMeters"
-    ],
-    "tags": [
-      "muscle:quads",
-      "muscle:hamstrings",
-      "muscle:glutes",
-      "pattern:gait",
-      "modality:resistance",
-      "role:conditioning",
-      "equipment:sled"
-    ],
-    "videoUrl": "https://youtu.be/eOakNqRwNms"
+    "videoUrl": "https://youtu.be/yI8DgUn9veU",
+    "durationSeconds": 20
   },
   {
     "id": "sled-push",
@@ -4389,7 +3253,8 @@
       "role:conditioning",
       "equipment:sled"
     ],
-    "videoUrl": "https://youtu.be/QwscR2BhdEg"
+    "videoUrl": "https://youtu.be/QwscR2BhdEg",
+    "durationSeconds": 16
   },
   {
     "id": "sm-side-bend",
@@ -4405,7 +3270,8 @@
       "role:core",
       "equipment:smith-machine"
     ],
-    "videoUrl": "https://youtu.be/OGqo8jrw2GA"
+    "videoUrl": "https://youtu.be/wGs6r53Q6IM",
+    "durationSeconds": 12
   },
   {
     "id": "smith-machine-squat",
@@ -4422,7 +3288,8 @@
       "role:compound",
       "equipment:smith-machine"
     ],
-    "videoUrl": "https://youtu.be/-eO_VydErV0"
+    "videoUrl": "https://youtu.be/m3tEG33Tdk4",
+    "durationSeconds": 53
   },
   {
     "id": "snap-down",
@@ -4438,7 +3305,8 @@
       "role:potentiation",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/0fadxQR0g0c"
+    "videoUrl": "https://youtu.be/0fadxQR0g0c",
+    "durationSeconds": 16
   },
   {
     "id": "spanish-squat",
@@ -4453,7 +3321,8 @@
       "role:prehab",
       "equipment:band"
     ],
-    "videoUrl": "https://youtu.be/KkFB-9qMPAg"
+    "videoUrl": "https://youtu.be/szTHOnCwZpc",
+    "durationSeconds": 42
   },
   {
     "id": "split-squat",
@@ -4471,25 +3340,8 @@
       "role:compound",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/vgn7bSXkgkA"
-  },
-  {
-    "id": "split-stance-db-rdl",
-    "name": "Split-Stance Dumbbell Romanian Deadlift",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:hamstrings",
-      "muscle:glutes",
-      "pattern:hinge",
-      "pattern:single-leg",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:dumbbell"
-    ],
-    "videoUrl": "https://youtu.be/fl_aTpQK2lk"
+    "videoUrl": "https://youtu.be/Wcmg-3iHwjQ",
+    "durationSeconds": 12
   },
   {
     "id": "sprint",
@@ -4506,8 +3358,7 @@
       "modality:cardio",
       "role:power",
       "equipment:none"
-    ],
-    "videoUrl": "https://youtu.be/qLAv-ekvbNk"
+    ]
   },
   {
     "id": "squat-iso-hold",
@@ -4523,8 +3374,7 @@
       "modality:isometric",
       "role:potentiation",
       "equipment:barbell"
-    ],
-    "videoUrl": "https://youtu.be/gmCS3dnvRUI"
+    ]
   },
   {
     "id": "squat-mobility-routine",
@@ -4540,8 +3390,7 @@
       "modality:mobility",
       "role:warmup",
       "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/-CiWQ2IvY34"
+    ]
   },
   {
     "id": "stairmaster",
@@ -4559,23 +3408,8 @@
       "role:conditioning",
       "equipment:stairmaster"
     ],
-    "videoUrl": "https://youtu.be/pZIONyw031M"
-  },
-  {
-    "id": "stationary-bike",
-    "name": "Stationary Bike",
-    "fields": [
-      "distanceMeters",
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:quads",
-      "muscle:glutes",
-      "modality:cardio",
-      "role:conditioning",
-      "equipment:stationary-bike"
-    ],
-    "videoUrl": "https://youtu.be/NwwDBARCGgo"
+    "videoUrl": "https://youtu.be/sCvITWZOqXQ",
+    "durationSeconds": 43
   },
   {
     "id": "step-up",
@@ -4593,7 +3427,8 @@
       "role:accessory",
       "equipment:box"
     ],
-    "videoUrl": "https://youtu.be/9ZknEYboBOQ"
+    "videoUrl": "https://youtu.be/jcGbLEETLxs",
+    "durationSeconds": 38
   },
   {
     "id": "step-up-complex",
@@ -4610,8 +3445,7 @@
       "modality:resistance",
       "role:accessory",
       "equipment:box"
-    ],
-    "videoUrl": "https://youtu.be/1QZw9DVe1Ek"
+    ]
   },
   {
     "id": "stepback-lunge",
@@ -4629,7 +3463,8 @@
       "role:accessory",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/U8O40vangSQ"
+    "videoUrl": "https://youtu.be/MLkWMHTzB6I",
+    "durationSeconds": 18
   },
   {
     "id": "stilletto-squat",
@@ -4648,7 +3483,8 @@
       "role:accessory",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/1Kd0lEvvAqM"
+    "videoUrl": "https://youtu.be/1Kd0lEvvAqM",
+    "durationSeconds": 16
   },
   {
     "id": "straight-arm-pulldown",
@@ -4664,26 +3500,8 @@
       "role:isolation",
       "equipment:cable"
     ],
-    "videoUrl": "https://youtu.be/98W63pVdW38"
-  },
-  {
-    "id": "suitcase-carry",
-    "name": "Suitcase Carry",
-    "fields": [
-      "weightKg",
-      "distanceMeters"
-    ],
-    "tags": [
-      "muscle:obliques",
-      "muscle:forearms",
-      "muscle:traps",
-      "pattern:carry",
-      "pattern:anti-lateral-flexion",
-      "modality:resistance",
-      "role:accessory",
-      "equipment:kettlebell"
-    ],
-    "videoUrl": "https://youtu.be/3RKKnZhhelE"
+    "videoUrl": "https://youtu.be/G9uNaXGTJ4w",
+    "durationSeconds": 12
   },
   {
     "id": "sumo-deadlift",
@@ -4702,7 +3520,8 @@
       "role:compound",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/JbY72Him34Q"
+    "videoUrl": "https://youtu.be/pfSMst14EFk",
+    "durationSeconds": 10
   },
   {
     "id": "sumo-squat",
@@ -4720,7 +3539,8 @@
       "role:accessory",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/snq4DQw9YSI"
+    "videoUrl": "https://youtu.be/snq4DQw9YSI",
+    "durationSeconds": 20
   },
   {
     "id": "sun-salutation",
@@ -4733,8 +3553,7 @@
       "modality:yoga",
       "role:warmup",
       "equipment:yoga-mat"
-    ],
-    "videoUrl": "https://youtu.be/PpXoK0T6OAQ"
+    ]
   },
   {
     "id": "superman-iso-hold",
@@ -4750,7 +3569,8 @@
       "role:core",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/JaTHa00T1hQ"
+    "videoUrl": "https://youtu.be/Tl2FLF-IPj4",
+    "durationSeconds": 10
   },
   {
     "id": "supine-twist",
@@ -4766,25 +3586,8 @@
       "role:cooldown",
       "equipment:yoga-mat"
     ],
-    "videoUrl": "https://youtu.be/cZgv59Ibnkw"
-  },
-  {
-    "id": "surrender",
-    "name": "Surrender",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:quads",
-      "muscle:glutes",
-      "muscle:full-body",
-      "pattern:lunge",
-      "modality:resistance",
-      "role:conditioning",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/dUwv-OftnNk"
+    "videoUrl": "https://youtu.be/TeAhhVD2q1c",
+    "durationSeconds": 51
   },
   {
     "id": "swim",
@@ -4799,8 +3602,7 @@
       "modality:cardio",
       "role:conditioning",
       "equipment:none"
-    ],
-    "videoUrl": "https://youtu.be/AQy_c30lNjI"
+    ]
   },
   {
     "id": "t-bar-row",
@@ -4817,23 +3619,8 @@
       "role:compound",
       "equipment:landmine"
     ],
-    "videoUrl": "https://youtu.be/1YDZaMFFu5c"
-  },
-  {
-    "id": "t-spine-rotation",
-    "name": "T-Spine Rotation",
-    "fields": [
-      "reps"
-    ],
-    "tags": [
-      "muscle:upper-back",
-      "muscle:obliques",
-      "pattern:rotation",
-      "modality:mobility",
-      "role:warmup",
-      "equipment:bodyweight"
-    ],
-    "videoUrl": "https://youtu.be/uzrQ_CzN7Ic"
+    "videoUrl": "https://youtu.be/hYo72r8Ivso",
+    "durationSeconds": 11
   },
   {
     "id": "thread-the-needle",
@@ -4848,8 +3635,7 @@
       "modality:mobility",
       "role:warmup",
       "equipment:yoga-mat"
-    ],
-    "videoUrl": "https://youtu.be/OE3v5-iivYM"
+    ]
   },
   {
     "id": "three-way-calf-raise",
@@ -4865,26 +3651,8 @@
       "role:prehab",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/-REeqQhn9No"
-  },
-  {
-    "id": "thruster",
-    "name": "Thruster",
-    "fields": [
-      "weightKg",
-      "reps"
-    ],
-    "tags": [
-      "muscle:full-body",
-      "muscle:quads",
-      "muscle:front-delts",
-      "pattern:squat",
-      "pattern:vertical-push",
-      "modality:resistance",
-      "role:conditioning",
-      "equipment:barbell"
-    ],
-    "videoUrl": "https://youtu.be/8n1-ejbiCcw"
+    "videoUrl": "https://youtu.be/-REeqQhn9No",
+    "durationSeconds": 23
   },
   {
     "id": "tibialis-raise",
@@ -4900,7 +3668,8 @@
       "role:prehab",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/pn7DLqo-IKs"
+    "videoUrl": "https://youtu.be/HNa-n4xq8ro",
+    "durationSeconds": 36
   },
   {
     "id": "toes-to-bar",
@@ -4916,8 +3685,7 @@
       "modality:resistance",
       "role:core",
       "equipment:pull-up-bar"
-    ],
-    "videoUrl": "https://youtu.be/BContPDoOpk"
+    ]
   },
   {
     "id": "trap-bar-deadlift",
@@ -4935,8 +3703,7 @@
       "modality:resistance",
       "role:compound",
       "equipment:barbell"
-    ],
-    "videoUrl": "https://youtu.be/2SJ9HkKaxwU"
+    ]
   },
   {
     "id": "treadmill",
@@ -4952,8 +3719,7 @@
       "modality:cardio",
       "role:conditioning",
       "equipment:treadmill"
-    ],
-    "videoUrl": "https://youtu.be/09k1PbNqKDc"
+    ]
   },
   {
     "id": "tricep-extension",
@@ -4969,7 +3735,8 @@
       "role:isolation",
       "equipment:cable"
     ],
-    "videoUrl": "https://youtu.be/ns-RGsbzqok"
+    "videoUrl": "https://youtu.be/ns-RGsbzqok",
+    "durationSeconds": 43
   },
   {
     "id": "tricep-kickback",
@@ -4985,7 +3752,8 @@
       "role:isolation",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/JPmbMOu4IYw"
+    "videoUrl": "https://youtu.be/JPmbMOu4IYw",
+    "durationSeconds": 19
   },
   {
     "id": "turkish-get-up",
@@ -5002,7 +3770,8 @@
       "role:accessory",
       "equipment:kettlebell"
     ],
-    "videoUrl": "https://youtu.be/sgd8n917Zv0"
+    "videoUrl": "https://youtu.be/sgd8n917Zv0",
+    "durationSeconds": 28
   },
   {
     "id": "twisting-lunge",
@@ -5020,8 +3789,7 @@
       "modality:resistance",
       "role:accessory",
       "equipment:dumbbell"
-    ],
-    "videoUrl": "https://youtu.be/sP1Rzf9D2Ss"
+    ]
   },
   {
     "id": "two-leg-slider-curl",
@@ -5037,7 +3805,8 @@
       "role:prehab",
       "equipment:slider"
     ],
-    "videoUrl": "https://youtube.com/shorts/MqI1iK-7BkQ"
+    "videoUrl": "https://youtu.be/kkkTfzi2gj4",
+    "durationSeconds": 31
   },
   {
     "id": "unilaterally-loaded-squat",
@@ -5056,7 +3825,8 @@
       "role:accessory",
       "equipment:kettlebell"
     ],
-    "videoUrl": "https://youtu.be/kdW0qJHi5Ao"
+    "videoUrl": "https://youtu.be/3nDdZQvfOLM",
+    "durationSeconds": 17
   },
   {
     "id": "upright-row",
@@ -5073,7 +3843,8 @@
       "role:accessory",
       "equipment:barbell"
     ],
-    "videoUrl": "https://youtu.be/l226CdjaWPA"
+    "videoUrl": "https://youtu.be/um3VVzqunPU",
+    "durationSeconds": 10
   },
   {
     "id": "v-up",
@@ -5089,21 +3860,8 @@
       "role:core",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/5kvKmRGADlQ"
-  },
-  {
-    "id": "vinyasa-flow",
-    "name": "Vinyasa Flow",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:full-body",
-      "modality:yoga",
-      "role:warmup",
-      "equipment:yoga-mat"
-    ],
-    "videoUrl": "https://youtu.be/es4c3Ri7dsY"
+    "videoUrl": "https://youtu.be/5kvKmRGADlQ",
+    "durationSeconds": 37
   },
   {
     "id": "walk",
@@ -5119,8 +3877,7 @@
       "modality:cardio",
       "role:conditioning",
       "equipment:none"
-    ],
-    "videoUrl": "https://youtu.be/R0KLLQInsR8"
+    ]
   },
   {
     "id": "walking-lunge",
@@ -5138,7 +3895,8 @@
       "role:compound",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/I34ysEkPK7w"
+    "videoUrl": "https://youtu.be/8fZxWTiIJWo",
+    "durationSeconds": 13
   },
   {
     "id": "wall-ball",
@@ -5157,7 +3915,8 @@
       "role:conditioning",
       "equipment:medicine-ball"
     ],
-    "videoUrl": "https://youtu.be/GbKszJMNLb0"
+    "videoUrl": "https://youtu.be/fpUD0mcFp_0",
+    "durationSeconds": 37
   },
   {
     "id": "wall-slide",
@@ -5172,7 +3931,8 @@
       "role:prehab",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/4QqcbCjnnlw"
+    "videoUrl": "https://youtu.be/XwN3hXN4ZZE",
+    "durationSeconds": 21
   },
   {
     "id": "warrior-pose",
@@ -5187,8 +3947,7 @@
       "modality:yoga",
       "role:warmup",
       "equipment:yoga-mat"
-    ],
-    "videoUrl": "https://youtu.be/0Iv0V3NuG-8"
+    ]
   },
   {
     "id": "wide-grip-lat-pulldown",
@@ -5205,7 +3964,8 @@
       "role:compound",
       "equipment:cable"
     ],
-    "videoUrl": "https://youtu.be/7JnP8dFbS14"
+    "videoUrl": "https://youtu.be/7JnP8dFbS14",
+    "durationSeconds": 16
   },
   {
     "id": "wgs",
@@ -5222,7 +3982,8 @@
       "role:warmup",
       "equipment:bodyweight"
     ],
-    "videoUrl": "https://youtu.be/-CiWQ2IvY34"
+    "videoUrl": "https://youtu.be/-CiWQ2IvY34",
+    "durationSeconds": 43
   },
   {
     "id": "wrist-curl",
@@ -5238,7 +3999,8 @@
       "role:prehab",
       "equipment:dumbbell"
     ],
-    "videoUrl": "https://youtu.be/3VLTzIrnb5g"
+    "videoUrl": "https://youtu.be/2wPpcJBe03o",
+    "durationSeconds": 13
   },
   {
     "id": "wrist-warmup-routine",
@@ -5252,51 +4014,5 @@
       "role:warmup",
       "equipment:bodyweight"
     ]
-  },
-  {
-    "id": "yin-yoga",
-    "name": "Yin Yoga",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:full-body",
-      "modality:yoga",
-      "role:cooldown",
-      "equipment:yoga-mat"
-    ],
-    "videoUrl": "https://youtu.be/xyAY1zyuDeg"
-  },
-  {
-    "id": "yoga-for-sciatica-sequence",
-    "name": "Yoga for Sciatica Sequence",
-    "fields": [
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:glutes",
-      "muscle:lower-back",
-      "muscle:hamstrings",
-      "modality:yoga",
-      "role:prehab",
-      "equipment:yoga-mat"
-    ],
-    "videoUrl": "https://youtu.be/G5h0jkoBFbI"
-  },
-  {
-    "id": "zone-2-training",
-    "name": "Zone 2 Training",
-    "fields": [
-      "distanceMeters",
-      "durationSeconds"
-    ],
-    "tags": [
-      "muscle:full-body",
-      "pattern:gait",
-      "modality:cardio",
-      "role:conditioning",
-      "equipment:none"
-    ],
-    "videoUrl": "https://youtu.be/AyMUWBUt3WY"
   }
 ]

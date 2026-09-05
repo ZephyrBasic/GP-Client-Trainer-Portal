@@ -4,7 +4,7 @@
 //   node scripts/promote-videos.js --dry              # preview, change nothing
 //   node scripts/promote-videos.js                    # promote the top pick per exercise
 //   node scripts/promote-videos.js --min-score 70     # be fussier
-//   node scripts/promote-videos.js --fitting-only     # only 15-45s videos, never a long one
+//   node scripts/promote-videos.js --fitting-only     # only videos <= 60s, never a long one
 //   node scripts/promote-videos.js --overwrite        # replace existing videoUrls too
 //
 // The staging file is unreviewed search output, so this is the one deliberate
@@ -17,7 +17,7 @@
 const fs = require('fs')
 const path = require('path')
 
-const { CLIP_SECONDS } = require('./videoSources')
+const { DEMO_SECONDS } = require('./videoSources')
 
 const ROOT = path.join(__dirname, '..')
 const CATALOG = path.join(ROOT, 'constants', 'exercises.json')
@@ -77,6 +77,11 @@ for (const exercise of catalog) {
 
     if (!dry) {
         exercise.videoUrl = pick.url
+        // The duration yt-dlp already learned, carried into the catalog so the
+        // house rule is checkable offline forever. Dropping it here was what left
+        // 309 records of unknown length. See docs/adr/0006.
+        if (typeof pick.duration === 'number') exercise.durationSeconds = pick.duration
+        else delete exercise.durationSeconds
         // No clip is invented here. Guessing which 30 seconds of a six-minute
         // video show the movement is exactly the judgement a script cannot make.
         delete exercise.clip
@@ -94,7 +99,7 @@ const needsClip = promoted.filter((p) => !p.pick.fitsWindow)
 
 console.log(`${dry ? 'Would promote' : 'Promoted'} ${promoted.length} demo(s)` +
     ` (min-score ${minScore}${fittingOnly ? ', fitting only' : ''})`)
-console.log(`  plays whole (${CLIP_SECONDS.min}-${CLIP_SECONDS.max}s): ${inWindow.length}`)
+console.log(`  plays whole (<= ${DEMO_SECONDS.max}s): ${inWindow.length}`)
 console.log(`  longer, needs a clip window:  ${needsClip.length}`)
 
 if (needsClip.length) {
