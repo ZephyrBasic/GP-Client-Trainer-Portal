@@ -1,6 +1,6 @@
 {
   "expo": {
-    "scheme": "your-app-scheme",
+    "scheme": "greenpulse",
     "experiments": {
       "typedRoutes": true
     },
@@ -16,14 +16,18 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "fit.greenpulse.app",
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "fit.greenpulse.app",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
