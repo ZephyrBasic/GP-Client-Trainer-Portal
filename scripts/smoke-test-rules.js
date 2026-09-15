@@ -11,6 +11,10 @@
  *
  * Exits non-zero if any expectation fails, so it can gate a commit.
  * Reads EXPO_PUBLIC_FIREBASE_* from .env by hand, like the other scripts.
+ *
+ * A full pass is currently **45 passed, 0 failed**. Any other number means a
+ * rule moved or an assertion was added without updating this line and the
+ * matching one in CLAUDE.md.
  */
 
 const fs = require('fs')
@@ -220,6 +224,53 @@ const main = async () => {
 
     await expect('client edits a Template she is assigned', 'deny', () =>
         updateDoc(doc(db, 'workoutTemplates', T.lowerA), { name: 'Hijacked' }))
+
+    // === The trainer signup gate ==========================================
+    //
+    // The gate's whole security argument is an asymmetry: rules' get() can read
+    // the shared code and the applicant's answer, and no client can read either.
+    // If any of these four denials turns into an allow, the first curious tester
+    // can read the code out of Firestore and hand out trainer accounts - which
+    // is exactly the thing the gate exists to prevent, and it would fail
+    // silently, because the app would carry on working.
+    await expect('client reads the shared trainer signup code', 'deny', () =>
+        getDoc(doc(db, 'config', 'trainerSignup')).then((s) => {
+            if (!s.exists()) throw new Error('missing, not denied')
+        }))
+
+    await expect('client reads another user\'s signup proof', 'deny', () =>
+        getDoc(doc(db, 'users', uid.zephyr, 'private', 'signup')).then((s) => {
+            if (!s.exists()) throw new Error('missing, not denied')
+        }))
+
+    // Mutating, so fenced: the proof document has to go whatever happens in
+    // between, or the next run finds Maya carrying a stale one.
+    try {
+        await expect('client writes her own signup proof', 'allow', () =>
+            setDoc(doc(db, 'users', uid.maya, 'private', 'signup'), { trainerCode: 'not-the-code' }))
+
+        // The one that matters most. `users` is world-readable to signed-in
+        // accounts, and this subcollection is only private because rules v2 does
+        // not extend a document match to the paths beneath it. A rules_version
+        // downgrade, or a stray `match /users/{uid}/{doc=**}`, would quietly undo
+        // that and put the applicant's own answer - and by extension the shared
+        // code - back within reach.
+        await expect('client reads the signup proof she just wrote', 'deny', () =>
+            getDoc(doc(db, 'users', uid.maya, 'private', 'signup')).then((s) => {
+                if (!s.exists()) throw new Error('missing, not denied')
+            }))
+    } finally {
+        await expect('client deletes her own signup proof', 'allow', () =>
+            deleteDoc(doc(db, 'users', uid.maya, 'private', 'signup')))
+    }
+
+    // Account deletion, from the side that can be asserted without destroying
+    // the fixture. The matching allow - a user deleting their *own* profile -
+    // has no non-destructive form here: it would delete a seeded account and
+    // every later assertion with it, so it is verified by hand against a
+    // throwaway registration instead.
+    await expect('client deletes another user\'s account document', 'deny', () =>
+        deleteDoc(doc(db, 'users', uid.tom)))
 
     // === Tom: Patrick's client, assigned Full Body only ===================
     await as('tom')

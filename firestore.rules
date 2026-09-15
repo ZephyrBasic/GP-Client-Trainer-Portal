@@ -11,15 +11,61 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
+    // The shared trainer signup code, and nothing else yet.
+    //
+    // Denied on both verbs to every client, which is the entire point: rules'
+    // get() reads documents the requester cannot (see knowsTrainerCode below),
+    // and the Firebase console and Admin SDK bypass rules altogether. So the
+    // code is checkable without being readable, and rotating it is a one-field
+    // edit in the console - no rebuild, no redeploy, no new app version.
+    //
+    // Document: config/trainerSignup, field `code` (string). If it does not
+    // exist, no new trainer can register. That is the intended failure mode:
+    // a missing gate has to fail closed.
+    match /config/{docId} {
+      allow read, write: if false;
+    }
+
     match /users/{uid} {
       // Any signed-in user can read profiles: trainers need to see their
       // clients, clients need to look up their trainer, and invite-code
       // lookup during registration queries this collection right after the
       // new auth account is created.
+      //
+      // Note what this rule does *not* cover: in rules v2 a match on a document
+      // path says nothing about the paths beneath it, so the private/
+      // subcollection below is not readable through this clause. The signup
+      // gate depends on that.
       allow read: if isSignedIn();
 
+      // Did this applicant write the current shared trainer signup code into
+      // their own private scratch document?
+      //
+      // Two get()s, and neither value is ever legible to a client: the code
+      // lives in config/ (denied above) and the answer in users/{uid}/private/
+      // (denied below). That asymmetry - rules can read what the client cannot -
+      // is the whole mechanism. The obvious alternative, carrying the code as a
+      // field on the user document being created, would publish it: `users` is
+      // readable by any signed-in account, so the first curious tester could
+      // read the code back out and hand out trainer accounts.
+      //
+      // exists() before get() on both, because get() on a missing document
+      // errors rather than returning null, and an erroring rule is a denial with
+      // a confusing message rather than a clean one.
+      function knowsTrainerCode(applicant) {
+        return exists(/databases/$(database)/documents/config/trainerSignup)
+          && exists(/databases/$(database)/documents/users/$(applicant)/private/signup)
+          && get(/databases/$(database)/documents/users/$(applicant)/private/signup).data.trainerCode
+             == get(/databases/$(database)/documents/config/trainerSignup).data.code;
+      }
+
+      // Registering as a client is gated by a trainer's own invite code, which
+      // the app can check for itself because it can read `users`. Registering as
+      // a trainer is gated here instead, for the reason above. The || short
+      // circuits, so a client registration still costs zero extra get()s.
       allow create: if isOwner(uid)
-        && request.resource.data.role in ['client', 'trainer'];
+        && request.resource.data.role in ['client', 'trainer']
+        && (request.resource.data.role != 'trainer' || knowsTrainerCode(uid));
 
       // Role and trainerId are set once at registration and are not
       // user-editable afterwards, to prevent self-promotion to trainer or
@@ -28,7 +74,36 @@ service cloud.firestore {
         && request.resource.data.role == resource.data.role
         && request.resource.data.trainerId == resource.data.trainerId;
 
-      allow delete: if false;
+      // Deleting your own account is required in-app by Apple guideline
+      // 5.1.1(v) and by Google Play, so this is no longer `if false`. Your own
+      // document, by you, and nothing else.
+      //
+      // What it deliberately does NOT do is stop a Trainer deleting themselves
+      // out from under their Clients, whose profiles point at them by trainerId
+      // and whose update rule just above refuses to let that field change. Rules
+      // cannot run a query, so "does this Trainer still have Clients?" is
+      // unanswerable here - the same limit that leaves the single-active-Session
+      // rule to the UI (ADR 0003). utils/deleteAccount.ts holds that guard, and
+      // it can only ever be a product rule: Firebase Auth always lets an account
+      // delete itself, so no rule here could make it a security boundary.
+      allow delete: if isOwner(uid);
+
+      // Write-only scratch space for the signup gate - unreadable to everyone,
+      // including its own owner.
+      //
+      // The applicant writes what they typed to private/signup, the create rule
+      // above compares it against config/trainerSignup, and AuthContext.signUp
+      // deletes it the moment registration succeeds so no copy of a shared
+      // secret outlives its use. Write, not just create, so a second attempt
+      // after a wrong code can overwrite the first; read stays false forever.
+      //
+      // Written before the user document rather than batched with it, because
+      // rules cannot see a sibling write in the same batch - the same ordering
+      // constraint that makes a Template precede its first Version.
+      match /private/{docId} {
+        allow read: if false;
+        allow write: if isOwner(uid);
+      }
     }
 
     match /sessions/{sessionId} {

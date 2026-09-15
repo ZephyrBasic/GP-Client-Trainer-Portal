@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Pressable, StyleSheet, useColorScheme } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, useColorScheme } from 'react-native'
 import { Link } from 'expo-router'
 
 // themed components
@@ -7,6 +7,7 @@ import ThemedView from '../../components/ThemedView'
 import ThemedText from '../../components/ThemedText'
 import ThemedTextInput from '../../components/ThemedTextInput'
 import ThemedButton from '../../components/ThemedButton'
+import LegalLinks from '../../components/LegalLinks'
 import Spacer from '../../components/Spacer'
 
 import { Colors } from '../../constants/Colors'
@@ -24,6 +25,7 @@ const Register = () => {
     const [password, setPassword] = useState('')
     const [role, setRole] = useState('client')
     const [inviteCode, setInviteCode] = useState('')
+    const [trainerCode, setTrainerCode] = useState('')
     const [error, setError] = useState('')
     const [submitting, setSubmitting] = useState(false)
 
@@ -38,10 +40,22 @@ const Register = () => {
             setError("Please enter your trainer's invite code.")
             return
         }
+        // Only that it is present. Whether it is *right* is a question only
+        // firestore.rules can answer, because the code is deliberately not
+        // readable by this app - see AuthContext.signUp.
+        if (role === 'trainer' && !trainerCode.trim()) {
+            setError('Please enter the trainer signup code.')
+            return
+        }
 
         setSubmitting(true)
         try {
-            await signUp(email.trim(), password, { name: name.trim(), role, inviteCode: inviteCode.trim() })
+            await signUp(email.trim(), password, {
+                name: name.trim(),
+                role,
+                inviteCode: inviteCode.trim(),
+                trainerCode: trainerCode.trim(),
+            })
             // Successful sign-up flips the auth state; the root layout's route
             // guard takes it from here.
         } catch (err) {
@@ -50,8 +64,12 @@ const Register = () => {
         }
     }
 
+    // A ScrollView now rather than a centred block: the form grew a role-specific
+    // code field and a consent line, and on a short screen with the keyboard up
+    // the Register button was the thing that went off the bottom.
     return (
-        <ThemedView style={styles.container}>
+        <ThemedView style={styles.screen}>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
             <Spacer />
             <ThemedText variant="title" tone="title" style={styles.title}>
                 Register for an account
@@ -137,6 +155,26 @@ const Register = () => {
                 </>
             )}
 
+            {/* The trainer side of the same gate. A client's code names one
+                trainer and is theirs to hand out; this one is shared, rotated
+                by us, and is the only thing standing between a public signup
+                page and a stranger with a trainer account. */}
+            {role === 'trainer' && (
+                <>
+                    <Spacer height={Space.lg} />
+                    <ThemedText variant="label" tone="muted" style={styles.label}>
+                        Trainer signup code
+                    </ThemedText>
+                    <ThemedTextInput
+                        value={trainerCode}
+                        onChangeText={setTrainerCode}
+                        autoCapitalize="none"
+                        placeholder="Ask us for this"
+                        editable={!submitting}
+                    />
+                </>
+            )}
+
             {error ? (
                 <>
                     <Spacer height={Space.lg} />
@@ -146,7 +184,18 @@ const Register = () => {
                 </>
             ) : null}
 
+            {/* Above the button, not below it. Consent has to be available
+                *before* the act it consents to, and these open as plain web
+                pages precisely so someone with no account yet can read them. */}
             <Spacer height={Space.xl} />
+            <ThemedText variant="meta" tone="muted" style={styles.consent}>
+                By registering you agree to our terms, and to how we handle your data - including the
+                training data your trainer records about you.
+            </ThemedText>
+            <Spacer height={Space.sm} />
+            <LegalLinks />
+
+            <Spacer height={Space.lg} />
             <ThemedButton onPress={handleRegister} disabled={submitting}>
                 <ThemedText variant="cardTitle" tone="onPrimary">
                     {submitting ? 'Creating account...' : 'Register'}
@@ -159,6 +208,7 @@ const Register = () => {
                     Already have an account? Login
                 </ThemedText>
             </Link>
+        </ScrollView>
         </ThemedView>
     )
 }
@@ -166,14 +216,23 @@ const Register = () => {
 export default Register
 
 const styles = StyleSheet.create({
-    container: {
+    screen: {
         flex: 1,
+    },
+    container: {
+        // flexGrow rather than flex, so the form still centres on a tall screen
+        // and scrolls on a short one instead of being squashed.
+        flexGrow: 1,
         justifyContent: 'center',
         paddingHorizontal: Space.xl,
+        paddingBottom: Space.xl,
     },
     title: {
         textAlign: 'center',
         marginBottom: Space.sm,
+    },
+    consent: {
+        textAlign: 'center',
     },
     label: {
         marginBottom: Space.sm,

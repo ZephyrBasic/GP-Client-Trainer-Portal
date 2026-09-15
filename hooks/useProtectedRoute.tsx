@@ -7,10 +7,14 @@ import { useAuth } from '../contexts/AuthContext'
 // transitions and log "action not handled by any navigator" warnings.
 // Returning a target path lets the layout render <Redirect> instead.
 export const useProtectedRoute = () => {
-    const { user, loading } = useAuth()
+    const { user, loading, signingUp } = useAuth()
     const segments = useSegments()
 
-    if (loading) return null
+    // A signup in flight has a signed-in user sitting on an auth screen, which
+    // is exactly the state the rule below redirects away from. Redirecting would
+    // unmount the register screen before it can show a failed code check - see
+    // signUp in AuthContext.
+    if (loading || signingUp) return null
 
     const inAuthGroup = segments[0] === '(auth)'
 

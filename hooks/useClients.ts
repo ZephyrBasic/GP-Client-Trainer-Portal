@@ -14,7 +14,7 @@ import { useFirestoreQuery } from './useFirestoreSnapshot'
  * deliberately empty.
  */
 export const useClients = (trainerId?: string | null) => {
-    const { data, loading, offline, retry } = useFirestoreQuery(
+    const { data, loading, offline, error, retry } = useFirestoreQuery(
         () =>
             trainerId
                 ? query(
@@ -30,5 +30,5 @@ export const useClients = (trainerId?: string | null) => {
         }
     )
 
-    return { clients: data, loading, offline, retry }
+    return { clients: data, loading, offline, error, retry }
 }

@@ -72,7 +72,9 @@ const TabsLayout = () => {
             />
             {/* Messaging is out of scope while the core tracking loop is built (see
                 CLAUDE.md, "Current scope"); it showed for both roles before, so
-                dropping `href: null` is the whole of switching it back on. */}
+                dropping `href: null` switches the tab back on. Also add a Trainer
+                line to `deletionNotes` in utils/deleteAccount.ts: messages can't be
+                deleted, and today only the Client's notes say so. */}
             <Tabs.Screen
                 name="messages"
                 options={{
@@ -84,7 +86,9 @@ const TabsLayout = () => {
             />
             {/* Progress media, likewise out of scope - but this one was a client-only
                 tab, so switching it back on means restoring the role check
-                (`href: isTrainer ? null : undefined`), not plain `undefined`. */}
+                (`href: isTrainer ? null : undefined`), not plain `undefined`. And a
+                trainer's comments on media outlive the Client's account deletion, so
+                `deletionNotes` in utils/deleteAccount.ts needs a line saying so. */}
             <Tabs.Screen
                 name="progress"
                 options={{
