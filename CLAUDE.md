@@ -56,6 +56,7 @@ npm run web              # expo start --web — the usual dev loop (port 8081, s
 npm run ios / android
 
 npm run build:web        # expo export -p web, then scripts/fix-web-assets.js — what Pages must run
+node scripts/generate-web-icons.js         # after replacing assets/icon.png, the single icon source
 firebase deploy --only firestore:rules     # after editing firestore.rules
 firebase deploy --only storage             # after editing storage.rules
 ```
@@ -108,7 +109,8 @@ through obtaining them.
 ```bash
 node scripts/seed-test-data.js             # the five test accounts (docs/test-accounts.md)
 node scripts/seed-test-data.js --reset     # ... and delete them again
-node scripts/smoke-test-rules.js           # signs in as each account, asserts firestore.rules; expect 39 passed
+node scripts/seed-test-data.js --review    # store-reviewer accounts; --reset without --review leaves them alone
+node scripts/smoke-test-rules.js           # signs in as each account, asserts firestore.rules; expect 45 passed
 node scripts/migrate-workouts-to-sessions.js --dry   # the workouts -> sessions rename; already run
 ```
 
@@ -136,8 +138,16 @@ There is **no test runner and no linter**. Three commands gate a commit, all exi
 ## Configuration
 
 `.env` (gitignored; copy `.env.example`) holds `EXPO_PUBLIC_FIREBASE_*`, read in `firebase/config.ts`.
-`YOUTUBE_API_KEY` there is intentionally *not* `EXPO_PUBLIC_` — only `scripts/verify-videos.js`
+`EXPO_PUBLIC_SENTRY_DSN` and `EXPO_PUBLIC_FIREBASE_APPCHECK_SITE_KEY` are optional and **inert when
+blank** — a build without them must behave exactly like one without the feature. App Check is web
+only (the JS SDK cannot attest native), so its console enforcement stays in monitor.
+
+`YOUTUBE_API_KEY` in `.env` is intentionally *not* `EXPO_PUBLIC_` — only `scripts/verify-videos.js`
 reads it, under bare node, and it must never be bundled into the app.
+
+Trainer registration is gated by a shared code at Firestore `config/trainerSignup` (field `code`,
+a string), checked by `firestore.rules` and readable by no client. If that doc is missing, no one can
+register as a trainer — a deliberate fail-closed. Rotate it by editing the field in the console.
 
 ## Technology choices
 
