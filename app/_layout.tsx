@@ -6,7 +6,15 @@ import { Colors } from '../constants/Colors'
 import { useSignalFonts } from '../constants/Type'
 import { AuthProvider, useAuth } from '../contexts/AuthContext'
 import { useProtectedRoute } from '../hooks/useProtectedRoute'
+import ErrorBoundary from '../components/ErrorBoundary'
 import ThemedView from '../components/ThemedView'
+import { initCrashReporting } from '../utils/crashReporting'
+
+// At module scope, and above every other import that could throw, because a
+// reporter installed inside a component only ever hears about crashes that
+// happened after the first render. Does nothing at all when no DSN is
+// configured - see utils/crashReporting.ts.
+initCrashReporting()
 
 const RootLayoutNav = () => {
     const colorScheme = useColorScheme()
@@ -62,10 +70,16 @@ const RootLayout = () => {
         return null
     }
 
+    // Outside AuthProvider rather than inside it: the provider is where the
+    // Firestore profile listener lives, so a throw in there is exactly the kind
+    // of crash that used to leave a white page, and a boundary nested under it
+    // could not catch it.
     return (
-        <AuthProvider>
-            <RootLayoutNav />
-        </AuthProvider>
+        <ErrorBoundary>
+            <AuthProvider>
+                <RootLayoutNav />
+            </AuthProvider>
+        </ErrorBoundary>
     )
 }
 
