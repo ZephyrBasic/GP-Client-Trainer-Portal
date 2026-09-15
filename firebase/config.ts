@@ -7,6 +7,7 @@ import { initializeApp, getApps, getApp } from 'firebase/app'
 import { initializeAuth, getReactNativePersistence, getAuth } from 'firebase/auth'
 import { getFirestore, initializeFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Platform } from 'react-native'
 
@@ -20,6 +21,48 @@ const firebaseConfig = {
 }
 
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig)
+
+// App Check attests that a request comes from *our* app, not from someone who
+// lifted the config out of the web bundle - which is public by design, so rules
+// are the only thing standing between a stranger's client and this project.
+// Rules stop them reading other people's data; App Check stops them hammering
+// the project at all.
+//
+// It is initialised here, before the Firestore and Storage instances below, so
+// the first request they make already carries a token.
+//
+// WEB ONLY, and not by preference. Every provider the Firebase JS SDK ships -
+// ReCaptchaV3Provider, ReCaptchaEnterpriseProvider - drives a browser reCAPTCHA
+// that needs a DOM, and the third, CustomProvider, wants a token minted by a
+// backend we don't have. There is no JS-SDK attestation path on native; that
+// needs @react-native-firebase/app-check, i.e. native modules and a config
+// plugin. So native clients send no App Check token at all.
+//
+// The consequence, which decides an operational question rather than a coding
+// one: turning on *enforcement* for Firestore or Storage in the Firebase console
+// locks out every native build while this app uses the JS SDK. Web-first beta,
+// so that may be the right trade - but it is a deliberate choice, not a default.
+// Leave enforcement in "monitor" until native is either covered or written off.
+//
+// With no site key configured, App Check is skipped entirely rather than
+// initialised in some half state: an unconfigured build must behave exactly like
+// today's, because a broken attestation fails requests closed.
+const appCheckSiteKey = process.env.EXPO_PUBLIC_FIREBASE_APPCHECK_SITE_KEY
+if (Platform.OS === 'web' && appCheckSiteKey) {
+    try {
+        initializeAppCheck(app, {
+            provider: new ReCaptchaV3Provider(appCheckSiteKey),
+            // Refresh in the background so a long gym session doesn't end with a
+            // dead token the moment someone logs their last set.
+            isTokenAutoRefreshEnabled: true,
+        })
+    } catch (error) {
+        // Double-init across Fast Refresh throws, same as initializeAuth and
+        // initializeFirestore below. There is no getAppCheck() fallback worth
+        // calling here - the existing instance is already attached to `app`.
+        console.warn('[firebase] App Check init skipped:', error)
+    }
+}
 
 // getReactNativePersistence needs a native AsyncStorage; on web, Firebase's
 // default browser persistence (IndexedDB/localStorage) already works.

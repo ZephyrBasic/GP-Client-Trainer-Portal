@@ -10,6 +10,11 @@ service firebase.storage {
         && (request.auth.uid == clientId
             || firestore.get(/databases/(default)/documents/users/$(clientId)).data.trainerId == request.auth.uid);
 
+      // `write` covers delete as well as upload, which is what lets a client
+      // erase their own media - both from the progress screen and as part of
+      // deleting their account (utils/deleteAccount.ts). No separate rule is
+      // needed for that, and narrowing this one to create would silently break
+      // the deletion path the app stores require.
       allow write: if request.auth != null && request.auth.uid == clientId;
     }
 

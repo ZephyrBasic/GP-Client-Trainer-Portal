@@ -81,7 +81,17 @@ const Login = () => {
                 </ThemedText>
             </ThemedButton>
 
-            <Spacer height={Space.xl} />
+            {/* Above "Register" rather than below it: the person who needs this
+                link has an account and is stuck, which is a worse place to be
+                than not having one yet. */}
+            <Spacer height={Space.lg} />
+            <Link href="/forgot-password" style={styles.link}>
+                <ThemedText variant="meta" tone="accent">
+                    Forgot your password?
+                </ThemedText>
+            </Link>
+
+            <Spacer height={Space.lg} />
             <Link href="/register" style={styles.link}>
                 <ThemedText variant="body" tone="accent">
                     Need an account? Register

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="%LANG_ISO_CODE%">
+  <head>
+    <meta charset="utf-8" />
+    <!--
+      The HTML shell for the web export.
+
+      ## Why this is here and not app/+html.tsx
+
+      `app/+html.tsx` is the Expo Router way to own the head, and it is the
+      documented answer *for `web.output: "static"`*. This project exports a
+      single-page app, and in that mode the router never renders +html.tsx at
+      all: the CLI reads `public/index.html` if the project has one and its own
+      built-in template otherwise (@expo/cli,
+      start/server/webTemplate.js - `getTemplateIndexHtmlAsync`). A +html.tsx
+      here would be a file that silently does nothing, which is worse than no
+      file. If this project ever moves to static rendering, this file stops
+      being read and its contents move there.
+
+      ## Do not name Expo's placeholders in this comment
+
+      Expo fills this template in with four single `String.replace` calls: the
+      language and title placeholders, the favicon and CSS links before the
+      closing head tag, and the bundle script before the closing body tag. Each
+      replaces the *first* occurrence in the file. An earlier draft of this
+      comment quoted those tokens to explain them, and the export duly
+      substituted them here - putting the app's only script tag inside a
+      comment and shipping a page that renders nothing at all. Describe them;
+      never write them.
+
+      ## What this adds over Expo's default template, and why
+
+      Everything here that is not the react-native-web reset exists to make the
+      app installable:
+
+      - `viewport-fit=cover`. Without it `env(safe-area-inset-*)` is 0 on web,
+        and once the app is installed and the browser chrome is gone the tab
+        bar sits under the iPhone home indicator.
+      - `apple-touch-icon`. iOS ignores the web manifest's icons *entirely* for
+        Add to Home Screen; with no such link it uses a screenshot of the page
+        as the home-screen icon.
+      - `apple-mobile-web-app-*`: iOS's pre-manifest equivalents of
+        `display: standalone` and a status bar style.
+      - The manifest link, which is what makes Chrome on Android offer "Install
+        app" rather than a bookmark.
+
+      The colours are literals rather than imports from constants/Colors.ts,
+      which is the one place in this repo with no alternative: a static HTML
+      file and a static manifest.json sit outside the module graph entirely,
+      the same way app.json's splash `backgroundColor` already does. They are
+      Colors.light.background and Colors.dark.background - if the palette
+      moves, these and public/manifest.json move with it.
+    -->
+
+    <!-- `http-equiv`, not the `httpEquiv` React spelling Expo's own template
+         carries: a browser only honours the hyphenated form. -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
+    <title>%WEB_TITLE%</title>
+
+    <!-- Two theme-colour metas rather than one: the app follows the system
+         scheme (app.json `userInterfaceStyle: automatic`), so a single value
+         would paint the status bar the wrong shade for half of testers. The
+         manifest can carry only one, and takes the dark value. -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#E8EFEA" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#080B09" />
+
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180.png" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- `black-translucent` is what lets the page paint under the status bar,
+         which is the point of viewport-fit=cover above - the safe-area insets
+         then keep content out of it. -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <!-- The name under the icon on an iOS home screen. Left alone iOS uses the
+         page title, which is right today and stops being right the moment a
+         route sets its own. -->
+    <meta name="apple-mobile-web-app-title" content="GreenPulse" />
+
+    <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
+    <style id="expo-reset">
+      /* These styles make the body full-height */
+      html,
+      body {
+        height: 100%;
+      }
+      /* These styles disable body scrolling if you are using <ScrollView> */
+      body {
+        overflow: hidden;
+      }
+      /* These styles make the root element full-height */
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+      }
+    </style>
+  </head>
+
+  <body>
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <!-- The root element for your Expo app. -->
+    <div id="root"></div>
+    <!-- Registered on `load` rather than immediately so installing the worker
+         never competes with the first render for bandwidth. Failures are
+         swallowed on purpose: no service worker means no offline start, which
+         is a degradation, not a reason to show the user an error. -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js').catch(function () {})
+        })
+      }
+    </script>
+  </body>
+</html>
