@@ -14,6 +14,11 @@ These are throwaway accounts on the dev project. The password is shared, weak, a
 purpose so anyone can pick the fixture up. Delete them before this project holds anything real:
 `node scripts/seed-test-data.js --reset`.
 
+**The app-store reviewer accounts are a separate cohort and are not any of these.** They live behind
+`--review` in the same script, their passwords are never committed, and `--reset` above does not
+touch them — which is the point, since a fixture reset must not be able to cut off a live app
+review. See `docs/store-listing.md`.
+
 ## Accounts
 
 | Who | Email | Role | Trainer | UID |
