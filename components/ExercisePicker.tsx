@@ -8,6 +8,7 @@ import ThemedTextInput from './ThemedTextInput'
 import ThemedButton from './ThemedButton'
 import SectionLabel from './SectionLabel'
 import Spacer from './Spacer'
+import BottomSheet from './BottomSheet'
 import ExerciseInfoModal from './ExerciseInfoModal'
 import { Colors } from '../constants/Colors'
 import { Radius, Space } from '../constants/Layout'
@@ -127,36 +128,21 @@ const FacetButton = ({
 /**
  * The shared shell for the two bottom sheets - a facet's own values, and the
  * overflow menu naming the facets that don't fit their own pill. Module-level
- * for the same remount reason as `FacetButton` above; `theme` and `insetsBottom`
- * are passed in rather than read from a hook, since a component out here has
- * no access to ExercisePicker's own `useColorScheme`/`useSafeAreaInsets` calls.
+ * for the same remount reason as `FacetButton` above. Only the height cap is
+ * this picker's; the rest is the house BottomSheet.
  */
 const Sheet = ({
     visible,
     onRequestClose,
-    theme,
-    insetsBottom,
     children,
 }: {
     visible: boolean
     onRequestClose: () => void
-    theme: (typeof Colors)['dark']
-    insetsBottom: number
     children: ReactNode
 }) => (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onRequestClose}>
-        <Pressable style={styles.backdrop} onPress={onRequestClose}>
-            {/* Swallows the backdrop's onPress so tapping the sheet itself
-                doesn't also close through it a frame later. */}
-            <Pressable
-                style={[styles.sheet, { backgroundColor: theme.navBackground, paddingBottom: insetsBottom + Space.lg }]}
-                onPress={() => {}}
-            >
-                <View style={[styles.grabber, { backgroundColor: theme.line }]} />
-                {children}
-            </Pressable>
-        </Pressable>
-    </Modal>
+    <BottomSheet visible={visible} onClose={onRequestClose} style={styles.sheet}>
+        {children}
+    </BottomSheet>
 )
 
 /**
@@ -611,8 +597,6 @@ const ExercisePicker = ({ visible, onSelect, onClose }) => {
             <Sheet
                 visible={openFacet != null}
                 onRequestClose={() => setOpenFacet(null)}
-                theme={theme}
-                insetsBottom={insets.bottom}
             >
                 {openFacet ? (
                     <>
@@ -672,8 +656,6 @@ const ExercisePicker = ({ visible, onSelect, onClose }) => {
             <Sheet
                 visible={overflowOpen}
                 onRequestClose={() => setOverflowOpen(false)}
-                theme={theme}
-                insetsBottom={insets.bottom}
             >
                 <ThemedText variant="cardTitle" tone="title">More filters</ThemedText>
                 <Spacer height={Space.sm} />
@@ -882,24 +864,8 @@ const styles = StyleSheet.create({
         paddingVertical: Space.xs + 2,
         paddingHorizontal: Space.md,
     },
-    backdrop: {
-        flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'flex-end',
-    },
     sheet: {
         maxHeight: '75%',
-        borderTopLeftRadius: Radius.hero,
-        borderTopRightRadius: Radius.hero,
-        paddingTop: Space.sm,
-        paddingHorizontal: Space.xl,
-    },
-    grabber: {
-        alignSelf: 'center',
-        width: 36,
-        height: 4,
-        borderRadius: Radius.rail,
-        marginBottom: Space.md,
     },
     sheetHeaderRow: {
         flexDirection: 'row',

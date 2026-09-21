@@ -9,6 +9,8 @@ import ProgressSegments from '../../../components/ProgressSegments'
 import OfflineBanner from '../../../components/OfflineBanner'
 import ScreenSubtitle from '../../../components/ScreenSubtitle'
 import Spacer from '../../../components/Spacer'
+import FadeIn from '../../../components/FadeIn'
+import { PlaceholderRows } from '../../../components/Placeholder'
 import { Space, SCREEN_PADDING } from '../../../constants/Layout'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useClients } from '../../../hooks/useClients'
@@ -81,11 +83,14 @@ const ClientRosterRow = ({
     assignments,
     onPress,
     onReport,
+    hidden,
 }: {
     client: any
     assignments: any[]
     onPress: () => void
     onReport: (clientId: string, report: RowReport) => void
+    /** Mounted but undrawn until the roster's order settles - see ClientsRoster. */
+    hidden?: boolean
 }) => {
     const { sessions, loading, offline } = useSessions(client.uid)
     const completion = weeklyCompletion(sessions, assignments)
@@ -98,20 +103,25 @@ const ClientRosterRow = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [client.uid, completion.completed, completion.expected, loading, offline])
 
+    if (hidden) return null
+
+    // Mounted fresh when the roster reveals it, so this plays then.
     return (
-        <Pressable onPress={onPress}>
-            <ThemedCard style={styles.row}>
-                <View style={styles.identity}>
-                    <ThemedText variant="cardTitle" tone="title" numberOfLines={1}>
-                        {client.name}
-                    </ThemedText>
-                    <ThemedText variant="small" tone="muted" numberOfLines={1}>
-                        {client.email}
-                    </ThemedText>
-                </View>
-                <RosterFigure completion={completion} />
-            </ThemedCard>
-        </Pressable>
+        <FadeIn>
+            <Pressable onPress={onPress}>
+                <ThemedCard style={styles.row}>
+                    <View style={styles.identity}>
+                        <ThemedText variant="cardTitle" tone="title" numberOfLines={1}>
+                            {client.name}
+                        </ThemedText>
+                        <ThemedText variant="small" tone="muted" numberOfLines={1}>
+                            {client.email}
+                        </ThemedText>
+                    </View>
+                    <RosterFigure completion={completion} />
+                </ThemedCard>
+            </Pressable>
+        </FadeIn>
     )
 }
 
@@ -229,6 +239,15 @@ const ClientsRoster = () => {
     // can - see hooks/useOffline.ts - and a row that silently shows "0 of 3" on
     // a failed read is a lie about a real number, not an empty state.
     const anyRowOffline = Object.values(rowReports).some((r) => r.offline)
+
+    // Until the order freezes, the rows are mounted - each one holds the read
+    // the ranking waits on - but not drawn, and placeholders stand in. Drawing
+    // them meant a list in name order, each figure ticking up from "0 of 3" as
+    // its read landed, then the whole list reshuffling into rank order: three
+    // changes of mind before the answer. Now the answer arrives once, already
+    // sorted. A row that times out still reports (not loading, offline), so
+    // this cannot hold the screen hostage past the snapshot timeout.
+    const ranking = clients.length > 0 && !settledOrder
     const offline = useOffline(clientsOffline, assignmentsOffline, anyRowOffline)
 
     if (profile && profile.role !== 'trainer') {
@@ -245,21 +264,22 @@ const ClientsRoster = () => {
                     <>
                         <OfflineBanner visible={offline} onRetry={retry} />
                         <ScreenSubtitle>
-                            {clients.length} client{clients.length === 1 ? '' : 's'}
+                            {loading ? ' ' : `${clients.length} client${clients.length === 1 ? '' : 's'}`}
                         </ScreenSubtitle>
+                        {ranking ? <PlaceholderRows count={Math.min(clients.length, 5)} /> : null}
                     </>
                 }
-                ItemSeparatorComponent={() => <Spacer height={Space.sm + 2} />}
+                ItemSeparatorComponent={ranking ? null : () => <Spacer height={Space.sm + 2} />}
                 ListEmptyComponent={
                     loading ? (
-                        <ThemedText variant="body" tone="muted" style={styles.empty}>
-                            Loading...
-                        </ThemedText>
+                        <PlaceholderRows />
                     ) : (
-                        <ThemedText variant="body" tone="muted" style={styles.empty}>
-                            No clients yet. Share your invite code (see Profile tab) so clients can link to you when
-                            they register.
-                        </ThemedText>
+                        <FadeIn>
+                            <ThemedText variant="body" tone="muted" style={styles.empty}>
+                                No clients yet. Share your invite code (see Profile tab) so clients can link to you
+                                when they register.
+                            </ThemedText>
+                        </FadeIn>
                     )
                 }
                 renderItem={({ item }) => (
@@ -268,6 +288,7 @@ const ClientsRoster = () => {
                         assignments={assignmentsByClientId[item.uid] ?? []}
                         onPress={() => router.push(`/clients/${item.uid}`)}
                         onReport={reportRow}
+                        hidden={ranking}
                     />
                 )}
             />

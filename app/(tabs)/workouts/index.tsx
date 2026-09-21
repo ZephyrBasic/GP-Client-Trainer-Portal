@@ -7,6 +7,8 @@ import WorkoutListItem from '../../../components/WorkoutListItem'
 import OfflineBanner from '../../../components/OfflineBanner'
 import ScreenSubtitle from '../../../components/ScreenSubtitle'
 import Spacer from '../../../components/Spacer'
+import FadeIn from '../../../components/FadeIn'
+import { PlaceholderRows } from '../../../components/Placeholder'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useSessions } from '../../../hooks/useSessions'
 import { useOffline } from '../../../hooks/useOffline'
@@ -39,23 +41,28 @@ const WorkoutsHistory = () => {
                 ListHeaderComponent={
                     <>
                         <OfflineBanner visible={offline} onRetry={retry} />
+                        {/* Blank rather than "Nothing logged yet" while the
+                            read is out: a count that claims zero and then
+                            changes its mind is the flicker, not the answer. */}
                         <ScreenSubtitle>
-                            {sessions.length > 0
-                                ? `${sessions.length} session${sessions.length === 1 ? '' : 's'}`
-                                : 'Nothing logged yet'}
+                            {loading
+                                ? ' '
+                                : sessions.length > 0
+                                  ? `${sessions.length} session${sessions.length === 1 ? '' : 's'}`
+                                  : 'Nothing logged yet'}
                         </ScreenSubtitle>
                     </>
                 }
                 ItemSeparatorComponent={() => <Spacer height={10} />}
                 ListEmptyComponent={
                     loading ? (
-                        <ThemedText variant="body" tone="muted" style={styles.empty}>
-                            Loading...
-                        </ThemedText>
+                        <PlaceholderRows />
                     ) : (
-                        <ThemedText variant="body" tone="muted" style={styles.empty}>
-                            No sessions yet. Start a workout from Today, or log one you already did.
-                        </ThemedText>
+                        <FadeIn>
+                            <ThemedText variant="body" tone="muted" style={styles.empty}>
+                                No sessions yet. Start a workout from Today, or log one you already did.
+                            </ThemedText>
+                        </FadeIn>
                     )
                 }
                 renderItem={({ item }) => (

@@ -2,6 +2,7 @@ import { View } from 'react-native'
 
 import ThemedText from './ThemedText'
 import ThemedCard from './ThemedCard'
+import { PlaceholderRows } from './Placeholder'
 import ProgressSegments from './ProgressSegments'
 import WorkoutSection from './WorkoutSection'
 import WorkoutStartRow from './WorkoutStartRow'
@@ -78,10 +79,11 @@ const PrescribedWorkoutRow = ({
     // rendering an anonymous empty card - the screen's offline banner covers the
     // assignment list, not this per-row read.
     if (!template) {
+        if (loading) return <PlaceholderRows count={1} />
         return (
             <ThemedCard muted={true}>
                 <ThemedText variant="meta" tone="muted">
-                    {loading ? 'Loading workout...' : "This workout isn't available right now."}
+                    This workout isn&apos;t available right now.
                 </ThemedText>
             </ThemedCard>
         )

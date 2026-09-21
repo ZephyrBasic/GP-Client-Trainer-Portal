@@ -1,13 +1,12 @@
 import { useState } from 'react'
-import { Modal, Pressable, ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Pressable, ScrollView, StyleSheet } from 'react-native'
 
+import BottomSheet from './BottomSheet'
 import Spacer from './Spacer'
 import ThemedButton from './ThemedButton'
 import ThemedText from './ThemedText'
 import ThemedTextInput from './ThemedTextInput'
-import { Colors } from '../constants/Colors'
-import { Radius, Space } from '../constants/Layout'
+import { Space } from '../constants/Layout'
 import { getAuthErrorMessage } from '../utils/firebaseErrors'
 import { deletionNotes, deletionTakes, trainerDeletionBlock } from '../utils/deleteAccount'
 
@@ -28,8 +27,8 @@ type Props = {
  *
  * A sheet rather than a route, because Profile is a leaf file in the tabs
  * navigator and turning it into a folder to hold one destructive screen would
- * rearrange the tab config for the sake of a confirm dialog. Same plain RN Modal
- * as SomethingElseSheet, for the same reason it gives.
+ * rearrange the tab config for the sake of a confirm dialog. Drawn on the house
+ * BottomSheet, like SomethingElseSheet.
  *
  * Three things it deliberately does rather than the usual one-tap confirm:
  * lists what goes, lists what stays (utils/deleteAccount explains why the second
@@ -39,9 +38,6 @@ type Props = {
  * into a deliberate act.
  */
 const DeleteAccountSheet = ({ visible, onClose, role, clientCount, onConfirm }: Props) => {
-    const colorScheme = useColorScheme()
-    const theme = Colors[colorScheme] ?? Colors.light
-    const insets = useSafeAreaInsets()
 
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
@@ -79,125 +75,96 @@ const DeleteAccountSheet = ({ visible, onClose, role, clientCount, onConfirm }: 
     }
 
     return (
-        <Modal visible={visible} transparent animationType="slide" onRequestClose={close}>
-            <Pressable style={styles.backdrop} onPress={close}>
-                {/* Swallows the backdrop's onPress so tapping the sheet itself
-                    doesn't also close through it a frame later. */}
-                <Pressable
-                    style={[
-                        styles.sheet,
-                        { backgroundColor: theme.navBackground, paddingBottom: insets.bottom + Space.lg },
-                    ]}
-                    onPress={() => {}}
-                >
-                    <View style={[styles.grabber, { backgroundColor: theme.line }]} />
-                    <ScrollView contentContainerStyle={styles.body}>
-                        <ThemedText variant="heading" tone="title">
-                            Delete your account
+        <BottomSheet visible={visible} onClose={close} style={styles.sheet}>
+            <ScrollView contentContainerStyle={styles.body}>
+                <ThemedText variant="heading" tone="title">
+                    Delete your account
+                </ThemedText>
+
+                {blocked ? (
+                    <>
+                        <Spacer height={Space.md} />
+                        <ThemedText variant="body" tone="body">
+                            {blocked}
                         </ThemedText>
-
-                        {blocked ? (
-                            <>
-                                <Spacer height={Space.md} />
-                                <ThemedText variant="body" tone="body">
-                                    {blocked}
-                                </ThemedText>
-                            </>
-                        ) : (
-                            <>
-                                <Spacer height={Space.md} />
-                                <ThemedText variant="body" tone="body">
-                                    This cannot be undone. Deleting removes:
-                                </ThemedText>
-                                <Spacer height={Space.sm} />
-                                {deletionTakes(role).map((line) => (
-                                    <ThemedText key={line} variant="body" tone="body" style={styles.bullet}>
-                                        {`•  ${line}`}
-                                    </ThemedText>
-                                ))}
-
-                                <Spacer height={Space.lg} />
-                                <ThemedText variant="label" tone="muted">
-                                    What stays behind
-                                </ThemedText>
-                                <Spacer height={Space.xs} />
-                                {deletionNotes(role).map((line) => (
-                                    <ThemedText key={line} variant="small" tone="muted" style={styles.bullet}>
-                                        {line}
-                                    </ThemedText>
-                                ))}
-
-                                <Spacer height={Space.lg} />
-                                <ThemedText variant="label" tone="muted">
-                                    Confirm with your password
-                                </ThemedText>
-                                <Spacer height={Space.sm} />
-                                <ThemedTextInput
-                                    value={password}
-                                    onChangeText={setPassword}
-                                    secureTextEntry
-                                    autoCapitalize="none"
-                                    editable={!submitting}
-                                />
-                            </>
-                        )}
-
-                        {error ? (
-                            <>
-                                <Spacer height={Space.md} />
-                                <ThemedText variant="body" tone="danger">
-                                    {error}
-                                </ThemedText>
-                            </>
-                        ) : null}
+                    </>
+                ) : (
+                    <>
+                        <Spacer height={Space.md} />
+                        <ThemedText variant="body" tone="body">
+                            This cannot be undone. Deleting removes:
+                        </ThemedText>
+                        <Spacer height={Space.sm} />
+                        {deletionTakes(role).map((line) => (
+                            <ThemedText key={line} variant="body" tone="body" style={styles.bullet}>
+                                {`•  ${line}`}
+                            </ThemedText>
+                        ))}
 
                         <Spacer height={Space.lg} />
-                        {blocked ? null : (
-                            <>
-                                <ThemedButton variant="danger" onPress={handleConfirm} disabled={submitting}>
-                                    <ThemedText variant="cardTitle" tone="danger">
-                                        {submitting ? 'Deleting...' : 'Delete my account'}
-                                    </ThemedText>
-                                </ThemedButton>
-                                <Spacer height={Space.sm} />
-                            </>
-                        )}
-                        <Pressable onPress={close} style={styles.cancel} disabled={submitting}>
-                            <ThemedText variant="body" tone="muted">
-                                {blocked ? 'Close' : 'Cancel'}
+                        <ThemedText variant="label" tone="muted">
+                            What stays behind
+                        </ThemedText>
+                        <Spacer height={Space.xs} />
+                        {deletionNotes(role).map((line) => (
+                            <ThemedText key={line} variant="small" tone="muted" style={styles.bullet}>
+                                {line}
                             </ThemedText>
-                        </Pressable>
-                    </ScrollView>
+                        ))}
+
+                        <Spacer height={Space.lg} />
+                        <ThemedText variant="label" tone="muted">
+                            Confirm with your password
+                        </ThemedText>
+                        <Spacer height={Space.sm} />
+                        <ThemedTextInput
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry
+                            autoCapitalize="none"
+                            editable={!submitting}
+                        />
+                    </>
+                )}
+
+                {error ? (
+                    <>
+                        <Spacer height={Space.md} />
+                        <ThemedText variant="body" tone="danger">
+                            {error}
+                        </ThemedText>
+                    </>
+                ) : null}
+
+                <Spacer height={Space.lg} />
+                {blocked ? null : (
+                    <>
+                        <ThemedButton variant="danger" onPress={handleConfirm} disabled={submitting}>
+                            <ThemedText variant="cardTitle" tone="danger">
+                                {submitting ? 'Deleting...' : 'Delete my account'}
+                            </ThemedText>
+                        </ThemedButton>
+                        <Spacer height={Space.sm} />
+                    </>
+                )}
+                <Pressable onPress={close} style={styles.cancel} disabled={submitting}>
+                    <ThemedText variant="body" tone="muted">
+                        {blocked ? 'Close' : 'Cancel'}
+                    </ThemedText>
                 </Pressable>
-            </Pressable>
-        </Modal>
+            </ScrollView>
+        </BottomSheet>
     )
 }
 
 export default DeleteAccountSheet
 
 const styles = StyleSheet.create({
-    backdrop: {
-        flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'flex-end',
-    },
     sheet: {
-        borderTopLeftRadius: Radius.hero,
-        borderTopRightRadius: Radius.hero,
-        paddingTop: Space.sm,
-        paddingHorizontal: Space.xl,
         // There is a lot to read here, and none of it should push the confirm
         // button off a small screen - so the sheet is capped and its contents
         // scroll rather than the sheet growing to fill the display.
         maxHeight: '88%',
-    },
-    grabber: {
-        alignSelf: 'center',
-        width: 36,
-        height: 4,
-        borderRadius: Radius.rail,
-        marginBottom: Space.md,
     },
     body: {
         paddingBottom: Space.md,

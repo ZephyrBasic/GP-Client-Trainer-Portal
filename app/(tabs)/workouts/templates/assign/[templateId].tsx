@@ -7,6 +7,7 @@ import ThemedText from '../../../../../components/ThemedText'
 import ThemedCard from '../../../../../components/ThemedCard'
 import ThemedChip from '../../../../../components/ThemedChip'
 import OfflineBanner from '../../../../../components/OfflineBanner'
+import { PlaceholderRows } from '../../../../../components/Placeholder'
 import ScreenSubtitle from '../../../../../components/ScreenSubtitle'
 import Spacer from '../../../../../components/Spacer'
 import { Space, SCREEN_PADDING } from '../../../../../constants/Layout'
@@ -128,9 +129,13 @@ const AssignTemplate = () => {
         return (
             <ThemedView style={styles.container}>
                 <OfflineBanner visible={offline} onRetry={retry} />
-                <ThemedText variant="body" tone="muted">
-                    {templateLoading ? 'Loading...' : "This template isn't available."}
-                </ThemedText>
+                {templateLoading ? (
+                    <PlaceholderRows />
+                ) : (
+                    <ThemedText variant="body" tone="muted">
+                        This template isn&apos;t available.
+                    </ThemedText>
+                )}
             </ThemedView>
         )
     }
@@ -169,9 +174,7 @@ const AssignTemplate = () => {
                 ItemSeparatorComponent={() => <Spacer height={Space.sm + 2} />}
                 ListEmptyComponent={
                     clientsLoading ? (
-                        <ThemedText variant="body" tone="muted">
-                            Loading...
-                        </ThemedText>
+                        <PlaceholderRows />
                     ) : (
                         <ThemedText variant="body" tone="muted">
                             No clients yet. Share your invite code (see Profile tab) so clients can link to you

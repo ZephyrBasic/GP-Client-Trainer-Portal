@@ -1,6 +1,9 @@
-import { Pressable, StyleSheet, useColorScheme } from 'react-native'
+import { useEffect, useRef } from 'react'
+import { Animated, Pressable, StyleSheet, useColorScheme } from 'react-native'
 import ThemedText from './ThemedText'
 import { Colors } from '../constants/Colors'
+import { NATIVE_DRIVER } from '../constants/Motion'
+import { useReducedMotion } from '../hooks/useReducedMotion'
 
 // (44 - 30) / 2: the padding hitSlop needs on each side to bring a 30px
 // circle up to the 44pt minimum tap target, without drawing a visibly larger
@@ -35,24 +38,45 @@ const Checkbox = ({
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
     const fill = tone === 'amber' ? theme.amber : theme.iconColorFocused
+    const reduced = useReducedMotion()
+
+    // A tick lands with a small press-and-release of the circle - the one
+    // moment in a Session the thumb is waiting on, so it gets a physical
+    // answer. Only on ticking: unticking is a correction, not an event.
+    const scale = useRef(new Animated.Value(1)).current
+    const previous = useRef(value)
+    useEffect(() => {
+        const ticked = value && !previous.current
+        previous.current = value
+        if (!ticked || reduced) return
+        scale.setValue(0.82)
+        Animated.spring(scale, {
+            toValue: 1,
+            friction: 4,
+            tension: 220,
+            useNativeDriver: NATIVE_DRIVER,
+        }).start()
+    }, [value, reduced, scale])
 
     return (
-        <Pressable
-            onPress={onPress}
-            disabled={disabled}
-            hitSlop={HIT_SLOP}
-            accessibilityRole="checkbox"
-            accessibilityState={{ checked: value }}
-            style={[
-                styles.circle,
-                { borderColor: value ? fill : theme.iconColor },
-                value && { backgroundColor: fill },
-            ]}
-        >
-            {value ? (
-                <ThemedText style={[styles.mark, { color: theme.background }]}>✓</ThemedText>
-            ) : null}
-        </Pressable>
+        <Animated.View style={{ transform: [{ scale }] }}>
+            <Pressable
+                onPress={onPress}
+                disabled={disabled}
+                hitSlop={HIT_SLOP}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: value }}
+                style={[
+                    styles.circle,
+                    { borderColor: value ? fill : theme.iconColor },
+                    value && { backgroundColor: fill },
+                ]}
+            >
+                {value ? (
+                    <ThemedText style={[styles.mark, { color: theme.background }]}>✓</ThemedText>
+                ) : null}
+            </Pressable>
+        </Animated.View>
     )
 }
 export default Checkbox

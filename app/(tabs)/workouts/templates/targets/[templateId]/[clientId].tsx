@@ -7,6 +7,7 @@ import ThemedText from '../../../../../../components/ThemedText'
 import ThemedButton from '../../../../../../components/ThemedButton'
 import ThemedCard from '../../../../../../components/ThemedCard'
 import OfflineBanner from '../../../../../../components/OfflineBanner'
+import { PlaceholderRows } from '../../../../../../components/Placeholder'
 import ScreenSubtitle from '../../../../../../components/ScreenSubtitle'
 import Spacer from '../../../../../../components/Spacer'
 import ExerciseSetEditor from '../../../../../../components/ExerciseSetEditor'
@@ -146,11 +147,15 @@ const ClientTargets = () => {
         return (
             <ThemedView style={styles.container}>
                 <OfflineBanner visible={offline} onRetry={retry} />
-                <ThemedText variant="body" tone="muted">
-                    {templateLoading || versionLoading || assignmentLoading
-                        ? 'Loading...'
-                        : "This client's targets aren't available."}
-                </ThemedText>
+                {/* `version` for the same reason as the Template editor: one
+                    that has arrived is about to be loaded, not missing. */}
+                {templateLoading || versionLoading || assignmentLoading || version ? (
+                    <PlaceholderRows />
+                ) : (
+                    <ThemedText variant="body" tone="muted">
+                        This client&apos;s targets aren&apos;t available.
+                    </ThemedText>
+                )}
             </ThemedView>
         )
     }

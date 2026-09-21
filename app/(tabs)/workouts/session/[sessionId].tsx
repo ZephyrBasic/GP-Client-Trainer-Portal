@@ -12,6 +12,7 @@ import ThemedCard from '../../../../components/ThemedCard'
 import Checkbox from '../../../../components/Checkbox'
 import DateField from '../../../../components/DateField'
 import OfflineBanner from '../../../../components/OfflineBanner'
+import { PlaceholderRows } from '../../../../components/Placeholder'
 import ProgressBar from '../../../../components/ProgressBar'
 import Spacer from '../../../../components/Spacer'
 import ExercisePicker from '../../../../components/ExercisePicker'
@@ -156,11 +157,6 @@ const LiveSession = () => {
         pickExercise,
         updateSet,
         addSet,
-        // `removeSet` is deliberately not destructured: Signal's row has no
-        // per-Set remove, only Skip on the whole Exercise. Dropping the
-        // control loses nothing a Client could do here before - leaving a Set
-        // unticked already keeps it out of what's saved (see handleFinish).
-        //
         // Skipping, not deleting: the Exercise leaves this screen, and the
         // Session is simply recorded without it. Nothing has been written yet,
         // so there is nothing to undo.
@@ -323,6 +319,30 @@ const LiveSession = () => {
             )
         )
 
+    // Swiping a Set away (see components/SwipeToDelete). Not the shared
+    // `removeSet`: that keeps `sets` and `checked` in step, but this screen
+    // hangs a third parallel array off each row - `targetSets`, what each Set
+    // was prescribed - and dropping a Set without dropping its target would
+    // slide every later row's target up one, marking on-target Sets as
+    // departed. A prescribed Set deleted here is simply work not done; the
+    // verdict at completion is judged against `targets`, not these rows, so it
+    // still counts as a departure from the plan.
+    const deleteSet = (exIndex, setIndex) => {
+        const keep = (_, j) => j !== setIndex
+        setExercises((prev) =>
+            prev.map((ex, i) =>
+                i === exIndex
+                    ? {
+                          ...ex,
+                          sets: ex.sets.filter(keep),
+                          checked: ex.checked.filter(keep),
+                          ...(ex.targetSets ? { targetSets: ex.targetSets.filter(keep) } : null),
+                      }
+                    : ex
+            )
+        )
+    }
+
     const totalChecked = exercises.reduce((total, ex) => total + checkedCount(ex), 0)
     const totalSets = exercises.reduce((total, ex) => total + ex.sets.length, 0)
 
@@ -454,9 +474,11 @@ const LiveSession = () => {
         return (
             <ThemedView style={styles.container}>
                 <OfflineBanner visible={offline} onRetry={retry} />
-                <ThemedText>
-                    {sessionLoading ? 'Loading...' : 'This session is no longer here. It may have been discarded.'}
-                </ThemedText>
+                {sessionLoading ? (
+                    <PlaceholderRows />
+                ) : (
+                    <ThemedText>This session is no longer here. It may have been discarded.</ThemedText>
+                )}
             </ThemedView>
         )
     }
@@ -575,6 +597,7 @@ const LiveSession = () => {
                             onToggleSet={(setIndex) => toggleSet(exIndex, setIndex)}
                             onChangeSet={(setIndex, field, value) => updateSet(exIndex, setIndex, field, value)}
                             onAddSet={() => addSet(exIndex)}
+                            onRemoveSet={(setIndex) => deleteSet(exIndex, setIndex)}
                             onRemoveExercise={() => skipExercise(exIndex)}
                         />
                     </View>

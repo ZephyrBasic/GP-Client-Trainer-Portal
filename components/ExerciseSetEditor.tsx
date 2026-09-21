@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, TextInput, useColorScheme, View } from 'react-na
 import { Ionicons } from '@expo/vector-icons'
 
 import Checkbox from './Checkbox'
+import SwipeToDelete from './SwipeToDelete'
 import ThemedCard from './ThemedCard'
 import ThemedText from './ThemedText'
 import { Colors } from '../constants/Colors'
@@ -24,6 +25,9 @@ const FIELD_LABELS: Record<SetField, string> = {
 // row's trailing column has to reserve exactly this much, not a rounder
 // number, so its column head lines up above a circle that never moves.
 const CHECKBOX_WIDTH = 30
+
+// Between authoring rows - named because a deleted row folds this away too.
+const GRID_GAP = 5
 
 type Props = {
     /** The Exercise's display name, denormalised by the caller. */
@@ -160,6 +164,7 @@ const ExerciseSetEditor = ({
                 onToggleSet={onToggleSet}
                 onChangeSet={onChangeSet}
                 onAddSet={onAddSet}
+                onRemoveSet={onRemoveSet}
                 onRemoveExercise={onRemoveExercise}
             />
         )
@@ -201,46 +206,56 @@ const ExerciseSetEditor = ({
                 </View>
 
                 {sets.map((set, setIndex) => (
-                    <View key={setIndex} style={styles.row}>
-                        <View style={styles.lead}>
-                            <ThemedText variant="meta" tone="muted" style={styles.setNumber}>
-                                {setIndex + 1}
-                            </ThemedText>
+                    // The ✕ stays beside the swipe: it is the control a mouse,
+                    // a keyboard and a first-time author can all find.
+                    <SwipeToDelete
+                        key={setIndex}
+                        enabled={Boolean(onRemoveSet) && sets.length > 1}
+                        onDelete={() => onRemoveSet?.(setIndex)}
+                        accessibilityLabel={`Set ${setIndex + 1}`}
+                        collapseGap={GRID_GAP}
+                    >
+                        <View style={[styles.row, { backgroundColor: theme.uiBackground }]}>
+                            <View style={styles.lead}>
+                                <ThemedText variant="meta" tone="muted" style={styles.setNumber}>
+                                    {setIndex + 1}
+                                </ThemedText>
+                            </View>
+
+                            {fields.map((field) => (
+                                <TextInput
+                                    key={field}
+                                    value={set[field] ?? ''}
+                                    onChangeText={(text) => onChangeSet(setIndex, field, text)}
+                                    keyboardType="numeric"
+                                    editable={editable}
+                                    selectTextOnFocus={true}
+                                    style={[
+                                        styles.box,
+                                        {
+                                            backgroundColor: theme.background,
+                                            borderColor: theme.line,
+                                            color: theme.title,
+                                        },
+                                    ]}
+                                />
+                            ))}
+
+                            {/* The last Set keeps no ✕: an Exercise down to zero Sets
+                                is removed as an Exercise. */}
+                            {onRemoveSet && sets.length > 1 ? (
+                                <Pressable
+                                    onPress={() => onRemoveSet(setIndex)}
+                                    hitSlop={8}
+                                    style={styles.trail}
+                                >
+                                    <ThemedText style={{ color: theme.danger }}>✕</ThemedText>
+                                </Pressable>
+                            ) : (
+                                <View style={styles.trail} />
+                            )}
                         </View>
-
-                        {fields.map((field) => (
-                            <TextInput
-                                key={field}
-                                value={set[field] ?? ''}
-                                onChangeText={(text) => onChangeSet(setIndex, field, text)}
-                                keyboardType="numeric"
-                                editable={editable}
-                                selectTextOnFocus={true}
-                                style={[
-                                    styles.box,
-                                    {
-                                        backgroundColor: theme.background,
-                                        borderColor: theme.line,
-                                        color: theme.title,
-                                    },
-                                ]}
-                            />
-                        ))}
-
-                        {/* The last Set keeps no ✕: an Exercise down to zero Sets
-                            is removed as an Exercise. */}
-                        {onRemoveSet && sets.length > 1 ? (
-                            <Pressable
-                                onPress={() => onRemoveSet(setIndex)}
-                                hitSlop={8}
-                                style={styles.trail}
-                            >
-                                <ThemedText style={{ color: theme.danger }}>✕</ThemedText>
-                            </Pressable>
-                        ) : (
-                            <View style={styles.trail} />
-                        )}
-                    </View>
+                    </SwipeToDelete>
                 ))}
             </View>
 
@@ -279,6 +294,7 @@ const LiveExercise = ({
     onToggleSet,
     onChangeSet,
     onAddSet,
+    onRemoveSet,
     onRemoveExercise,
 }: {
     theme: (typeof Colors)['dark']
@@ -293,6 +309,7 @@ const LiveExercise = ({
     onToggleSet?: (setIndex: number) => void
     onChangeSet: (setIndex: number, field: SetField, value: string) => void
     onAddSet?: () => void
+    onRemoveSet?: (setIndex: number) => void
     onRemoveExercise?: () => void
 }) => {
     const done = progress?.done ?? checked.filter(Boolean).length
@@ -346,83 +363,93 @@ const LiveExercise = ({
                     const edgeColor = departed ? theme.amber : theme.iconColorFocused
 
                     return (
-                        <View
+                        // Swiped away rather than given a ✕: a row per Set is
+                        // already full, and the last one stays - an Exercise
+                        // down to nothing is skipped with its own pill below.
+                        <SwipeToDelete
                             key={setIndex}
-                            style={[
-                                styles.liveRow,
-                                isChecked
-                                    ? [
-                                          styles.liveRowTicked,
-                                          { backgroundColor: theme.uiBackground, borderLeftColor: edgeColor },
-                                      ]
-                                    : [
-                                          styles.liveRowUnticked,
-                                          { backgroundColor: theme.navBackground, borderColor: theme.lineSoft },
-                                      ],
-                            ]}
+                            enabled={Boolean(onRemoveSet) && editable && sets.length > 1}
+                            onDelete={() => onRemoveSet?.(setIndex)}
+                            accessibilityLabel={`Set ${setIndex + 1}`}
+                            collapseGap={Space.sm}
                         >
-                            {/* TOKENS.md: Space Grotesk is "every heading,
-                                every number" - the Set index is a number, so
-                                it takes the heading family even at body size. */}
-                            <ThemedText
-                                variant="small"
-                                tone="faint"
-                                style={[styles.liveLead, styles.tabular, styles.numeralFont]}
+                            <View
+                                style={[
+                                    styles.liveRow,
+                                    isChecked
+                                        ? [
+                                              styles.liveRowTicked,
+                                              { backgroundColor: theme.uiBackground, borderLeftColor: edgeColor },
+                                          ]
+                                        : [
+                                              styles.liveRowUnticked,
+                                              { backgroundColor: theme.navBackground, borderColor: theme.lineSoft },
+                                          ],
+                                ]}
                             >
-                                {setIndex + 1}
-                            </ThemedText>
+                                {/* TOKENS.md: Space Grotesk is "every heading,
+                                    every number" - the Set index is a number, so
+                                    it takes the heading family even at body size. */}
+                                <ThemedText
+                                    variant="small"
+                                    tone="faint"
+                                    style={[styles.liveLead, styles.tabular, styles.numeralFont]}
+                                >
+                                    {setIndex + 1}
+                                </ThemedText>
 
-                            <View style={styles.liveFieldGrid}>
-                                {fields.map((field) => {
-                                    const fieldDeparted = departedFields.includes(field)
-                                    const target = targetSet?.[field]
-                                    return (
-                                        <View key={field} style={styles.liveValueCell}>
-                                            <TextInput
-                                                value={set[field] ?? ''}
-                                                onChangeText={(text) => onChangeSet(setIndex, field, text)}
-                                                keyboardType="numeric"
-                                                editable={editable}
-                                                selectTextOnFocus
-                                                // Never "0": an unrecorded
-                                                // measurement is absent, and a
-                                                // dash says so without looking
-                                                // like a value that was typed.
-                                                placeholder="—"
-                                                placeholderTextColor={theme.faint}
-                                                style={[
-                                                    Type.metric,
-                                                    styles.liveValueInput,
-                                                    {
-                                                        color: fieldDeparted
-                                                            ? theme.amber
-                                                            : isChecked
-                                                              ? theme.title
-                                                              : theme.iconColor,
-                                                    },
-                                                ]}
-                                            />
-                                            {fieldDeparted && target ? (
-                                                <ThemedText
-                                                    variant="small"
-                                                    tone="muted"
-                                                    style={styles.liveTargetStrike}
-                                                >
-                                                    {target}
-                                                </ThemedText>
-                                            ) : null}
-                                        </View>
-                                    )
-                                })}
+                                <View style={styles.liveFieldGrid}>
+                                    {fields.map((field) => {
+                                        const fieldDeparted = departedFields.includes(field)
+                                        const target = targetSet?.[field]
+                                        return (
+                                            <View key={field} style={styles.liveValueCell}>
+                                                <TextInput
+                                                    value={set[field] ?? ''}
+                                                    onChangeText={(text) => onChangeSet(setIndex, field, text)}
+                                                    keyboardType="numeric"
+                                                    editable={editable}
+                                                    selectTextOnFocus
+                                                    // Never "0": an unrecorded
+                                                    // measurement is absent, and a
+                                                    // dash says so without looking
+                                                    // like a value that was typed.
+                                                    placeholder="—"
+                                                    placeholderTextColor={theme.faint}
+                                                    style={[
+                                                        Type.metric,
+                                                        styles.liveValueInput,
+                                                        {
+                                                            color: fieldDeparted
+                                                                ? theme.amber
+                                                                : isChecked
+                                                                  ? theme.title
+                                                                  : theme.iconColor,
+                                                        },
+                                                    ]}
+                                                />
+                                                {fieldDeparted && target ? (
+                                                    <ThemedText
+                                                        variant="small"
+                                                        tone="muted"
+                                                        style={styles.liveTargetStrike}
+                                                    >
+                                                        {target}
+                                                    </ThemedText>
+                                                ) : null}
+                                            </View>
+                                        )
+                                    })}
+                                </View>
+
+                                <Checkbox
+                                    value={isChecked}
+                                    onPress={() => onToggleSet?.(setIndex)}
+                                    disabled={!editable}
+                                    tone={departed ? 'amber' : 'accent'}
+                                />
                             </View>
-
-                            <Checkbox
-                                value={isChecked}
-                                onPress={() => onToggleSet?.(setIndex)}
-                                disabled={!editable}
-                                tone={departed ? 'amber' : 'accent'}
-                            />
-                        </View>
+                        </SwipeToDelete>
                     )
                 })}
             </View>
@@ -480,7 +507,7 @@ const styles = StyleSheet.create({
     },
     grid: {
         marginTop: 8,
-        gap: 5,
+        gap: GRID_GAP,
     },
     row: {
         flexDirection: 'row',

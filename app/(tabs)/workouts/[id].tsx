@@ -5,6 +5,7 @@ import { deleteDoc, doc, onSnapshot } from 'firebase/firestore'
 
 import ThemedView from '../../../components/ThemedView'
 import ThemedText from '../../../components/ThemedText'
+import { PlaceholderRows } from '../../../components/Placeholder'
 import ThemedTextInput from '../../../components/ThemedTextInput'
 import ThemedCard from '../../../components/ThemedCard'
 import ThemedButton, { buttonTextColor } from '../../../components/ThemedButton'
@@ -111,7 +112,7 @@ const WorkoutDetail = () => {
     if (loading) {
         return (
             <ThemedView style={styles.container}>
-                <ThemedText>Loading...</ThemedText>
+                <PlaceholderRows />
             </ThemedView>
         )
     }

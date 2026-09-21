@@ -208,6 +208,10 @@ renders its own header.
 `ThemedCard`/`ThemedTextInput` are the base layer; `ThemedChip`, `SectionLabel`, `ScreenSubtitle`
 and `Spacer` are the shared vocabulary the screens were redesigned onto — reach for one of those
 before inventing a per-screen style. No six-digit hex literal belongs outside `constants/Colors.ts`.
+A read still out renders `PlaceholderRows`/`PlaceholderInline` (`components/Placeholder.tsx`), never
+"Loading..." text or a count/empty state that may change its mind; bottom sheets use
+`components/BottomSheet.tsx`; motion takes its timings from `constants/Motion.ts` and checks
+`useReducedMotion`.
 Route auth failures through `utils/firebaseErrors.ts` rather than surfacing raw Firebase codes.
 
 **Exercise catalog.** Import from `constants/exerciseCatalog.ts`, never `exercises.json` directly —

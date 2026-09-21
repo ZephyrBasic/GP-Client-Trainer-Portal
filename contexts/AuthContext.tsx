@@ -20,7 +20,7 @@ import {
     where,
 } from 'firebase/firestore'
 import { auth, db } from '../firebase/config'
-import { SNAPSHOT_TIMEOUT_MS } from '../hooks/useFirestoreSnapshot'
+import { RECONNECT_GRACE_MS, SNAPSHOT_TIMEOUT_MS } from '../hooks/useFirestoreSnapshot'
 import { deleteOwnAccount } from '../utils/deleteAccount'
 
 const AuthContext = createContext(null)
@@ -87,30 +87,42 @@ export const AuthProvider = ({ children }) => {
         //
         // Releasing the gate does not cancel the listener: if the connection
         // returns at 30s the profile still arrives and `offline` clears itself.
-        const timer = setTimeout(() => {
+        const goOffline = () => {
+            timer = null
             console.warn('[auth] profile listener timed out; releasing the gate')
             setOffline(true)
             setProfileLoading(false)
-        }, SNAPSHOT_TIMEOUT_MS)
+        }
+        let timer: ReturnType<typeof setTimeout> | null = setTimeout(goOffline, SNAPSHOT_TIMEOUT_MS)
 
         const unsubscribe = onSnapshot(
             doc(db, 'users', user.uid),
             { includeMetadataChanges: true },
             (snapshot) => {
-                clearTimeout(timer)
-                // fromCache means Firestore gave up reaching the server and
-                // answered from the local cache - which, with no persistence on
-                // native, is empty on a cold start. Verified: against an
-                // unreachable backend this callback runs at ~11s with
-                // `exists = false, fromCache = true`, cancelling the timeout
-                // above and reporting a confident "you have no profile". Without
-                // this check the app signs a lie rather than admitting an outage.
+                // fromCache means this answer did not come from the server -
+                // which, with no persistence on native, can be an empty cache on
+                // a cold start. Verified: against an unreachable backend this
+                // callback runs at ~11s with `exists = false, fromCache = true`,
+                // and taking that as an answer reports a confident "you have no
+                // profile". Without this check the app signs a lie rather than
+                // admitting an outage.
                 const fromCache = snapshot.metadata?.fromCache === true
                 if (!fromCache || snapshot.exists()) {
                     setProfile(snapshot.exists() ? { uid: snapshot.id, ...snapshot.data() } : null)
+                    setProfileLoading(false)
                 }
-                setProfileLoading(false)
-                setOffline(fromCache)
+                if (!fromCache) {
+                    if (timer) clearTimeout(timer)
+                    timer = null
+                    setOffline(false)
+                    return
+                }
+                // But a cache answer is not an outage by itself either - the
+                // server usually confirms it moments later - so it only arms the
+                // watchdog, on the same terms as hooks/useFirestoreSnapshot.
+                // Flagging it at once is what put a banner up on every screen
+                // for the second before that confirmation landed.
+                if (!timer) timer = setTimeout(goOffline, RECONNECT_GRACE_MS)
             },
             (error) => {
                 // The other half of the same bug: a listener that *errors* (rules
@@ -119,7 +131,8 @@ export const AuthProvider = ({ children }) => {
                 // whatever degraded state it can manage.
                 // The last known profile is deliberately kept: a dropped connection
                 // shouldn't demote a trainer's session to a client's.
-                clearTimeout(timer)
+                if (timer) clearTimeout(timer)
+                timer = null
                 console.warn('[auth] profile listener failed:', error)
                 setProfileLoading(false)
                 // A rules rejection is not an outage, and saying "you're offline"

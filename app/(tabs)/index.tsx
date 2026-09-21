@@ -18,6 +18,7 @@ import PrescribedWorkoutList from '../../components/PrescribedWorkoutList'
 import SelfAuthoredWorkoutList from '../../components/SelfAuthoredWorkoutList'
 import SomethingElseSheet from '../../components/SomethingElseSheet'
 import Spacer from '../../components/Spacer'
+import { PlaceholderInline, PlaceholderRows } from '../../components/Placeholder'
 import { Colors } from '../../constants/Colors'
 import { Radius, SCREEN_PADDING, Space } from '../../constants/Layout'
 import { db } from '../../firebase/config'
@@ -79,10 +80,11 @@ const HeroCard = ({
     const { template, loading } = useWorkoutTemplate(assignment.templateId)
 
     if (!template) {
+        if (loading) return <PlaceholderRows count={1} raised={true} />
         return (
             <ThemedCard raised={true} style={styles.hero}>
                 <ThemedText variant="body" tone="muted">
-                    {loading ? 'Loading your next workout...' : "This workout isn't available right now."}
+                    This workout isn&apos;t available right now.
                 </ThemedText>
             </ThemedCard>
         )
@@ -167,6 +169,7 @@ const Today = () => {
     } = useSessions(profile?.uid)
     const {
         assignments,
+        loading: assignmentsLoading,
         offline: assignmentsOffline,
         retry: retryAssignments,
     } = useClientAssignments(profile?.uid)
@@ -175,6 +178,7 @@ const Today = () => {
     // nothing here asks about a role.
     const {
         templates: ownTemplates,
+        loading: templatesLoading,
         offline: templatesOffline,
         retry: retryTemplates,
     } = useWorkoutTemplates(profile?.uid)
@@ -210,13 +214,11 @@ const Today = () => {
     const remainingAssignments = orderedAssignments.slice(1)
 
     const trainerName = trainer?.name
-    // Only ever named once it is actually known - the loading and offline
-    // words are not a name, and dressing either one up as "PT Loading..."
-    // would read as a very oddly named trainer rather than an unknown one.
-    const trainerPillLabel = trainerLoading
-        ? 'Loading...'
-        : trainerLabel(trainerName) ??
-          (trainerOffline ? 'Unavailable offline' : 'Your trainer')
+    // Only ever named once it is actually known - the offline wording is not a
+    // name, and dressing it up as "PT Unavailable" would read as a very oddly
+    // named trainer rather than an unknown one. While loading, the pill holds
+    // a placeholder instead of any words at all (see the header below).
+    const trainerPillLabel = trainerLabel(trainerName) ?? (trainerOffline ? 'Unavailable offline' : 'Your trainer')
     const heroFromLabel = trainerLabel(trainerName)
 
     const [starting, setStarting] = useState(false)
@@ -350,9 +352,13 @@ const Today = () => {
                     ]}
                 >
                     <View style={[styles.dot, { backgroundColor: theme.iconColorFocused }]} />
-                    <ThemedText variant="small" tone="body">
-                        {trainerPillLabel}
-                    </ThemedText>
+                    {trainerLoading ? (
+                        <PlaceholderInline width={64} />
+                    ) : (
+                        <ThemedText variant="small" tone="body">
+                            {trainerPillLabel}
+                        </ThemedText>
+                    )}
                 </View>
             </View>
 
@@ -367,6 +373,12 @@ const Today = () => {
                     discarding={discarding}
                 />
                 <OfflineBanner visible={offline} onRetry={retry} />
+
+                {/* One placeholder for the whole plan while it is out, so
+                    the rows below it - and the "Start, log or plan a workout"
+                    row under them - don't arrive one at a time and push each
+                    other down the screen. */}
+                {assignmentsLoading || (templatesLoading && !heroAssignment) ? <PlaceholderRows count={1} raised={true} /> : null}
 
                 {heroAssignment ? (
                     <HeroCard
@@ -398,7 +410,7 @@ const Today = () => {
                 >
                     <Ionicons name="add" size={15} color={theme.iconColor} />
                     <ThemedText variant="body" tone="muted">
-                        Something else
+                        Start, log or plan a workout
                     </ThemedText>
                 </Pressable>
 

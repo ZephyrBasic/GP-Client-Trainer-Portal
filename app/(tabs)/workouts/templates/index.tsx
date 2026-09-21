@@ -9,6 +9,8 @@ import ThemedButton from '../../../../components/ThemedButton'
 import OfflineBanner from '../../../../components/OfflineBanner'
 import ScreenSubtitle from '../../../../components/ScreenSubtitle'
 import Spacer from '../../../../components/Spacer'
+import FadeIn from '../../../../components/FadeIn'
+import { PlaceholderRows } from '../../../../components/Placeholder'
 import { Space, SCREEN_PADDING } from '../../../../constants/Layout'
 import { useAuth } from '../../../../contexts/AuthContext'
 import { useTrainerAssignments } from '../../../../hooks/useAssignments'
@@ -31,7 +33,7 @@ const WorkoutTemplates = () => {
         useWorkoutTemplates(profile?.uid)
     // Only for the count in the subtitle - "who is looking at these?" is the
     // question a Trainer opens this list with, and the answer is one number.
-    const { clients, offline: clientsOffline, retry: retryClients } = useClients(
+    const { clients, loading: clientsLoading, offline: clientsOffline, retry: retryClients } = useClients(
         profile?.role === 'trainer' ? profile.uid : null
     )
     // Only to count who is on each Template. One subscription for the whole
@@ -69,11 +71,19 @@ const WorkoutTemplates = () => {
                 ListHeaderComponent={
                     <>
                         <OfflineBanner visible={offline} onRetry={retry} />
+                        {/* Blank until both counts are real - "0 templates"
+                            on the way to "4 templates" is a flicker. */}
                         <ScreenSubtitle>
-                            {templates.length} template{templates.length === 1 ? '' : 's'}
-                            {profile?.role === 'trainer'
-                                ? ` · ${clients.length} client${clients.length === 1 ? '' : 's'}`
-                                : ''}
+                            {loading || clientsLoading ? (
+                                ' '
+                            ) : (
+                                <>
+                                    {templates.length} template{templates.length === 1 ? '' : 's'}
+                                    {profile?.role === 'trainer'
+                                        ? ` · ${clients.length} client${clients.length === 1 ? '' : 's'}`
+                                        : ''}
+                                </>
+                            )}
                         </ScreenSubtitle>
                     </>
                 }
@@ -94,13 +104,13 @@ const WorkoutTemplates = () => {
                 ItemSeparatorComponent={() => <Spacer height={Space.sm + 2} />}
                 ListEmptyComponent={
                     loading ? (
-                        <ThemedText variant="body" tone="muted" style={styles.empty}>
-                            Loading...
-                        </ThemedText>
+                        <PlaceholderRows />
                     ) : (
-                        <ThemedText variant="body" tone="muted" style={styles.empty}>
-                            No templates yet. Tap &quot;New template&quot; to build a workout you can reuse.
-                        </ThemedText>
+                        <FadeIn>
+                            <ThemedText variant="body" tone="muted" style={styles.empty}>
+                                No templates yet. Tap &quot;New template&quot; to build a workout you can reuse.
+                            </ThemedText>
+                        </FadeIn>
                     )
                 }
                 renderItem={({ item }) => (

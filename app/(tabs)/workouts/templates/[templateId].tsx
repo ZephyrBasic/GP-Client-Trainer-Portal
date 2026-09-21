@@ -7,6 +7,7 @@ import ThemedText from '../../../../components/ThemedText'
 import ThemedTextInput from '../../../../components/ThemedTextInput'
 import ThemedButton from '../../../../components/ThemedButton'
 import OfflineBanner from '../../../../components/OfflineBanner'
+import { PlaceholderRows } from '../../../../components/Placeholder'
 import ScreenSubtitle from '../../../../components/ScreenSubtitle'
 import Spacer from '../../../../components/Spacer'
 import SectionLabel from '../../../../components/SectionLabel'
@@ -171,9 +172,16 @@ const EditWorkoutTemplate = () => {
         return (
             <ThemedView style={styles.container}>
                 <OfflineBanner visible={offline} onRetry={retry} />
-                <ThemedText variant="body" tone="muted">
-                    {templateLoading || versionLoading ? 'Loading...' : "This template isn't available."}
-                </ThemedText>
+                {/* A Version already here is one the effect above is about to
+                    load into the form, not a missing one - without `version` in
+                    this test the failure copy painted for that frame. */}
+                {templateLoading || versionLoading || version ? (
+                    <PlaceholderRows />
+                ) : (
+                    <ThemedText variant="body" tone="muted">
+                        This template isn&apos;t available.
+                    </ThemedText>
+                )}
             </ThemedView>
         )
     }

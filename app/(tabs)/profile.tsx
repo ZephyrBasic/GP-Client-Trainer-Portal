@@ -12,6 +12,7 @@ import DeleteAccountSheet from '../../components/DeleteAccountSheet'
 import ExternalLink from '../../components/ExternalLink'
 import LegalLinks from '../../components/LegalLinks'
 import OfflineBanner from '../../components/OfflineBanner'
+import { PlaceholderInline } from '../../components/Placeholder'
 import SectionLabel from '../../components/SectionLabel'
 import Spacer from '../../components/Spacer'
 import { Space } from '../../constants/Layout'
@@ -78,9 +79,7 @@ const Profile = () => {
     // This read used to have no error callback and no timeout, so an
     // unreachable backend left "Loading..." under "Your trainer" permanently.
     // It now resolves to a stated unknown instead of an eternal one.
-    const trainerLabel = trainerLoading
-        ? 'Loading...'
-        : trainer?.name ?? (offline ? 'Unavailable offline' : 'Unknown')
+    const trainerLabel = trainer?.name ?? (offline ? 'Unavailable offline' : 'Unknown')
 
     const feedbackHref = buildFeedbackMailto({
         role: profile?.role,
@@ -210,9 +209,13 @@ const Profile = () => {
                     <ThemedCard>
                         <SectionLabel>Your trainer</SectionLabel>
                         <Spacer height={Space.xs} />
-                        <ThemedText variant="body" tone="title">
-                            {trainerLabel}
-                        </ThemedText>
+                        {trainerLoading ? (
+                            <PlaceholderInline width={120} />
+                        ) : (
+                            <ThemedText variant="body" tone="title">
+                                {trainerLabel}
+                            </ThemedText>
+                        )}
                     </ThemedCard>
                 )}
 
