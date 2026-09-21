@@ -23,6 +23,7 @@ import { useSessions } from '../../../../hooks/useSessions'
 import { useTrainerAssignments } from '../../../../hooks/useAssignments'
 import { useWorkoutTemplates } from '../../../../hooks/useWorkoutTemplates'
 import { useFirestoreDoc } from '../../../../hooks/useFirestoreSnapshot'
+import { useLeave } from '../../../../hooks/useLeave'
 import { useOffline } from '../../../../hooks/useOffline'
 import { deviations } from '../../../../utils/prescription'
 import { weeklyCompletion } from '../../../../utils/weeklyCompletion'
@@ -61,6 +62,9 @@ const PROGRESS_MEDIA_ENABLED: boolean = false
 const ClientDetail = () => {
     const { clientId } = useLocalSearchParams<{ clientId: string }>()
     const router = useRouter()
+    // Back to the Roster even when nothing is under this screen - a direct
+    // link or a refresh - where back() had nowhere to go and did nothing.
+    const { leave } = useLeave({ home: '/clients', homeLabel: 'Roster' })
     const { profile } = useAuth()
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
@@ -132,7 +136,7 @@ const ClientDetail = () => {
         <ThemedView style={styles.container}>
             <View style={[styles.header, { paddingTop: insets.top + Space.md }]}>
                 <Pressable
-                    onPress={() => router.back()}
+                    onPress={leave}
                     hitSlop={4}
                     style={[styles.backButton, { backgroundColor: theme.uiBackground, borderColor: theme.line }]}
                 >

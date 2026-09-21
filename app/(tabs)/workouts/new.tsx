@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
-import { useRouter } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 
 import ThemedView from '../../../components/ThemedView'
@@ -8,6 +7,7 @@ import ThemedText from '../../../components/ThemedText'
 import ThemedTextInput from '../../../components/ThemedTextInput'
 import ThemedButton from '../../../components/ThemedButton'
 import OfflineBanner from '../../../components/OfflineBanner'
+import ScreenEnter from '../../../components/ScreenEnter'
 import Spacer from '../../../components/Spacer'
 import SectionLabel from '../../../components/SectionLabel'
 import DateField from '../../../components/DateField'
@@ -19,6 +19,7 @@ import { Radius, Space, SCREEN_PADDING } from '../../../constants/Layout'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useAssignment, useClientAssignments } from '../../../hooks/useAssignments'
 import { draftsFrom, useExerciseDraft } from '../../../hooks/useExerciseDraft'
+import { useLeave } from '../../../hooks/useLeave'
 import { useOffline } from '../../../hooks/useOffline'
 import { createManualSession, useSessions } from '../../../hooks/useSessions'
 import { useTemplateVersion, useWorkoutTemplates } from '../../../hooks/useWorkoutTemplates'
@@ -51,7 +52,8 @@ import { emptySetDraft, hasMeasurement, setDraftFrom, storedSetFrom } from '../.
  */
 const LogWorkout = () => {
     const { profile } = useAuth()
-    const router = useRouter()
+    // Opened from Today, so saving goes back there (hooks/useLeave).
+    const { leave, fromToday } = useLeave({ home: '/workouts', homeLabel: 'History' })
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
 
@@ -242,7 +244,7 @@ const LogWorkout = () => {
                 // did not compare rather than compared and found nothing to say.
                 comparison: compareSession(cleanedExercises, targets),
             })
-            router.back()
+            leave()
         } catch (err) {
             setError(err.message || 'Failed to save workout.')
             setSaving(false)
@@ -257,131 +259,133 @@ const LogWorkout = () => {
 
     return (
         <ThemedView style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-                <OfflineBanner visible={offline} onRetry={retry} />
+            <ScreenEnter play={fromToday}>
+                <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+                    <OfflineBanner visible={offline} onRetry={retry} />
 
-                {/* First, because it decides what the rest of the form is
-                    prefilled with - and because "which workout was this?" is
-                    a question about the whole entry, not about one exercise. */}
-                <WorkoutPlanPicker
-                    assignments={assignments}
-                    templates={ownTemplates}
-                    selectedTemplateId={plan?.templateId}
-                    onSelect={choosePlan}
-                    disabled={saving}
-                />
-                {assignments.length > 0 || ownTemplates.length > 0 ? <Spacer height={Space.lg} /> : null}
+                    {/* First, because it decides what the rest of the form is
+                        prefilled with - and because "which workout was this?" is
+                        a question about the whole entry, not about one exercise. */}
+                    <WorkoutPlanPicker
+                        assignments={assignments}
+                        templates={ownTemplates}
+                        selectedTemplateId={plan?.templateId}
+                        onSelect={choosePlan}
+                        disabled={saving}
+                    />
+                    {assignments.length > 0 || ownTemplates.length > 0 ? <Spacer height={Space.lg} /> : null}
 
-                <ThemedText variant="meta" tone="muted" style={styles.label}>Date</ThemedText>
-                <DateField value={date} onChange={setDate} editable={!saving} />
+                    <ThemedText variant="meta" tone="muted" style={styles.label}>Date</ThemedText>
+                    <DateField value={date} onChange={setDate} editable={!saving} />
 
-                <Spacer height={Space.lg} />
-                <ThemedText variant="meta" tone="muted" style={styles.label}>Duration</ThemedText>
-                {/* By hand, because no timer ran. Blank saves as unrecorded
-                    rather than as a workout that took no time. */}
-                <ThemedTextInput
-                    value={duration}
-                    onChangeText={setDuration}
-                    placeholder="4:30"
-                    keyboardType="numbers-and-punctuation"
-                    editable={!saving}
-                />
-                <ThemedText variant="small" tone="muted" style={styles.hint}>
-                    Minutes and seconds, as 4:30. A plain number is read as minutes.
-                </ThemedText>
-
-                <Spacer height={Space.xl} />
-                <SectionLabel>EXERCISES</SectionLabel>
-
-                {planPending ? (
-                    <>
-                        <Spacer height={Space.sm} />
-                        <ThemedText variant="meta" tone="muted">
-                            {versionLoading || assignmentLoading
-                                ? 'Loading that workout...'
-                                : "That workout's plan hasn't reached your phone. Add what you did — it's still recorded as that workout."}
-                        </ThemedText>
-                    </>
-                ) : exercises.length === 0 ? (
-                    <>
-                        <Spacer height={Space.sm} />
-                        <ThemedText variant="meta" tone="muted">
-                            Add an exercise from the library to start logging.
-                        </ThemedText>
-                    </>
-                ) : null}
-
-                {plan && exercises.length > 0 ? (
-                    <>
-                        <Spacer height={Space.sm} />
-                        {/* The one place this differs from checking off a live
-                            Session, and worth a sentence: there is nothing to
-                            tick, so a row that stands is a row that happened. */}
-                        <ThemedText variant="meta" tone="muted">
-                            Filled in with what you were asked for. Change the numbers you changed, and remove
-                            anything you didn&apos;t do.
-                        </ThemedText>
-                    </>
-                ) : null}
-
-                {exercises.map((exercise, exIndex) => (
-                    <View key={`${exercise.exerciseId}-${exIndex}`}>
-                        <Spacer height={Space.md} />
-                        <ExerciseSetEditor
-                            name={exercise.name}
-                            fields={exercise.fields}
-                            sets={exercise.sets}
-                            hint={exercise.previous}
-                            editable={!saving}
-                            onChangeSet={(setIndex, field, value) => updateSet(exIndex, setIndex, field, value)}
-                            onAddSet={() => addSet(exIndex)}
-                            onRemoveSet={(setIndex) => removeSet(exIndex, setIndex)}
-                            onRemoveExercise={() => removeExercise(exIndex)}
-                        />
-                    </View>
-                ))}
-
-                <Spacer height={Space.md} />
-                {/* Styled like the live session's own "Add exercise" pill
-                    (app/(tabs)/workouts/session/[sessionId].tsx) rather than a
-                    bare link, so the one control both screens share for this
-                    reads the same wherever a Client meets it. */}
-                <Pressable
-                    onPress={() => setPickerOpen(true)}
-                    disabled={saving}
-                    style={[styles.addExercisePill, { backgroundColor: theme.uiBackground, borderColor: theme.line }]}
-                >
-                    <Ionicons name="add" size={14} color={theme.text} />
-                    <ThemedText variant="small" tone="body">Add exercise</ThemedText>
-                </Pressable>
-
-                <Spacer height={Space.xl} />
-                <ThemedText variant="meta" tone="muted" style={styles.label}>Notes</ThemedText>
-                <ThemedTextInput
-                    value={notes}
-                    onChangeText={setNotes}
-                    placeholder="How did it feel?"
-                    multiline
-                    numberOfLines={3}
-                    style={styles.notesInput}
-                    editable={!saving}
-                />
-
-                {error ? (
-                    <>
-                        <Spacer height={Space.lg} />
-                        <ThemedText variant="body" tone="danger">{error}</ThemedText>
-                    </>
-                ) : null}
-
-                <Spacer height={Space.xl} />
-                <ThemedButton onPress={handleSave} disabled={saving}>
-                    <ThemedText variant="label" tone="onPrimary">
-                        {saving ? 'SAVING' : 'SAVE WORKOUT'}
+                    <Spacer height={Space.lg} />
+                    <ThemedText variant="meta" tone="muted" style={styles.label}>Duration</ThemedText>
+                    {/* By hand, because no timer ran. Blank saves as unrecorded
+                        rather than as a workout that took no time. */}
+                    <ThemedTextInput
+                        value={duration}
+                        onChangeText={setDuration}
+                        placeholder="4:30"
+                        keyboardType="numbers-and-punctuation"
+                        editable={!saving}
+                    />
+                    <ThemedText variant="small" tone="muted" style={styles.hint}>
+                        Minutes and seconds, as 4:30. A plain number is read as minutes.
                     </ThemedText>
-                </ThemedButton>
-                <Spacer height={Space.xl} />
-            </ScrollView>
+
+                    <Spacer height={Space.xl} />
+                    <SectionLabel>EXERCISES</SectionLabel>
+
+                    {planPending ? (
+                        <>
+                            <Spacer height={Space.sm} />
+                            <ThemedText variant="meta" tone="muted">
+                                {versionLoading || assignmentLoading
+                                    ? 'Loading that workout...'
+                                    : "That workout's plan hasn't reached your phone. Add what you did — it's still recorded as that workout."}
+                            </ThemedText>
+                        </>
+                    ) : exercises.length === 0 ? (
+                        <>
+                            <Spacer height={Space.sm} />
+                            <ThemedText variant="meta" tone="muted">
+                                Add an exercise from the library to start logging.
+                            </ThemedText>
+                        </>
+                    ) : null}
+
+                    {plan && exercises.length > 0 ? (
+                        <>
+                            <Spacer height={Space.sm} />
+                            {/* The one place this differs from checking off a live
+                                Session, and worth a sentence: there is nothing to
+                                tick, so a row that stands is a row that happened. */}
+                            <ThemedText variant="meta" tone="muted">
+                                Filled in with what you were asked for. Change the numbers you changed, and remove
+                                anything you didn&apos;t do.
+                            </ThemedText>
+                        </>
+                    ) : null}
+
+                    {exercises.map((exercise, exIndex) => (
+                        <View key={`${exercise.exerciseId}-${exIndex}`}>
+                            <Spacer height={Space.md} />
+                            <ExerciseSetEditor
+                                name={exercise.name}
+                                fields={exercise.fields}
+                                sets={exercise.sets}
+                                hint={exercise.previous}
+                                editable={!saving}
+                                onChangeSet={(setIndex, field, value) => updateSet(exIndex, setIndex, field, value)}
+                                onAddSet={() => addSet(exIndex)}
+                                onRemoveSet={(setIndex) => removeSet(exIndex, setIndex)}
+                                onRemoveExercise={() => removeExercise(exIndex)}
+                            />
+                        </View>
+                    ))}
+
+                    <Spacer height={Space.md} />
+                    {/* Styled like the live session's own "Add exercise" pill
+                        (app/(tabs)/workouts/session/[sessionId].tsx) rather than a
+                        bare link, so the one control both screens share for this
+                        reads the same wherever a Client meets it. */}
+                    <Pressable
+                        onPress={() => setPickerOpen(true)}
+                        disabled={saving}
+                        style={[styles.addExercisePill, { backgroundColor: theme.uiBackground, borderColor: theme.line }]}
+                    >
+                        <Ionicons name="add" size={14} color={theme.text} />
+                        <ThemedText variant="small" tone="body">Add exercise</ThemedText>
+                    </Pressable>
+
+                    <Spacer height={Space.xl} />
+                    <ThemedText variant="meta" tone="muted" style={styles.label}>Notes</ThemedText>
+                    <ThemedTextInput
+                        value={notes}
+                        onChangeText={setNotes}
+                        placeholder="How did it feel?"
+                        multiline
+                        numberOfLines={3}
+                        style={styles.notesInput}
+                        editable={!saving}
+                    />
+
+                    {error ? (
+                        <>
+                            <Spacer height={Space.lg} />
+                            <ThemedText variant="body" tone="danger">{error}</ThemedText>
+                        </>
+                    ) : null}
+
+                    <Spacer height={Space.xl} />
+                    <ThemedButton onPress={handleSave} disabled={saving}>
+                        <ThemedText variant="label" tone="onPrimary">
+                            {saving ? 'SAVING' : 'SAVE WORKOUT'}
+                        </ThemedText>
+                    </ThemedButton>
+                    <Spacer height={Space.xl} />
+                </ScrollView>
+            </ScreenEnter>
 
             <ExercisePicker
                 visible={pickerOpen}

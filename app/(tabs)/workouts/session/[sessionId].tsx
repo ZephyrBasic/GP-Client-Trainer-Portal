@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Animated, BackHandler, Pressable, ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
+import { useEffect, useMemo, useState } from 'react'
+import { Pressable, ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
+import { useLocalSearchParams, useNavigation } from 'expo-router'
 import type { NavigationProp, ParamListBase } from '@react-navigation/native'
 
 import ThemedView from '../../../../components/ThemedView'
@@ -15,17 +15,17 @@ import DateField from '../../../../components/DateField'
 import OfflineBanner from '../../../../components/OfflineBanner'
 import { PlaceholderRows } from '../../../../components/Placeholder'
 import ProgressBar from '../../../../components/ProgressBar'
+import ScreenEnter from '../../../../components/ScreenEnter'
 import Spacer from '../../../../components/Spacer'
 import ExercisePicker from '../../../../components/ExercisePicker'
 import ExerciseSetEditor from '../../../../components/ExerciseSetEditor'
 import { Colors } from '../../../../constants/Colors'
 import { Radius, Space, SCREEN_PADDING } from '../../../../constants/Layout'
-import { Duration, Ease, NATIVE_DRIVER } from '../../../../constants/Motion'
 import { FontFamily } from '../../../../constants/Type'
 import { useAssignment } from '../../../../hooks/useAssignments'
 import { draftsFrom, useExerciseDraft } from '../../../../hooks/useExerciseDraft'
 import { useOffline } from '../../../../hooks/useOffline'
-import { useReducedMotion } from '../../../../hooks/useReducedMotion'
+import { useLeave } from '../../../../hooks/useLeave'
 import { completeSession, isActiveSession, useSession } from '../../../../hooks/useSessions'
 import {
     createWorkoutTemplate,
@@ -125,7 +125,6 @@ const checkedCount = (exercise) => (exercise.checked ?? []).filter(Boolean).leng
  */
 const LiveSession = () => {
     const { sessionId } = useLocalSearchParams<{ sessionId: string }>()
-    const router = useRouter()
     // The Workouts tab's Stack, which this screen is pushed onto from Today.
     // Typed loosely: its route names are expo-router's file names, which the
     // typed-routes experiment types as hrefs, not as a param list.
@@ -133,67 +132,30 @@ const LiveSession = () => {
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
     const insets = useSafeAreaInsets()
-    const reduced = useReducedMotion()
 
     const { session, loading: sessionLoading, offline: sessionOffline, retry: retrySession } =
         useSession(sessionId)
 
     // Leaving without finishing always lands on Today, and takes this route
-    // out of the Workouts Stack on the way. A plain back() did neither: Today
-    // pushes this screen into another tab's Stack, so back() only switched
-    // tabs and left the route sitting there - and the next Session started was
-    // pushed on top of it, so its back button popped into the old one, which
-    // by then had usually been discarded. It also popped to History whenever
-    // History was underneath. Nothing is lost by leaving: the draft already
-    // holds every tick, and Today offers the Session back.
-    const leave = () => {
-        router.navigate('/')
-        const kept = navigation
-            .getState()
-            .routes.filter((route) => route.name !== 'session/[sessionId]')
-            .map(({ key, name, params }) => ({ key, name, params }))
+    // out of the Workouts Stack on the way (hooks/useLeave). A plain back()
+    // did neither: Today pushes this screen into another tab's Stack, so back()
+    // only switched tabs and left the route sitting there - and the next
+    // Session started was pushed on top of it, so its back button popped into
+    // the old one, by then usually discarded. Nothing is lost by leaving: the
+    // draft already holds every tick, and Today offers the Session back.
+    const { leave } = useLeave({ home: '/', homeLabel: 'Today', toToday: true })
+
+    // The summary, sat on History alone. Replacing this screen with it left
+    // the summary as the only route in the Stack - no back arrow, so the
+    // nearest thing to a way out was "Create template" or "Delete". This way
+    // it gets the ordinary back arrow, to /workouts, and nothing leads back
+    // into a live screen for a Session that is over.
+    const openSummary = () =>
         navigation.reset({
-            index: Math.max(kept.length - 1, 0),
-            routes: kept.length ? kept : [{ name: 'index' }],
+            index: 1,
+            routes: [{ name: 'index' }, { name: '[id]', params: { id: sessionId } }],
         })
-    }
 
-    // Android's back button means the same thing as the one in the footer.
-    // Left to itself it would pop to History, or switch tabs and strand this
-    // route exactly as back() used to.
-    useEffect(() => {
-        const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-            leave()
-            return true
-        })
-        return () => sub.remove()
-    }, [])
-
-    // Starting a workout switches tabs, hides the tab bar and swaps a whole
-    // screen in one frame, and on web - where the Stack has no transitions at
-    // all - that landed as a hard cut. The screen rises into place instead, once
-    // there is a Session to show, so a placeholder is never what arrives. It
-    // is the one entrance of its kind, which is why the Stack's own push is
-    // switched off for this route (workouts/_layout.tsx) rather than doubled.
-    const enter = useRef(new Animated.Value(0)).current
-    const arrived = Boolean(session)
-    useEffect(() => {
-        if (!arrived) return
-        if (reduced) {
-            enter.setValue(1)
-            return
-        }
-        Animated.timing(enter, {
-            toValue: 1,
-            duration: Duration.enter,
-            easing: Ease.out,
-            useNativeDriver: NATIVE_DRIVER,
-        }).start()
-    }, [arrived, reduced, enter])
-    const enterStyle = {
-        opacity: enter,
-        transform: [{ translateY: enter.interpolate({ inputRange: [0, 1], outputRange: [24, 0] }) }],
-    }
     // Null for a Self-Directed Session, and the hook subscribes to nothing then.
     const { version, loading: versionLoading, offline: versionOffline, retry: retryVersion } =
         useTemplateVersion(session?.templateId, session?.versionId)
@@ -523,19 +485,10 @@ const LiveSession = () => {
             }
 
             clearLiveSessionDraft(sessionId)
-            // Reset rather than replace, so the summary sits on History alone.
-            // Replacing left it as the only route in the Stack - no back arrow,
-            // so the nearest thing to a way out was "Create template" or
-            // "Delete". This way the summary gets the ordinary back arrow and
-            // it goes to /workouts, and nothing leads back into a live screen
-            // for a Session that is over. `saving` is deliberately left true:
-            // the snapshot echoes the completed status before navigation lands,
-            // and the guard below would otherwise flash the finished state on
-            // the way out.
-            navigation.reset({
-                index: 1,
-                routes: [{ name: 'index' }, { name: '[id]', params: { id: sessionId } }],
-            })
+            // `saving` is deliberately left true: the snapshot echoes the
+            // completed status before navigation lands, and the guard below
+            // would otherwise flash the finished state on the way out.
+            openSummary()
         } catch (err) {
             setError(err.message || 'Failed to save this session.')
             setSaving(false)
@@ -569,7 +522,7 @@ const LiveSession = () => {
             <ThemedView style={styles.container}>
                 <ThemedText>This session is finished.</ThemedText>
                 <Spacer height={16} />
-                <ThemedButton onPress={() => router.replace(`/workouts/${sessionId}`)}>
+                <ThemedButton onPress={openSummary}>
                     <ThemedText variant="body" tone="onPrimary" style={styles.primaryBtnText}>View session</ThemedText>
                 </ThemedButton>
             </ThemedView>
@@ -589,7 +542,9 @@ const LiveSession = () => {
 
     return (
         <ThemedView style={styles.container}>
-                <Animated.View style={[styles.container, enterStyle]}>
+                {/* Only reached once the Session has loaded, so the screen that
+                rises in is the workout, never its placeholder. */}
+            <ScreenEnter>
                 {/* Outside the ScrollView on purpose: the clock is the one thing that
                     must stay visible however far down the workout the Client is. */}
                 <View
@@ -861,7 +816,7 @@ const LiveSession = () => {
                         </ThemedText>
                     </ThemedButton>
                 </View>
-                </Animated.View>
+                </ScreenEnter>
 
             <ExercisePicker
                 visible={pickerOpen}

@@ -25,6 +25,7 @@ import { db } from '../../firebase/config'
 import { useAuth } from '../../contexts/AuthContext'
 import { useFirestoreDoc } from '../../hooks/useFirestoreSnapshot'
 import { useOffline } from '../../hooks/useOffline'
+import { FROM_TODAY } from '../../hooks/useLeave'
 import { discardSession, startSession, useSessions } from '../../hooks/useSessions'
 import { useClientAssignments } from '../../hooks/useAssignments'
 import { useWorkoutTemplate, useWorkoutTemplates } from '../../hooks/useWorkoutTemplates'
@@ -412,7 +413,12 @@ const Today = () => {
                 <SelfAuthoredWorkoutList
                     templates={ownTemplates}
                     onStart={startOwn}
-                    onEdit={(template) => router.push(`/workouts/templates/${template.id}`)}
+                    onEdit={(template) =>
+                        router.push({
+                            pathname: '/workouts/templates/[templateId]',
+                            params: { templateId: template.id, from: FROM_TODAY },
+                        })
+                    }
                     disabled={blocked}
                 />
 
@@ -437,8 +443,8 @@ const Today = () => {
                 visible={sheetOpen}
                 onClose={() => setSheetOpen(false)}
                 onStartWithoutPlan={startSelfDirected}
-                onLogPastWorkout={() => router.push('/workouts/new')}
-                onSaveOwnWorkout={() => router.push('/workouts/templates/new')}
+                onLogPastWorkout={() => router.push({ pathname: '/workouts/new', params: { from: FROM_TODAY } })}
+                onSaveOwnWorkout={() => router.push({ pathname: '/workouts/templates/new', params: { from: FROM_TODAY } })}
                 startDisabled={blocked}
             />
         </ThemedView>

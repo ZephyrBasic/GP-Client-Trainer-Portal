@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useLocalSearchParams } from 'expo-router'
 import { deleteDoc, doc, onSnapshot } from 'firebase/firestore'
 
 import ThemedView from '../../../components/ThemedView'
@@ -16,6 +16,7 @@ import { Colors } from '../../../constants/Colors'
 import { Space, SCREEN_PADDING } from '../../../constants/Layout'
 import { db } from '../../../firebase/config'
 import { useAuth } from '../../../contexts/AuthContext'
+import { useLeave } from '../../../hooks/useLeave'
 import { SESSIONS } from '../../../hooks/useSessions'
 import {
     createWorkoutTemplate,
@@ -29,7 +30,9 @@ import { sessionDurationLabel } from '../../../utils/elapsed'
 
 const WorkoutDetail = () => {
     const { id } = useLocalSearchParams<{ id: string }>()
-    const router = useRouter()
+    // Normally History is underneath (finishing a Session puts it there); from
+    // a direct link or a refresh nothing is, and back goes to History anyway.
+    const { leave } = useLeave({ home: '/workouts', homeLabel: 'History' })
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
     const { profile } = useAuth()
@@ -103,7 +106,7 @@ const WorkoutDetail = () => {
         setDeleting(true)
         try {
             await deleteDoc(doc(db, SESSIONS, id))
-            router.back()
+            leave()
         } catch (err) {
             setDeleting(false)
         }
@@ -318,12 +321,12 @@ const WorkoutDetail = () => {
                                 <ThemedText>Cancel</ThemedText>
                             </ThemedButton>
                             <ThemedButton
-                                variant="danger"
+                                variant="destructive"
                                 onPress={handleDelete}
                                 style={styles.confirmBtn}
                                 disabled={deleting}
                             >
-                                <ThemedText style={{ color: buttonTextColor('danger', theme), fontWeight: '600' }}>
+                                <ThemedText style={{ color: buttonTextColor('destructive', theme), fontWeight: '600' }}>
                                     {deleting ? 'Deleting...' : 'Confirm Delete'}
                                 </ThemedText>
                             </ThemedButton>

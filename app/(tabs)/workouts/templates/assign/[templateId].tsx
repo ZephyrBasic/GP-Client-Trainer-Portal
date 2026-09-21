@@ -1,15 +1,17 @@
 import { useState } from 'react'
-import { FlatList, Pressable, StyleSheet, View } from 'react-native'
+import { FlatList, Pressable, StyleSheet, View, useColorScheme } from 'react-native'
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
 
 import ThemedView from '../../../../../components/ThemedView'
 import ThemedText from '../../../../../components/ThemedText'
+import ThemedButton, { buttonTextColor } from '../../../../../components/ThemedButton'
 import ThemedCard from '../../../../../components/ThemedCard'
 import ThemedChip from '../../../../../components/ThemedChip'
 import OfflineBanner from '../../../../../components/OfflineBanner'
 import { PlaceholderRows } from '../../../../../components/Placeholder'
 import ScreenSubtitle from '../../../../../components/ScreenSubtitle'
 import Spacer from '../../../../../components/Spacer'
+import { Colors } from '../../../../../constants/Colors'
 import { Space, SCREEN_PADDING } from '../../../../../constants/Layout'
 import { FontFamily } from '../../../../../constants/Type'
 import { useAuth } from '../../../../../contexts/AuthContext'
@@ -47,6 +49,8 @@ import {
 const AssignTemplate = () => {
     const { templateId } = useLocalSearchParams<{ templateId: string }>()
     const router = useRouter()
+    const colorScheme = useColorScheme()
+    const theme = Colors[colorScheme] ?? Colors.light
     const { profile } = useAuth()
 
     const { template, loading: templateLoading, offline: templateOffline, retry: retryTemplate } =
@@ -343,28 +347,35 @@ const AssignTemplate = () => {
                                         assign it again.
                                     </ThemedText>
                                     <Spacer height={Space.sm} />
+                                    {/* Buttons, where the row above is links: this is
+                                        the answer to a question, and it keeps the
+                                        sides of the one it replaced - Unassign was on
+                                        the right, so its confirmation is too, under
+                                        the thumb that asked. Same shape as discarding
+                                        a Session (components/ActiveSessionBanner). */}
                                     <View style={styles.confirmRow}>
-                                        <Pressable
-                                            onPress={() => handleUnassign(item.uid)}
-                                            disabled={busy}
-                                            hitSlop={8}
-                                        >
-                                            <ThemedText
-                                                tone="danger"
-                                                style={[styles.actionLink, busy && styles.stepDisabled]}
-                                            >
-                                                {busy ? 'Unassigning...' : 'Yes, unassign'}
-                                            </ThemedText>
-                                        </Pressable>
-                                        <Pressable
+                                        <ThemedButton
+                                            variant="ghost"
                                             onPress={() => setConfirmingClientId(null)}
                                             disabled={busy}
-                                            hitSlop={8}
+                                            style={styles.confirmBtn}
                                         >
                                             <ThemedText tone="body" style={styles.actionLink}>
                                                 Keep it
                                             </ThemedText>
-                                        </Pressable>
+                                        </ThemedButton>
+                                        <ThemedButton
+                                            variant="destructive"
+                                            onPress={() => handleUnassign(item.uid)}
+                                            disabled={busy}
+                                            style={styles.confirmBtn}
+                                        >
+                                            <ThemedText
+                                                style={[styles.actionLink, { color: buttonTextColor('destructive', theme) }]}
+                                            >
+                                                {busy ? 'Unassigning...' : 'Yes, unassign'}
+                                            </ThemedText>
+                                        </ThemedButton>
                                     </View>
                                 </>
                             ) : null}
@@ -437,6 +448,10 @@ const styles = StyleSheet.create({
     },
     confirmRow: {
         flexDirection: 'row',
-        gap: Space.xl,
+        gap: Space.sm,
+    },
+    confirmBtn: {
+        flex: 1,
+        padding: Space.sm,
     },
 })

@@ -1,8 +1,9 @@
-import { Tabs, useSegments } from 'expo-router'
+import { Tabs, useGlobalSearchParams, useSegments } from 'expo-router'
 import { useColorScheme } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors } from '../../constants/Colors'
 import { useAuth } from '../../contexts/AuthContext'
+import { isFromToday } from '../../hooks/useLeave'
 
 const TabsLayout = () => {
     const colorScheme = useColorScheme()
@@ -17,6 +18,11 @@ const TabsLayout = () => {
     // screen-owned flag, since a flag would need plumbing through a navigator
     // that does not otherwise know what its screens are doing.
     const inLiveSession = segments[1] === 'workouts' && segments[2] === 'session'
+    // The same goes for anything else Today opens in the Workouts tab - logging
+    // a past workout, writing or editing their own. Its back goes to Today
+    // (hooks/useLeave), and a tab bar lighting up History underneath says the
+    // Client is somewhere they are not.
+    const onTodayDetour = isFromToday(useGlobalSearchParams())
 
     // Tabs whose route is a folder render their own Stack header (with the back
     // button and per-screen title), so the Tabs header is switched off for those
@@ -26,7 +32,7 @@ const TabsLayout = () => {
             screenOptions={{
                 headerStyle: { backgroundColor: theme.navBackground },
                 headerTintColor: theme.title,
-                tabBarStyle: inLiveSession
+                tabBarStyle: inLiveSession || onTodayDetour
                     ? { display: 'none' }
                     : { backgroundColor: theme.navBackground },
                 tabBarActiveTintColor: theme.iconColorFocused,

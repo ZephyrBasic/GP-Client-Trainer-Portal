@@ -8,6 +8,7 @@ import ThemedTextInput from '../../../../components/ThemedTextInput'
 import ThemedButton from '../../../../components/ThemedButton'
 import OfflineBanner from '../../../../components/OfflineBanner'
 import { PlaceholderRows } from '../../../../components/Placeholder'
+import ScreenEnter from '../../../../components/ScreenEnter'
 import ScreenSubtitle from '../../../../components/ScreenSubtitle'
 import Spacer from '../../../../components/Spacer'
 import SectionLabel from '../../../../components/SectionLabel'
@@ -17,6 +18,7 @@ import { Space, SCREEN_PADDING } from '../../../../constants/Layout'
 import { FontFamily } from '../../../../constants/Type'
 import { useAuth } from '../../../../contexts/AuthContext'
 import { draftsFrom, useExerciseDraft } from '../../../../hooks/useExerciseDraft'
+import { useLeave } from '../../../../hooks/useLeave'
 import { useOffline } from '../../../../hooks/useOffline'
 import {
     nextVersionNumber,
@@ -46,6 +48,13 @@ const EditWorkoutTemplate = () => {
     const { templateId } = useLocalSearchParams<{ templateId: string }>()
     const router = useRouter()
     const { profile } = useAuth()
+    // As in templates/new: a Client only ever edits their own from Today, so
+    // their back and publish go there; a Trainer's go down the Library.
+    const { leave, fromToday } = useLeave({
+        home: '/workouts/templates',
+        homeLabel: 'Library',
+        toToday: profile?.role !== 'trainer',
+    })
 
     const {
         template,
@@ -135,7 +144,7 @@ const EditWorkoutTemplate = () => {
                 exercises: targetExercises,
                 currentVersionNumber: template?.currentVersionNumber,
             })
-            router.back()
+            leave()
         } catch (err) {
             setError(err.message || 'Failed to publish new version.')
             setSaving(false)
@@ -188,120 +197,122 @@ const EditWorkoutTemplate = () => {
 
     return (
         <ThemedView style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-                <OfflineBanner visible={offline} onRetry={retry} />
+            <ScreenEnter play={fromToday}>
+                <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+                    <OfflineBanner visible={offline} onRetry={retry} />
 
-                {/* Which Version is live right now, and therefore what anyone
-                    starting this workout gets. Worded for either author: a
-                    Client editing their own routine has no clients to speak of,
-                    and telling them otherwise would be nonsense. */}
-                <ScreenSubtitle>
-                    Editing · currently v{currentVersion} —{' '}
-                    {profile?.role === 'trainer'
-                        ? 'the version your clients see now'
-                        : 'the version you start now'}
-                </ScreenSubtitle>
+                    {/* Which Version is live right now, and therefore what anyone
+                        starting this workout gets. Worded for either author: a
+                        Client editing their own routine has no clients to speak of,
+                        and telling them otherwise would be nonsense. */}
+                    <ScreenSubtitle>
+                        Editing · currently v{currentVersion} —{' '}
+                        {profile?.role === 'trainer'
+                            ? 'the version your clients see now'
+                            : 'the version you start now'}
+                    </ScreenSubtitle>
 
-                {/* Assigning is reached from the Template, because "who is doing
-                    this workout?" is a question about this Template and nothing
-                    else. It leaves unsaved edits behind, which is correct: an
-                    Assignment points at the Template, not at a draft.
+                    {/* Assigning is reached from the Template, because "who is doing
+                        this workout?" is a question about this Template and nothing
+                        else. It leaves unsaved edits behind, which is correct: an
+                        Assignment points at the Template, not at a draft.
                     
-                    Trainers only, and not because a Client is forbidden to
-                    prescribe - the rules would deny it - but because a Client
-                    has no clients, so the roster behind this link is empty by
-                    construction. A Client's own Template is simply not
-                    prescribed. */}
-                {profile?.role === 'trainer' ? (
-                    <>
-                        <Pressable onPress={() => router.push(`/workouts/templates/assign/${templateId}`)}>
-                            <ThemedText tone="accent" style={styles.addLink}>
-                                Assign to clients →
+                        Trainers only, and not because a Client is forbidden to
+                        prescribe - the rules would deny it - but because a Client
+                        has no clients, so the roster behind this link is empty by
+                        construction. A Client's own Template is simply not
+                        prescribed. */}
+                    {profile?.role === 'trainer' ? (
+                        <>
+                            <Pressable onPress={() => router.push(`/workouts/templates/assign/${templateId}`)}>
+                                <ThemedText tone="accent" style={styles.addLink}>
+                                    Assign to clients →
+                                </ThemedText>
+                            </Pressable>
+                            <Spacer height={Space.lg} />
+                        </>
+                    ) : null}
+
+                    <ThemedText variant="meta" tone="muted" style={styles.label}>
+                        Name
+                    </ThemedText>
+                    <ThemedTextInput
+                        value={name}
+                        onChangeText={setName}
+                        placeholder="Upper Body A"
+                        autoCapitalize="words"
+                        editable={!saving}
+                    />
+
+                    <Spacer height={Space.xl} />
+                    <SectionLabel>EXERCISES</SectionLabel>
+
+                    {exercises.length === 0 ? (
+                        <>
+                            <Spacer height={Space.sm} />
+                            <ThemedText variant="meta" tone="muted">
+                                Add an exercise from the catalog, then set the targets for each set.
                             </ThemedText>
-                        </Pressable>
-                        <Spacer height={Space.lg} />
-                    </>
-                ) : null}
+                        </>
+                    ) : null}
 
-                <ThemedText variant="meta" tone="muted" style={styles.label}>
-                    Name
-                </ThemedText>
-                <ThemedTextInput
-                    value={name}
-                    onChangeText={setName}
-                    placeholder="Upper Body A"
-                    autoCapitalize="words"
-                    editable={!saving}
-                />
+                    {exercises.map((exercise, exIndex) => (
+                        <View key={`${exercise.exerciseId}-${exIndex}`}>
+                            <Spacer height={Space.md} />
+                            <ExerciseSetEditor
+                                name={exercise.name}
+                                fields={exercise.fields}
+                                sets={exercise.sets}
+                                hint="Targets - blank where a measurement doesn't apply"
+                                editable={!saving}
+                                onChangeSet={(setIndex, field, value) => updateSet(exIndex, setIndex, field, value)}
+                                onAddSet={() => addSet(exIndex)}
+                                onRemoveSet={(setIndex) => removeSet(exIndex, setIndex)}
+                                onRemoveExercise={() => removeExercise(exIndex)}
+                            />
+                        </View>
+                    ))}
 
-                <Spacer height={Space.xl} />
-                <SectionLabel>EXERCISES</SectionLabel>
-
-                {exercises.length === 0 ? (
-                    <>
-                        <Spacer height={Space.sm} />
-                        <ThemedText variant="meta" tone="muted">
-                            Add an exercise from the catalog, then set the targets for each set.
+                    <Spacer height={Space.md} />
+                    <Pressable onPress={() => setPickerOpen(true)} disabled={saving}>
+                        <ThemedText tone="accent" style={styles.addLink}>
+                            + Add Exercise
                         </ThemedText>
-                    </>
-                ) : null}
+                    </Pressable>
 
-                {exercises.map((exercise, exIndex) => (
-                    <View key={`${exercise.exerciseId}-${exIndex}`}>
-                        <Spacer height={Space.md} />
-                        <ExerciseSetEditor
-                            name={exercise.name}
-                            fields={exercise.fields}
-                            sets={exercise.sets}
-                            hint="Targets - blank where a measurement doesn't apply"
-                            editable={!saving}
-                            onChangeSet={(setIndex, field, value) => updateSet(exIndex, setIndex, field, value)}
-                            onAddSet={() => addSet(exIndex)}
-                            onRemoveSet={(setIndex) => removeSet(exIndex, setIndex)}
-                            onRemoveExercise={() => removeExercise(exIndex)}
-                        />
-                    </View>
-                ))}
+                    {error ? (
+                        <>
+                            <Spacer height={Space.lg} />
+                            <ThemedText variant="body" tone="danger">
+                                {error}
+                            </ThemedText>
+                        </>
+                    ) : null}
 
-                <Spacer height={Space.md} />
-                <Pressable onPress={() => setPickerOpen(true)} disabled={saving}>
-                    <ThemedText tone="accent" style={styles.addLink}>
-                        + Add Exercise
-                    </ThemedText>
-                </Pressable>
-
-                {error ? (
-                    <>
-                        <Spacer height={Space.lg} />
-                        <ThemedText variant="body" tone="danger">
-                            {error}
+                    <Spacer height={Space.xxl} />
+                    {/* Spelled out, not implied. Progressing a workout and correcting
+                        a typo take the same keystrokes here, and only one of them is
+                        what the Trainer means - so the screen names the version being
+                        published and promises the old one is untouched, which is the
+                        promise a Client's history rests on. */}
+                    <ThemedText variant="meta" tone="muted" style={styles.publishNote}>
+                        Saving publishes version{' '}
+                        <ThemedText tone="title" style={styles.publishVersion}>
+                            {publishingVersion}
                         </ThemedText>
-                    </>
-                ) : null}
-
-                <Spacer height={Space.xxl} />
-                {/* Spelled out, not implied. Progressing a workout and correcting
-                    a typo take the same keystrokes here, and only one of them is
-                    what the Trainer means - so the screen names the version being
-                    published and promises the old one is untouched, which is the
-                    promise a Client's history rests on. */}
-                <ThemedText variant="meta" tone="muted" style={styles.publishNote}>
-                    Saving publishes version{' '}
-                    <ThemedText tone="title" style={styles.publishVersion}>
-                        {publishingVersion}
+                        . Version {currentVersion} stays exactly as it is, so sessions already performed against it keep
+                        their meaning.
                     </ThemedText>
-                    . Version {currentVersion} stays exactly as it is, so sessions already performed against it keep
-                    their meaning.
-                </ThemedText>
 
-                <Spacer height={Space.sm + 2} />
-                <ThemedButton onPress={handlePublish} disabled={saving}>
-                    <ThemedText variant="cardTitle" tone="onPrimary">
-                        {saving ? 'Publishing...' : 'Publish new version'}
-                    </ThemedText>
-                </ThemedButton>
-                <Spacer height={Space.xl} />
-            </ScrollView>
+                    <Spacer height={Space.sm + 2} />
+                    <ThemedButton onPress={handlePublish} disabled={saving}>
+                        <ThemedText variant="cardTitle" tone="onPrimary">
+                            {saving ? 'Publishing...' : 'Publish new version'}
+                        </ThemedText>
+                    </ThemedButton>
+                    <Spacer height={Space.xl} />
+                </ScrollView>
+            </ScreenEnter>
 
             <ExercisePicker
                 visible={pickerOpen}

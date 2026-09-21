@@ -139,8 +139,11 @@ const DeleteAccountSheet = ({ visible, onClose, role, clientCount, onConfirm }: 
                 <Spacer height={Space.lg} />
                 {blocked ? null : (
                     <>
-                        <ThemedButton variant="danger" onPress={handleConfirm} disabled={submitting}>
-                            <ThemedText variant="cardTitle" tone="danger">
+                        {/* Filled: the Profile screen's Delete account button
+                            was the outline asking the question, and this sheet
+                            is the answer to it. */}
+                        <ThemedButton variant="destructive" onPress={handleConfirm} disabled={submitting}>
+                            <ThemedText variant="cardTitle" tone="onPrimary">
                                 {submitting ? 'Deleting...' : 'Delete my account'}
                             </ThemedText>
                         </ThemedButton>
