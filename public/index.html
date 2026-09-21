@@ -44,6 +44,15 @@
       - The manifest link, which is what makes Chrome on Android offer "Install
         app" rather than a bookmark.
 
+      And one that is not about installing: `maximum-scale=1`. iOS Safari zooms
+      the page into any focused input whose text is under 16px, and the body
+      type here is 13px, so every tap into a set's reps field shoved the layout
+      sideways and left it zoomed. Since iOS 10 Safari ignores this for pinch
+      zoom, so it stops only the focus zoom there; Android Chrome never did the
+      focus zoom, but does honour the cap, so pinch zoom is lost on Android web.
+      The alternative - 16px inputs on web only - would make the web build's
+      forms look unlike the native ones it is meant to match.
+
       The colours are literals rather than imports from constants/Colors.ts,
       which is the one place in this repo with no alternative: a static HTML
       file and a static manifest.json sit outside the module graph entirely,
@@ -55,7 +64,7 @@
     <!-- `http-equiv`, not the `httpEquiv` React spelling Expo's own template
          carries: a browser only honours the hyphenated form. -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no, viewport-fit=cover" />
     <title>%WEB_TITLE%</title>
 
     <!-- Two theme-colour metas rather than one: the app follows the system

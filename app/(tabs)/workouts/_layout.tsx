@@ -25,7 +25,15 @@ const WorkoutsLayout = () => {
                 whole surface rather than sit under a second, generic header.
                 Under workouts/ like everything else: the collection is
                 `sessions` but the URL segment deliberately is not. */}
-            <Stack.Screen name="session/[sessionId]" options={{ headerShown: false }} />
+            {/* No push animation and no swipe back. The screen draws its own
+                entrance (it rises in once the Session has loaded), and a native
+                slide on top of that would play two motions at once. The swipe
+                would pop to History, and leaving a Session always goes to
+                Today - the footer's back button and Android's both do that. */}
+            <Stack.Screen
+                name="session/[sessionId]"
+                options={{ headerShown: false, animation: 'none', gestureEnabled: false }}
+            />
             {/* templates/ has no _layout of its own, so its routes flatten into
                 this Stack and are named with the slash. A second nested Stack
                 would only add a second header. */}

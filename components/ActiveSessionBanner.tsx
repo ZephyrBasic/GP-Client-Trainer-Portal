@@ -99,17 +99,10 @@ const ActiveSessionBanner = ({ session, onResume, onDiscard, discarding }: Props
                         Discard this session? Anything you checked off is lost.
                     </ThemedText>
                     <Spacer height={Space.xs + 4} />
+                    {/* Same sides as the row it replaced - Discard was on the
+                        right, so its confirmation lands under the thumb that
+                        just tapped it, and backing out is the other side. */}
                     <View style={styles.actions}>
-                        <ThemedButton
-                            variant="danger"
-                            onPress={onDiscard}
-                            disabled={discarding}
-                            style={styles.action}
-                        >
-                            <ThemedText variant="small" style={[styles.label, { color: buttonTextColor('danger', theme) }]}>
-                                {discarding ? 'Discarding...' : 'Yes, discard'}
-                            </ThemedText>
-                        </ThemedButton>
                         <ThemedButton
                             variant="ghost"
                             onPress={() => setConfirming(false)}
@@ -118,6 +111,19 @@ const ActiveSessionBanner = ({ session, onResume, onDiscard, discarding }: Props
                         >
                             <ThemedText variant="small" tone="body" style={styles.label}>
                                 Keep it
+                            </ThemedText>
+                        </ThemedButton>
+                        <ThemedButton
+                            variant="destructive"
+                            onPress={onDiscard}
+                            disabled={discarding}
+                            style={styles.action}
+                        >
+                            <ThemedText
+                                variant="small"
+                                style={[styles.label, { color: buttonTextColor('destructive', theme) }]}
+                            >
+                                {discarding ? 'Discarding...' : 'Yes, discard'}
                             </ThemedText>
                         </ThemedButton>
                     </View>

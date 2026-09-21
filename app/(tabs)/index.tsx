@@ -145,6 +145,14 @@ const HeroCard = ({
     )
 }
 
+// Pushing a Session drops any other Session route from the Workouts Stack.
+// The live screen's own back button already removes itself (see leave() in
+// workouts/session/[sessionId].tsx), but a browser's back button goes around it,
+// and a stranded route under the next Session is how back ended up on "no
+// longer here". Singular by name rather than by id: two Sessions are never both
+// worth keeping.
+const SINGLE_SESSION_ROUTE = { dangerouslySingular: (name: string) => name }
+
 /**
  * Today - the Client's landing tab, and the one place Signal draws a hero.
  *
@@ -247,7 +255,7 @@ const Today = () => {
         setStarting(true)
         try {
             const sessionId = await start()
-            router.push(`/workouts/session/${sessionId}`)
+            router.push(`/workouts/session/${sessionId}`, SINGLE_SESSION_ROUTE)
         } catch (err) {
             setError(err.message || 'Could not start this session.')
         }
@@ -365,10 +373,14 @@ const Today = () => {
             <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
                 {/* Above everything, including the offline notice: a Session
                     left open blocks starting anything else, so it is the
-                    first thing that needs answering. */}
+                    first thing that needs answering. Keyed by the Session so
+                    a half-made "Discard?" belongs to the one it was asked
+                    about - without it, the next Session started after a
+                    discard arrived already asking to be discarded. */}
                 <ActiveSessionBanner
+                    key={activeSession?.id}
                     session={activeSession}
-                    onResume={() => router.push(`/workouts/session/${activeSession.id}`)}
+                    onResume={() => router.push(`/workouts/session/${activeSession.id}`, SINGLE_SESSION_ROUTE)}
                     onDiscard={handleDiscard}
                     discarding={discarding}
                 />

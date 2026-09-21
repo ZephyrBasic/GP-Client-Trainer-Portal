@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Animated, BackHandler, Pressable, ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
+import type { NavigationProp, ParamListBase } from '@react-navigation/native'
 
 import ThemedView from '../../../../components/ThemedView'
 import ThemedText from '../../../../components/ThemedText'
@@ -19,10 +20,12 @@ import ExercisePicker from '../../../../components/ExercisePicker'
 import ExerciseSetEditor from '../../../../components/ExerciseSetEditor'
 import { Colors } from '../../../../constants/Colors'
 import { Radius, Space, SCREEN_PADDING } from '../../../../constants/Layout'
+import { Duration, Ease, NATIVE_DRIVER } from '../../../../constants/Motion'
 import { FontFamily } from '../../../../constants/Type'
 import { useAssignment } from '../../../../hooks/useAssignments'
 import { draftsFrom, useExerciseDraft } from '../../../../hooks/useExerciseDraft'
 import { useOffline } from '../../../../hooks/useOffline'
+import { useReducedMotion } from '../../../../hooks/useReducedMotion'
 import { completeSession, isActiveSession, useSession } from '../../../../hooks/useSessions'
 import {
     createWorkoutTemplate,
@@ -123,12 +126,74 @@ const checkedCount = (exercise) => (exercise.checked ?? []).filter(Boolean).leng
 const LiveSession = () => {
     const { sessionId } = useLocalSearchParams<{ sessionId: string }>()
     const router = useRouter()
+    // The Workouts tab's Stack, which this screen is pushed onto from Today.
+    // Typed loosely: its route names are expo-router's file names, which the
+    // typed-routes experiment types as hrefs, not as a param list.
+    const navigation = useNavigation<NavigationProp<ParamListBase>>()
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
     const insets = useSafeAreaInsets()
+    const reduced = useReducedMotion()
 
     const { session, loading: sessionLoading, offline: sessionOffline, retry: retrySession } =
         useSession(sessionId)
+
+    // Leaving without finishing always lands on Today, and takes this route
+    // out of the Workouts Stack on the way. A plain back() did neither: Today
+    // pushes this screen into another tab's Stack, so back() only switched
+    // tabs and left the route sitting there - and the next Session started was
+    // pushed on top of it, so its back button popped into the old one, which
+    // by then had usually been discarded. It also popped to History whenever
+    // History was underneath. Nothing is lost by leaving: the draft already
+    // holds every tick, and Today offers the Session back.
+    const leave = () => {
+        router.navigate('/')
+        const kept = navigation
+            .getState()
+            .routes.filter((route) => route.name !== 'session/[sessionId]')
+            .map(({ key, name, params }) => ({ key, name, params }))
+        navigation.reset({
+            index: Math.max(kept.length - 1, 0),
+            routes: kept.length ? kept : [{ name: 'index' }],
+        })
+    }
+
+    // Android's back button means the same thing as the one in the footer.
+    // Left to itself it would pop to History, or switch tabs and strand this
+    // route exactly as back() used to.
+    useEffect(() => {
+        const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+            leave()
+            return true
+        })
+        return () => sub.remove()
+    }, [])
+
+    // Starting a workout switches tabs, hides the tab bar and swaps a whole
+    // screen in one frame, and on web - where the Stack has no transitions at
+    // all - that landed as a hard cut. The screen rises into place instead, once
+    // there is a Session to show, so a placeholder is never what arrives. It
+    // is the one entrance of its kind, which is why the Stack's own push is
+    // switched off for this route (workouts/_layout.tsx) rather than doubled.
+    const enter = useRef(new Animated.Value(0)).current
+    const arrived = Boolean(session)
+    useEffect(() => {
+        if (!arrived) return
+        if (reduced) {
+            enter.setValue(1)
+            return
+        }
+        Animated.timing(enter, {
+            toValue: 1,
+            duration: Duration.enter,
+            easing: Ease.out,
+            useNativeDriver: NATIVE_DRIVER,
+        }).start()
+    }, [arrived, reduced, enter])
+    const enterStyle = {
+        opacity: enter,
+        transform: [{ translateY: enter.interpolate({ inputRange: [0, 1], outputRange: [24, 0] }) }],
+    }
     // Null for a Self-Directed Session, and the hook subscribes to nothing then.
     const { version, loading: versionLoading, offline: versionOffline, retry: retryVersion } =
         useTemplateVersion(session?.templateId, session?.versionId)
@@ -458,12 +523,19 @@ const LiveSession = () => {
             }
 
             clearLiveSessionDraft(sessionId)
-            // Replace, so the back gesture returns to the workout list rather
-            // than to a live screen for a Session that is over. `saving` is
-            // deliberately left true: the snapshot echoes the completed status
-            // before navigation lands, and the guard below would otherwise flash
-            // the finished state on the way out.
-            router.replace(`/workouts/${sessionId}`)
+            // Reset rather than replace, so the summary sits on History alone.
+            // Replacing left it as the only route in the Stack - no back arrow,
+            // so the nearest thing to a way out was "Create template" or
+            // "Delete". This way the summary gets the ordinary back arrow and
+            // it goes to /workouts, and nothing leads back into a live screen
+            // for a Session that is over. `saving` is deliberately left true:
+            // the snapshot echoes the completed status before navigation lands,
+            // and the guard below would otherwise flash the finished state on
+            // the way out.
+            navigation.reset({
+                index: 1,
+                routes: [{ name: 'index' }, { name: '[id]', params: { id: sessionId } }],
+            })
         } catch (err) {
             setError(err.message || 'Failed to save this session.')
             setSaving(false)
@@ -477,7 +549,13 @@ const LiveSession = () => {
                 {sessionLoading ? (
                     <PlaceholderRows />
                 ) : (
-                    <ThemedText>This session is no longer here. It may have been discarded.</ThemedText>
+                    <>
+                        <ThemedText>This session is no longer here. It may have been discarded.</ThemedText>
+                        <Spacer height={16} />
+                        <ThemedButton onPress={leave}>
+                            <ThemedText variant="body" tone="onPrimary" style={styles.primaryBtnText}>Back to Today</ThemedText>
+                        </ThemedButton>
+                    </>
                 )}
             </ThemedView>
         )
@@ -511,277 +589,279 @@ const LiveSession = () => {
 
     return (
         <ThemedView style={styles.container}>
-            {/* Outside the ScrollView on purpose: the clock is the one thing that
-                must stay visible however far down the workout the Client is. */}
-            <View
-                style={[
-                    styles.header,
-                    { paddingTop: insets.top + Space.sm, borderBottomColor: theme.line, backgroundColor: theme.background },
-                ]}
-            >
-                <View style={styles.headerTop}>
-                    <View style={styles.headerEyebrowWrap}>
-                        <ThemedText variant="label" tone="faint" numberOfLines={1}>
-                            {eyebrow}
-                        </ThemedText>
-                        <View style={styles.clockRow}>
-                            <View style={[styles.dot, { backgroundColor: theme.iconColorFocused }]} />
-                            <ThemedText variant="display" tone="title" style={styles.tabular}>
-                                {formatElapsed(elapsedSeconds)}
-                            </ThemedText>
-                        </View>
-                    </View>
-                    {/* The artboard puts a Pause pill here and there deliberately
-                        isn't one. Elapsed is always (now - startedAt), so pausing
-                        would have to persist how long the Session spent stopped -
-                        a new field on the document, which is a domain change and
-                        not a visual one. A pill that looks tappable and does
-                        nothing is worse than no pill, so it waits for the field. */}
-                </View>
-
-                <View style={styles.progressRow}>
-                    <ProgressBar value={totalSets > 0 ? totalChecked / totalSets : 0} style={styles.progressBar} />
-                    <ThemedText variant="small" tone="muted" style={styles.progressLabel}>
-                        <ThemedText variant="small" tone="title" style={[styles.tabular, styles.numeralFont]}>
-                            {totalChecked}
-                        </ThemedText>{' '}
-                        of {totalSets} sets
-                    </ThemedText>
-                </View>
-            </View>
-
-            <ScrollView
-                contentContainerStyle={[
-                    styles.scrollContent,
-                    { paddingBottom: insets.bottom + Space.xxl * 2 },
-                ]}
-                keyboardShouldPersistTaps="handled"
-            >
-                <OfflineBanner visible={offline} onRetry={retry} />
-
-                {/* Three states, and the middle one is the whole point: the plan
-                    has not arrived, the Client is training anyway, and they are
-                    told so rather than left looking at an empty screen. Nothing
-                    below is disabled while it says this - what they record here
-                    is kept, and the targets slot in underneath if the Version
-                    reaches the phone later. */}
-                {!planApplied ? (
-                    <ThemedText variant="meta" tone="muted" style={styles.hint}>
-                        {/* `hydrated` is in the test because the Version read
-                            reports "not loading" for the frame before it starts:
-                            its ref is null until the Session document names a
-                            Template, so without this the wording would flash the
-                            failure copy on the way to the normal path. */}
-                        {!hydrated || versionLoading || assignmentLoading
-                            ? 'Loading your workout...'
-                            : "This workout's plan hasn't reached your phone. Add what you do — it's all kept, and the plan fills in below if it arrives."}
-                    </ThemedText>
-                ) : exercises.length === 0 ? (
-                    <ThemedText variant="meta" tone="muted" style={styles.hint}>
-                        Nothing here yet. Add an exercise as you do it — the timer is already running.
-                    </ThemedText>
-                ) : null}
-
-                {exercises.map((exercise, exIndex) => (
-                    <View key={`${exercise.exerciseId}-${exIndex}`}>
-                        <Spacer height={Space.xxl} />
-                        <ExerciseSetEditor
-                            name={exercise.name}
-                            fields={exercise.fields}
-                            sets={exercise.sets}
-                            hint={exercise.target}
-                            progress={{ done: checkedCount(exercise), total: exercise.sets.length }}
-                            checked={exercise.checked}
-                            targets={exercise.targetSets}
-                            editable={!saving}
-                            onToggleSet={(setIndex) => toggleSet(exIndex, setIndex)}
-                            onChangeSet={(setIndex, field, value) => updateSet(exIndex, setIndex, field, value)}
-                            onAddSet={() => addSet(exIndex)}
-                            onRemoveSet={(setIndex) => deleteSet(exIndex, setIndex)}
-                            onRemoveExercise={() => skipExercise(exIndex)}
-                        />
-                    </View>
-                ))}
-
-                {/* Not in the reference artboards, which only frame the fixed
-                    prescribed Exercises - but adding one mid-workout is real
-                    functionality (a Self-Directed Session has no other way to
-                    start), so it keeps a place here, styled the same as the
-                    pills under each Exercise. */}
-                <Spacer height={Space.lg} />
-                <Pressable
-                    onPress={() => setPickerOpen(true)}
-                    disabled={saving}
-                    style={[styles.addExercisePill, { backgroundColor: theme.uiBackground, borderColor: theme.line }]}
+                <Animated.View style={[styles.container, enterStyle]}>
+                {/* Outside the ScrollView on purpose: the clock is the one thing that
+                    must stay visible however far down the workout the Client is. */}
+                <View
+                    style={[
+                        styles.header,
+                        { paddingTop: insets.top + Space.sm, borderBottomColor: theme.line, backgroundColor: theme.background },
+                    ]}
                 >
-                    <Ionicons name="add" size={14} color={theme.text} />
-                    <ThemedText variant="small" tone="body">Add exercise</ThemedText>
-                </Pressable>
-
-                {error ? (
-                    <>
-                        <Spacer height={16} />
-                        <ThemedText style={{ color: theme.danger }}>{error}</ThemedText>
-                    </>
-                ) : null}
-
-                {finishing ? (
-                    <>
-                        <Spacer height={Space.xl} />
-                        <ThemedCard raised>
-                            <ThemedText variant="cardTitle" tone="title">
-                                Finish session
+                    <View style={styles.headerTop}>
+                        <View style={styles.headerEyebrowWrap}>
+                            <ThemedText variant="label" tone="faint" numberOfLines={1}>
+                                {eyebrow}
                             </ThemedText>
-
-                            <Spacer height={16} />
-                            <ThemedText variant="meta" tone="muted" style={styles.label}>Duration</ThemedText>
-                            {/* Defaulted from the timer and editable, because a phone
-                                left running through lunch should not ruin the record.
-                                Filled in the clock's own mm:ss so the figure offered
-                                here is character-for-character the one the Client has
-                                been watching in the header. */}
-                            <ThemedTextInput
-                                value={duration}
-                                onChangeText={setDuration}
-                                placeholder="4:30"
-                                keyboardType="numbers-and-punctuation"
-                                editable={!saving}
-                            />
-
-                            <Spacer height={16} />
-                            {/* "Date", not "Counts for". The old label was
-                                explaining a rule - that a Session begun at
-                                23:50 counts for the day it started - and a
-                                form label is the wrong place to teach one:
-                                the box is prefilled correctly already, so
-                                nobody has to know. */}
-                            <ThemedText variant="meta" tone="muted" style={styles.label}>Date</ThemedText>
-                            <DateField value={date} onChange={setDate} editable={!saving} />
-
-                            <Spacer height={16} />
-                            <ThemedText variant="meta" tone="muted" style={styles.label}>Notes</ThemedText>
-                            <ThemedTextInput
-                                value={notes}
-                                onChangeText={setNotes}
-                                placeholder="How did it feel?"
-                                multiline
-                                numberOfLines={3}
-                                style={styles.notesInput}
-                                editable={!saving}
-                            />
-
-                            {/* Only for a Session with no plan. One that ran a
-                                Template already has one, and the Client's
-                                answer to "do that again" is to start it again
-                                rather than to fork it. */}
-                            {selfDirected ? (
-                                <>
-                                    <Spacer height={16} />
-                                    <View style={[styles.templateRow, { borderColor: theme.line }]}>
-                                        <Checkbox
-                                            value={saveAsTemplate}
-                                            onPress={() => setSaveAsTemplate((prev) => !prev)}
-                                            disabled={saving}
-                                        />
-                                        <Pressable
-                                            onPress={() => setSaveAsTemplate((prev) => !prev)}
-                                            disabled={saving}
-                                            style={styles.templateLabel}
-                                        >
-                                            <ThemedText variant="body" tone="title">
-                                                Save this as a template
-                                            </ThemedText>
-                                            <ThemedText variant="small" tone="muted">
-                                                Keeps what you just did as a workout you can start again.
-                                            </ThemedText>
-                                        </Pressable>
-                                    </View>
-
-                                    {/* The name box appears only once the box is
-                                        ticked. An always-visible field would
-                                        read as required on a card whose whole
-                                        job is saving the Session. */}
-                                    {saveAsTemplate ? (
-                                        <>
-                                            <Spacer height={10} />
-                                            <ThemedTextInput
-                                                value={templateName}
-                                                onChangeText={setTemplateName}
-                                                placeholder="Name this workout"
-                                                autoCapitalize="words"
-                                                editable={!saving}
-                                            />
-                                        </>
-                                    ) : null}
-                                </>
-                            ) : null}
-
-                            <Spacer height={16} />
-                            {/* Said plainly before the button, not discovered
-                                afterwards: prefilled targets mean every row looks
-                                complete, and only the ticks say what was actually
-                                performed. */}
-                            <ThemedText variant="meta" tone="muted">
-                                Saving the {totalChecked} set{totalChecked === 1 ? '' : 's'} you checked off. Anything
-                                left unchecked isn&apos;t recorded.
-                            </ThemedText>
-
-                            <Spacer height={16} />
-                            <ThemedButton onPress={handleFinish} disabled={saving}>
-                                <ThemedText variant="body" tone="onPrimary" style={styles.primaryBtnText}>
-                                    {saving ? 'Saving...' : 'Save session'}
+                            <View style={styles.clockRow}>
+                                <View style={[styles.dot, { backgroundColor: theme.iconColorFocused }]} />
+                                <ThemedText variant="display" tone="title" style={styles.tabular}>
+                                    {formatElapsed(elapsedSeconds)}
                                 </ThemedText>
-                            </ThemedButton>
+                            </View>
+                        </View>
+                        {/* The artboard puts a Pause pill here and there deliberately
+                            isn't one. Elapsed is always (now - startedAt), so pausing
+                            would have to persist how long the Session spent stopped -
+                            a new field on the document, which is a domain change and
+                            not a visual one. A pill that looks tappable and does
+                            nothing is worse than no pill, so it waits for the field. */}
+                    </View>
 
-                            <Spacer height={10} />
-                            <ThemedButton
-                                variant="ghost"
-                                onPress={() => setFinishing(false)}
-                                disabled={saving}
-                            >
-                                <ThemedText>Keep training</ThemedText>
-                            </ThemedButton>
-                        </ThemedCard>
-                    </>
-                ) : null}
-                <Spacer height={20} />
-            </ScrollView>
+                    <View style={styles.progressRow}>
+                        <ProgressBar value={totalSets > 0 ? totalChecked / totalSets : 0} style={styles.progressBar} />
+                        <ThemedText variant="small" tone="muted" style={styles.progressLabel}>
+                            <ThemedText variant="small" tone="title" style={[styles.tabular, styles.numeralFont]}>
+                                {totalChecked}
+                            </ThemedText>{' '}
+                            of {totalSets} sets
+                        </ThemedText>
+                    </View>
+                </View>
 
-            {/* Fixed, like the header - a back button that simply leaves (the
-                draft above already persists everything ticked so far) and the
-                one answer this screen is for, naming what it will do rather
-                than just "Finish". While `finishing` is open, FINISH re-opens
-                that same form instead of a second, competing save path. */}
-            <View
-                style={[
-                    styles.footer,
-                    {
-                        paddingBottom: insets.bottom + Space.md,
-                        borderTopColor: theme.line,
-                        backgroundColor: theme.navBackground,
-                    },
-                ]}
-            >
-                <Pressable
-                    onPress={() => router.back()}
-                    hitSlop={4}
-                    style={[styles.backButton, { backgroundColor: theme.uiBackground, borderColor: theme.line }]}
+                <ScrollView
+                    contentContainerStyle={[
+                        styles.scrollContent,
+                        { paddingBottom: insets.bottom + Space.xxl * 2 },
+                    ]}
+                    keyboardShouldPersistTaps="handled"
                 >
-                    <Ionicons name="arrow-back" size={20} color={theme.text} />
-                </Pressable>
-                <ThemedButton
-                    style={styles.finishButton}
-                    onPress={finishing ? handleFinish : openFinish}
-                    disabled={saving}
+                    <OfflineBanner visible={offline} onRetry={retry} />
+
+                    {/* Three states, and the middle one is the whole point: the plan
+                        has not arrived, the Client is training anyway, and they are
+                        told so rather than left looking at an empty screen. Nothing
+                        below is disabled while it says this - what they record here
+                        is kept, and the targets slot in underneath if the Version
+                        reaches the phone later. */}
+                    {!planApplied ? (
+                        <ThemedText variant="meta" tone="muted" style={styles.hint}>
+                            {/* `hydrated` is in the test because the Version read
+                                reports "not loading" for the frame before it starts:
+                                its ref is null until the Session document names a
+                                Template, so without this the wording would flash the
+                                failure copy on the way to the normal path. */}
+                            {!hydrated || versionLoading || assignmentLoading
+                                ? 'Loading your workout...'
+                                : "This workout's plan hasn't reached your phone. Add what you do — it's all kept, and the plan fills in below if it arrives."}
+                        </ThemedText>
+                    ) : exercises.length === 0 ? (
+                        <ThemedText variant="meta" tone="muted" style={styles.hint}>
+                            Nothing here yet. Add an exercise as you do it — the timer is already running.
+                        </ThemedText>
+                    ) : null}
+
+                    {exercises.map((exercise, exIndex) => (
+                        <View key={`${exercise.exerciseId}-${exIndex}`}>
+                            <Spacer height={Space.xxl} />
+                            <ExerciseSetEditor
+                                name={exercise.name}
+                                fields={exercise.fields}
+                                sets={exercise.sets}
+                                hint={exercise.target}
+                                progress={{ done: checkedCount(exercise), total: exercise.sets.length }}
+                                checked={exercise.checked}
+                                targets={exercise.targetSets}
+                                editable={!saving}
+                                onToggleSet={(setIndex) => toggleSet(exIndex, setIndex)}
+                                onChangeSet={(setIndex, field, value) => updateSet(exIndex, setIndex, field, value)}
+                                onAddSet={() => addSet(exIndex)}
+                                onRemoveSet={(setIndex) => deleteSet(exIndex, setIndex)}
+                                onRemoveExercise={() => skipExercise(exIndex)}
+                            />
+                        </View>
+                    ))}
+
+                    {/* Not in the reference artboards, which only frame the fixed
+                        prescribed Exercises - but adding one mid-workout is real
+                        functionality (a Self-Directed Session has no other way to
+                        start), so it keeps a place here, styled the same as the
+                        pills under each Exercise. */}
+                    <Spacer height={Space.lg} />
+                    <Pressable
+                        onPress={() => setPickerOpen(true)}
+                        disabled={saving}
+                        style={[styles.addExercisePill, { backgroundColor: theme.uiBackground, borderColor: theme.line }]}
+                    >
+                        <Ionicons name="add" size={14} color={theme.text} />
+                        <ThemedText variant="small" tone="body">Add exercise</ThemedText>
+                    </Pressable>
+
+                    {error ? (
+                        <>
+                            <Spacer height={16} />
+                            <ThemedText style={{ color: theme.danger }}>{error}</ThemedText>
+                        </>
+                    ) : null}
+
+                    {finishing ? (
+                        <>
+                            <Spacer height={Space.xl} />
+                            <ThemedCard raised>
+                                <ThemedText variant="cardTitle" tone="title">
+                                    Finish session
+                                </ThemedText>
+
+                                <Spacer height={16} />
+                                <ThemedText variant="meta" tone="muted" style={styles.label}>Duration</ThemedText>
+                                {/* Defaulted from the timer and editable, because a phone
+                                    left running through lunch should not ruin the record.
+                                    Filled in the clock's own mm:ss so the figure offered
+                                    here is character-for-character the one the Client has
+                                    been watching in the header. */}
+                                <ThemedTextInput
+                                    value={duration}
+                                    onChangeText={setDuration}
+                                    placeholder="4:30"
+                                    keyboardType="numbers-and-punctuation"
+                                    editable={!saving}
+                                />
+
+                                <Spacer height={16} />
+                                {/* "Date", not "Counts for". The old label was
+                                    explaining a rule - that a Session begun at
+                                    23:50 counts for the day it started - and a
+                                    form label is the wrong place to teach one:
+                                    the box is prefilled correctly already, so
+                                    nobody has to know. */}
+                                <ThemedText variant="meta" tone="muted" style={styles.label}>Date</ThemedText>
+                                <DateField value={date} onChange={setDate} editable={!saving} />
+
+                                <Spacer height={16} />
+                                <ThemedText variant="meta" tone="muted" style={styles.label}>Notes</ThemedText>
+                                <ThemedTextInput
+                                    value={notes}
+                                    onChangeText={setNotes}
+                                    placeholder="How did it feel?"
+                                    multiline
+                                    numberOfLines={3}
+                                    style={styles.notesInput}
+                                    editable={!saving}
+                                />
+
+                                {/* Only for a Session with no plan. One that ran a
+                                    Template already has one, and the Client's
+                                    answer to "do that again" is to start it again
+                                    rather than to fork it. */}
+                                {selfDirected ? (
+                                    <>
+                                        <Spacer height={16} />
+                                        <View style={[styles.templateRow, { borderColor: theme.line }]}>
+                                            <Checkbox
+                                                value={saveAsTemplate}
+                                                onPress={() => setSaveAsTemplate((prev) => !prev)}
+                                                disabled={saving}
+                                            />
+                                            <Pressable
+                                                onPress={() => setSaveAsTemplate((prev) => !prev)}
+                                                disabled={saving}
+                                                style={styles.templateLabel}
+                                            >
+                                                <ThemedText variant="body" tone="title">
+                                                    Save this as a template
+                                                </ThemedText>
+                                                <ThemedText variant="small" tone="muted">
+                                                    Keeps what you just did as a workout you can start again.
+                                                </ThemedText>
+                                            </Pressable>
+                                        </View>
+
+                                        {/* The name box appears only once the box is
+                                            ticked. An always-visible field would
+                                            read as required on a card whose whole
+                                            job is saving the Session. */}
+                                        {saveAsTemplate ? (
+                                            <>
+                                                <Spacer height={10} />
+                                                <ThemedTextInput
+                                                    value={templateName}
+                                                    onChangeText={setTemplateName}
+                                                    placeholder="Name this workout"
+                                                    autoCapitalize="words"
+                                                    editable={!saving}
+                                                />
+                                            </>
+                                        ) : null}
+                                    </>
+                                ) : null}
+
+                                <Spacer height={16} />
+                                {/* Said plainly before the button, not discovered
+                                    afterwards: prefilled targets mean every row looks
+                                    complete, and only the ticks say what was actually
+                                    performed. */}
+                                <ThemedText variant="meta" tone="muted">
+                                    Saving the {totalChecked} set{totalChecked === 1 ? '' : 's'} you checked off. Anything
+                                    left unchecked isn&apos;t recorded.
+                                </ThemedText>
+
+                                <Spacer height={16} />
+                                <ThemedButton onPress={handleFinish} disabled={saving}>
+                                    <ThemedText variant="body" tone="onPrimary" style={styles.primaryBtnText}>
+                                        {saving ? 'Saving...' : 'Save session'}
+                                    </ThemedText>
+                                </ThemedButton>
+
+                                <Spacer height={10} />
+                                <ThemedButton
+                                    variant="ghost"
+                                    onPress={() => setFinishing(false)}
+                                    disabled={saving}
+                                >
+                                    <ThemedText>Keep training</ThemedText>
+                                </ThemedButton>
+                            </ThemedCard>
+                        </>
+                    ) : null}
+                    <Spacer height={20} />
+                </ScrollView>
+
+                {/* Fixed, like the header - a back button that simply leaves (the
+                    draft above already persists everything ticked so far) and the
+                    one answer this screen is for, naming what it will do rather
+                    than just "Finish". While `finishing` is open, FINISH re-opens
+                    that same form instead of a second, competing save path. */}
+                <View
+                    style={[
+                        styles.footer,
+                        {
+                            paddingBottom: insets.bottom + Space.md,
+                            borderTopColor: theme.line,
+                            backgroundColor: theme.navBackground,
+                        },
+                    ]}
                 >
-                    <ThemedText variant="label" tone="onPrimary">
-                        {saving ? 'SAVING' : 'FINISH'}
-                    </ThemedText>
-                    <ThemedText variant="small" tone="onPrimary" style={styles.finishSubLabel}>
-                        saves {totalChecked} of {totalSets} sets
-                    </ThemedText>
-                </ThemedButton>
-            </View>
+                    <Pressable
+                        onPress={leave}
+                        hitSlop={4}
+                        style={[styles.backButton, { backgroundColor: theme.uiBackground, borderColor: theme.line }]}
+                    >
+                        <Ionicons name="arrow-back" size={20} color={theme.text} />
+                    </Pressable>
+                    <ThemedButton
+                        style={styles.finishButton}
+                        onPress={finishing ? handleFinish : openFinish}
+                        disabled={saving}
+                    >
+                        <ThemedText variant="label" tone="onPrimary">
+                            {saving ? 'SAVING' : 'FINISH'}
+                        </ThemedText>
+                        <ThemedText variant="small" tone="onPrimary" style={styles.finishSubLabel}>
+                            saves {totalChecked} of {totalSets} sets
+                        </ThemedText>
+                    </ThemedButton>
+                </View>
+                </Animated.View>
 
             <ExercisePicker
                 visible={pickerOpen}

@@ -16,12 +16,19 @@ import { Radius, Space } from '../constants/Layout'
  *            flips per theme (`onPrimary`) since the fill itself does
  *   ghost    a real alternative, not a lesser one - a hairline pill, nothing filled
  *   danger   destructive - a hairline pill in red, text in red, still not filled
+ *   destructive  the answer to "are you sure?" - filled red at the button radius
  *
  * Ghost and danger are outlines rather than fills on purpose. A screen has at
  * most one filled button; the moment a second appears the first stops reading as
  * the answer. Danger in particular is an outline because a solid red block is
  * the loudest thing the palette can draw, and "discard this session" should be
  * possible to find without being the first thing the eye lands on.
+ *
+ * `destructive` is that loud block, kept for the one moment it is right: the
+ * second tap of a confirm, where the Client has already asked to destroy
+ * something and the filled button is now the answer. It is primary's shape in
+ * danger's colour, and `onPrimary` inks it - both themes' danger is close
+ * enough in value to their primary that the same ink reads on either.
  *
  * The two shapes carry the same story: primary sits at the 12px button radius,
  * everything else at the full pill - so which button is the answer is legible
@@ -31,7 +38,7 @@ import { Radius, Space } from '../constants/Layout'
  * style-or-callback union: this component already owns the callback form in
  * order to fold in the pressed and disabled states, and callers only ever append.
  */
-export type ButtonVariant = 'primary' | 'ghost' | 'danger'
+export type ButtonVariant = 'primary' | 'ghost' | 'danger' | 'destructive'
 
 type ThemedButtonProps = Omit<PressableProps, 'style'> & {
     style?: StyleProp<ViewStyle>
@@ -47,7 +54,11 @@ type ThemedButtonProps = Omit<PressableProps, 'style'> & {
  * reached into its children to recolour them would be guessing.
  */
 export const buttonTextColor = (variant: ButtonVariant, theme: (typeof Colors)['dark']) =>
-    variant === 'primary' ? theme.onPrimary : variant === 'danger' ? theme.danger : theme.text
+    variant === 'primary' || variant === 'destructive'
+        ? theme.onPrimary
+        : variant === 'danger'
+          ? theme.danger
+          : theme.text
 
 const ThemedButton = ({ style, disabled, variant = 'primary', ...props }: ThemedButtonProps) => {
     const colorScheme = useColorScheme()
@@ -56,7 +67,9 @@ const ThemedButton = ({ style, disabled, variant = 'primary', ...props }: Themed
     const skin =
         variant === 'primary'
             ? { backgroundColor: theme.primary, borderColor: theme.primary }
-            : variant === 'danger'
+            : variant === 'destructive'
+              ? { backgroundColor: theme.danger, borderColor: theme.danger }
+              : variant === 'danger'
               ? { backgroundColor: 'transparent', borderColor: theme.dangerTint }
               : { backgroundColor: 'transparent', borderColor: theme.line }
 
@@ -64,7 +77,7 @@ const ThemedButton = ({ style, disabled, variant = 'primary', ...props }: Themed
         <Pressable
             style={({ pressed }) => [
                 styles.btn,
-                variant === 'primary' ? styles.filled : styles.outline,
+                variant === 'primary' || variant === 'destructive' ? styles.filled : styles.outline,
                 skin,
                 disabled && styles.disabled,
                 pressed && !disabled && styles.pressed,
