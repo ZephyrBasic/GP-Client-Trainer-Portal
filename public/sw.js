@@ -48,6 +48,16 @@
 const BUILD = '__BUILD_ID__'
 const CACHE = `greenpulse-${BUILD}`
 
+// `npm run web` serves this file straight out of public/, unstamped - and the
+// dev server's bundle URL never changes between edits, so a cache-first worker
+// there pins the browser to whichever bundle it saw first and Fast Refresh
+// appears to do nothing at all. An unstamped worker therefore stands down:
+// it caches nothing, answers nothing, and removes itself and anything an
+// earlier one cached. Tested by prefix rather than by comparing against the
+// placeholder, because the stamp replaces the placeholder's first occurrence
+// and `--check` fails a file that still contains one.
+const STAMPED = !BUILD.startsWith('__')
+
 // Every navigation in this single-page export resolves to the same index.html,
 // so the shell is cached under one key and answers a navigation to any path.
 const SHELL = '/'
@@ -58,6 +68,10 @@ const PRECACHE = [
 ]
 
 self.addEventListener('install', (event) => {
+    if (!STAMPED) {
+        event.waitUntil(self.skipWaiting())
+        return
+    }
     event.waitUntil(
         (async () => {
             const cache = await caches.open(CACHE)
@@ -72,6 +86,16 @@ self.addEventListener('install', (event) => {
 })
 
 self.addEventListener('activate', (event) => {
+    if (!STAMPED) {
+        event.waitUntil(
+            (async () => {
+                const keys = await caches.keys()
+                await Promise.all(keys.map((key) => caches.delete(key)))
+                await self.registration.unregister()
+            })()
+        )
+        return
+    }
     event.waitUntil(
         (async () => {
             const keys = await caches.keys()
@@ -110,6 +134,7 @@ const cacheFirst = async (request) => {
 }
 
 self.addEventListener('fetch', (event) => {
+    if (!STAMPED) return
     const request = event.request
     if (request.method !== 'GET') return
 
