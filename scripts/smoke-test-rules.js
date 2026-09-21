@@ -27,7 +27,7 @@ const {
 } = require('firebase/firestore')
 
 const REPO_ROOT = path.join(__dirname, '..')
-const PASSWORD = 'GreenPulse!2026'
+const PASSWORD = 'Green1!'
 
 // --- config ---------------------------------------------------------------
 

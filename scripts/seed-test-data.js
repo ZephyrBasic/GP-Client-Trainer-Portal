@@ -42,7 +42,7 @@ const { getAuth } = require('firebase-admin/auth')
 
 const REPO_ROOT = path.join(__dirname, '..')
 const EXPECTED_PROJECT = 'gp-client-trainer-portal'
-const PASSWORD = 'GreenPulse!2026'
+const PASSWORD = 'Green1!'
 
 const args = process.argv.slice(2)
 const dry = args.includes('--dry')

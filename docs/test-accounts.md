@@ -8,7 +8,7 @@ pre-existing account, which are nobody's here.
 
 Sign in at `npm run web`.
 
-**Password for every account below: `GreenPulse!2026`**
+**Password for every account below: `Green1!`**
 
 These are throwaway accounts on the dev project. The password is shared, weak, and committed on
 purpose so anyone can pick the fixture up. Delete them before this project holds anything real:
