@@ -11,7 +11,10 @@ Sign in at `npm run web`.
 **Password for every account below: `Green1!`**
 
 These are throwaway accounts on the dev project. The password is shared, weak, and committed on
-purpose so anyone can pick the fixture up. Delete them before this project holds anything real:
+purpose so anyone can pick the fixture up. The addresses are on the project's own domain and are
+sign-in identifiers, not mailboxes — nothing is ever sent to them, and the seeder marks each one
+verified so Firebase does not try to. They replaced `@greenpulse.test` on 2026-09-25; the accounts
+under the old domain are deleted by `--reset` (see the script) and nothing is left behind. Delete them before this project holds anything real:
 `node scripts/seed-test-data.js --reset`.
 
 **The app-store reviewer accounts are a separate cohort and are not any of these.** They live behind
@@ -21,13 +24,16 @@ review. See `docs/store-listing.md`.
 
 ## Accounts
 
+The UIDs below are the ones the 2026-08-28 seed minted. A `--reset` and re-seed mints new ones, so
+they are a convenience for reading the Auth console, not identifiers to rely on.
+
 | Who | Email | Role | Trainer | UID |
 |---|---|---|---|---|
-| PT Zephyr | `pt.zephyr@greenpulse.test` | trainer | — | `BDssvM6hyGeDCZZEGKXme5jX8M42` |
-| PT Patrick | `pt.patrick@greenpulse.test` | trainer | — | `GVoZs88SFNS08jQYc2ekyrLIPh13` |
-| Maya Adeyemi | `maya@greenpulse.test` | client | Zephyr | `Y96jSekSgyaFwvSrtuWD9ZibK7N2` |
-| Tom Brennan | `tom@greenpulse.test` | client | Patrick | `INT7Qt3Bm4cvUn8GfNJtBxeT4Dz2` |
-| Priya Raman | `priya@greenpulse.test` | client | Patrick | `qJAPBnIhLhcRfaGayX5wivZ9SLU2` |
+| PT Zephyr | `pt.zephyr@greenpulse.fit` | trainer | — | `BDssvM6hyGeDCZZEGKXme5jX8M42` |
+| PT Patrick | `pt.patrick@greenpulse.fit` | trainer | — | `GVoZs88SFNS08jQYc2ekyrLIPh13` |
+| Maya Adeyemi | `maya@greenpulse.fit` | client | Zephyr | `Y96jSekSgyaFwvSrtuWD9ZibK7N2` |
+| Tom Brennan | `tom@greenpulse.fit` | client | Patrick | `INT7Qt3Bm4cvUn8GfNJtBxeT4Dz2` |
+| Priya Raman | `priya@greenpulse.fit` | client | Patrick | `qJAPBnIhLhcRfaGayX5wivZ9SLU2` |
 
 Trainer invite codes: **Zephyr `ZEPHYR`**, **Patrick `PATRK2`** — use these if you register a
 further client through the app's own signup flow.

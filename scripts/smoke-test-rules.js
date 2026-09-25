@@ -62,11 +62,11 @@ const db = getFirestore(app)
 // --- accounts and fixture ids ---------------------------------------------
 
 const EMAIL = {
-    zephyr: 'pt.zephyr@greenpulse.test',
-    patrick: 'pt.patrick@greenpulse.test',
-    maya: 'maya@greenpulse.test',
-    tom: 'tom@greenpulse.test',
-    priya: 'priya@greenpulse.test',
+    zephyr: 'pt.zephyr@greenpulse.fit',
+    patrick: 'pt.patrick@greenpulse.fit',
+    maya: 'maya@greenpulse.fit',
+    tom: 'tom@greenpulse.fit',
+    priya: 'priya@greenpulse.fit',
 }
 
 const T = {

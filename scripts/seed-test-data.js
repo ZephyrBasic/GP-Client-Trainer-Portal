@@ -102,14 +102,14 @@ const EX = {
 const sets = (ex, n, values) => ({ ...ex, sets: Array.from({ length: n }, () => ({ ...values })) })
 
 const TRAINERS = [
-    { key: 'zephyr', name: 'PT Zephyr', email: 'pt.zephyr@greenpulse.test', inviteCode: 'ZEPHYR' },
-    { key: 'patrick', name: 'PT Patrick', email: 'pt.patrick@greenpulse.test', inviteCode: 'PATRK2' },
+    { key: 'zephyr', name: 'PT Zephyr', email: 'pt.zephyr@greenpulse.fit', inviteCode: 'ZEPHYR' },
+    { key: 'patrick', name: 'PT Patrick', email: 'pt.patrick@greenpulse.fit', inviteCode: 'PATRK2' },
 ]
 
 const CLIENTS = [
-    { key: 'maya', name: 'Maya Adeyemi', email: 'maya@greenpulse.test', trainer: 'zephyr' },
-    { key: 'tom', name: 'Tom Brennan', email: 'tom@greenpulse.test', trainer: 'patrick' },
-    { key: 'priya', name: 'Priya Raman', email: 'priya@greenpulse.test', trainer: 'patrick' },
+    { key: 'maya', name: 'Maya Adeyemi', email: 'maya@greenpulse.fit', trainer: 'zephyr' },
+    { key: 'tom', name: 'Tom Brennan', email: 'tom@greenpulse.fit', trainer: 'patrick' },
+    { key: 'priya', name: 'Priya Raman', email: 'priya@greenpulse.fit', trainer: 'patrick' },
 ]
 
 const TEMPLATES = [
@@ -178,9 +178,8 @@ const VERSION_ID = 'v1'
  * progress. It reads as a bug in the app, and it is the reviewer who writes it
  * up.
  *
- * Emails sit under `review.greenpulse.test` rather than the fixture's
- * `greenpulse.test`: `.test` stays reserved and undeliverable either way, and
- * the subdomain makes the cohort greppable in the Auth console.
+ * Emails sit under `review.greenpulse.fit` rather than the fixture's
+ * `greenpulse.fit`, which makes the cohort greppable in the Auth console.
  */
 const REVIEW_STORES = [
     {
@@ -189,11 +188,11 @@ const REVIEW_STORES = [
         passwordKey: 'REVIEW_PASSWORD_APPLE',
         trainer: {
             key: 'apple-pt', name: 'PT Alex Rivera',
-            email: 'apple.trainer@review.greenpulse.test', inviteCode: 'APLREV',
+            email: 'apple.trainer@review.greenpulse.fit', inviteCode: 'APLREV',
         },
         client: {
             key: 'apple-client', name: 'Jordan Lee',
-            email: 'apple.client@review.greenpulse.test', trainer: 'apple-pt',
+            email: 'apple.client@review.greenpulse.fit', trainer: 'apple-pt',
         },
     },
     {
@@ -202,13 +201,30 @@ const REVIEW_STORES = [
         passwordKey: 'REVIEW_PASSWORD_GOOGLE',
         trainer: {
             key: 'google-pt', name: 'PT Sam Okafor',
-            email: 'google.trainer@review.greenpulse.test', inviteCode: 'GOOREV',
+            email: 'google.trainer@review.greenpulse.fit', inviteCode: 'GOOREV',
         },
         client: {
             key: 'google-client', name: 'Riley Chen',
-            email: 'google.client@review.greenpulse.test', trainer: 'google-pt',
+            email: 'google.client@review.greenpulse.fit', trainer: 'google-pt',
         },
     },
+]
+
+// One-time cleanup, and safe to delete once it has run everywhere: these
+// accounts were seeded under @greenpulse.test before 2026-09-25. A reset looks
+// its cohort up by the addresses in this file, so without this it would recreate
+// and delete the new ones and leave the old five - and their users/{uid}
+// documents, which the rules still serve - sitting in Auth forever.
+const LEGACY_DOMAIN_EMAILS = [
+    'pt.zephyr@greenpulse.test',
+    'pt.patrick@greenpulse.test',
+    'maya@greenpulse.test',
+    'tom@greenpulse.test',
+    'priya@greenpulse.test',
+    'apple.trainer@review.greenpulse.test',
+    'apple.client@review.greenpulse.test',
+    'google.trainer@review.greenpulse.test',
+    'google.client@review.greenpulse.test',
 ]
 
 const REVIEW_TRAINERS = REVIEW_STORES.map((s) => s.trainer)
@@ -485,6 +501,19 @@ const main = async () => {
         }
     }
 
+    // See LEGACY_DOMAIN_EMAILS. Every failure here is ignored on purpose: the
+    // ordinary case, once this has run once, is that none of them exist.
+    const deleteLegacyDomainAccounts = async () => {
+        for (const email of LEGACY_DOMAIN_EMAILS) {
+            try {
+                const record = await auth.getUserByEmail(email)
+                await db.doc(`users/${record.uid}`).delete()
+                await auth.deleteUser(record.uid)
+                console.log(`  deleted      ${email.padEnd(38)} ${record.uid}  (old domain)`)
+            } catch {}
+        }
+    }
+
     const ensureUser = async (person) => {
         const password = passwordFor(person)
         const store = REVIEW_STORES.find((s) => s.trainer.key === person.key || s.client.key === person.key)
@@ -541,6 +570,7 @@ const main = async () => {
                 await db.doc(`users/${uids[p.key]}`).delete()
                 await auth.deleteUser(uids[p.key]).catch(() => {})
             }
+            await deleteLegacyDomainAccounts()
         }
         console.log('Reset complete.')
         if (!review) console.log('The review accounts were not touched. Use --review --reset for those.')

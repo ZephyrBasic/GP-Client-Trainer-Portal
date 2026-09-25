@@ -55,14 +55,13 @@ between the two roles one reviewer signs into.
 
 | Store | Role | Email | Invite code |
 |---|---|---|---|
-| Apple App Review | Trainer | `apple.trainer@review.greenpulse.test` | `APLREV` |
-| Apple App Review | Client | `apple.client@review.greenpulse.test` | — |
-| Google Play review | Trainer | `google.trainer@review.greenpulse.test` | `GOOREV` |
-| Google Play review | Client | `google.client@review.greenpulse.test` | — |
+| Apple App Review | Trainer | `apple.trainer@review.greenpulse.fit` | `APLREV` |
+| Apple App Review | Client | `apple.client@review.greenpulse.fit` | — |
+| Google Play review | Trainer | `google.trainer@review.greenpulse.fit` | `GOOREV` |
+| Google Play review | Client | `google.client@review.greenpulse.fit` | — |
 
-They sit under `review.greenpulse.test` rather than the fixture's `greenpulse.test`: `.test` is the
-reserved, undeliverable TLD either way, and the subdomain makes the cohort obvious in the Firebase
-Auth console and greppable in the script.
+They sit under `review.greenpulse.fit` rather than the fixture's `greenpulse.fit`, which makes the
+cohort obvious in the Firebase Auth console and greppable in the script.
 
 Each review Client arrives with two assigned Workout Templates at a Target Frequency, and two
 finished Sessions inside the trailing week — one *As Prescribed* and one *Modified*, so the verdict
@@ -105,7 +104,7 @@ node scripts/seed-test-data.js --review --reset   # delete the review cohort
 > accounts below. Start with the client.
 >
 > CLIENT — sees their prescribed workouts and performs one
-> email: apple.client@review.greenpulse.test
+> email: apple.client@review.greenpulse.fit
 > password: <password printed by the seed run>
 > On sign-in you land on Today. The card at the top is the next prescribed workout; press START to
 > open a live session, tick the checkboxes beside a few sets, then press FINISH and Save session.
@@ -113,7 +112,7 @@ node scripts/seed-test-data.js --review --reset   # delete the review cohort
 > earlier sessions are already in the History tab, one of each verdict.
 >
 > TRAINER — sees the roster and authors the workouts
-> email: apple.trainer@review.greenpulse.test
+> email: apple.trainer@review.greenpulse.fit
 > password: <the same password>
 > On sign-in you land on Roster. Open the client to see their sessions and weekly completion; the
 > Library tab holds the workout templates and the screens for assigning them and setting a client's
