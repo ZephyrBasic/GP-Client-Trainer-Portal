@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, useColorScheme } from 'react-native'
+import { ScrollView, StyleSheet, useColorScheme } from 'react-native'
+import Pressable from '../../components/Touchable'
 import { Link } from 'expo-router'
 
 // themed components

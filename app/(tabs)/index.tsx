@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
+import { ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
+import Pressable from '../../components/Touchable'
 import { Redirect, useFocusEffect, useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'

@@ -1,4 +1,5 @@
-import { Linking, Pressable, StyleSheet } from 'react-native'
+import { Linking, StyleSheet } from 'react-native'
+import Pressable from './Touchable'
 
 import ThemedText from './ThemedText'
 import type { TextVariant } from './ThemedText'

@@ -1,5 +1,7 @@
 import { Tabs, useGlobalSearchParams, useSegments } from 'expo-router'
 import { useColorScheme } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { FontFamily } from '../../constants/Type'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors } from '../../constants/Colors'
 import { useAuth } from '../../contexts/AuthContext'
@@ -11,6 +13,7 @@ const TabsLayout = () => {
     const { profile } = useAuth()
     const isTrainer = profile?.role === 'trainer'
     const segments = useSegments()
+    const insets = useSafeAreaInsets()
 
     // The live session draws its own footer (a running clock, FINISH), so the
     // tab bar underneath it is dead weight at best and a second way to leave a
@@ -30,11 +33,26 @@ const TabsLayout = () => {
     return (
         <Tabs
             screenOptions={{
+                // Me is the one tab with a native header; it matches the
+                // Stacks' (hooks/useHeaderOptions).
                 headerStyle: { backgroundColor: theme.navBackground },
                 headerTintColor: theme.title,
+                headerShadowVisible: false,
+                headerTitleAlign: 'left',
+                headerTitleStyle: { fontFamily: FontFamily.heading, fontSize: 20, color: theme.title },
+                // The theme's own hairline: React Navigation's default border
+                // is a light grey that glared on the dark theme. The height is
+                // explicit because the default was 4px short of its items on
+                // the web, clipping every label and scrolling the page.
                 tabBarStyle: inLiveSession || onTodayDetour
                     ? { display: 'none' }
-                    : { backgroundColor: theme.navBackground },
+                    : {
+                          backgroundColor: theme.navBackground,
+                          borderTopColor: theme.line,
+                          height: 56 + insets.bottom,
+                          paddingTop: 4,
+                          paddingBottom: insets.bottom + 4,
+                      },
                 tabBarActiveTintColor: theme.iconColorFocused,
                 tabBarInactiveTintColor: theme.iconColor,
             }}
@@ -55,7 +73,7 @@ const TabsLayout = () => {
                 name="clients"
                 options={{
                     headerShown: false,
-                    title: 'Roster',
+                    title: 'Clients',
                     href: isTrainer ? undefined : null,
                     tabBarIcon: ({ color, size }) => <Ionicons name="people" size={size} color={color} />,
                 }}

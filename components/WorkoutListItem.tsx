@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import { Pressable, StyleSheet, View, useColorScheme } from 'react-native'
+import { StyleSheet, View, useColorScheme } from 'react-native'
+import Pressable from './Touchable'
 import { Ionicons } from '@expo/vector-icons'
 import ThemedCard from './ThemedCard'
 import ThemedText from './ThemedText'

@@ -1,7 +1,7 @@
 import { useCallback, useLayoutEffect } from 'react'
 import { BackHandler } from 'react-native'
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter, type Href } from 'expo-router'
-import { HeaderBackButton } from '@react-navigation/elements'
+import BackPill from '../components/BackPill'
 import type { NavigationProp, ParamListBase } from '@react-navigation/native'
 
 type Nav = NavigationProp<ParamListBase>
@@ -90,7 +90,7 @@ export const useLeave = ({ home, homeLabel, toToday }: Options) => {
     useLayoutEffect(() => {
         if (!ownBack) return
         navigation.setOptions({
-            headerLeft: ({ tintColor }) => <HeaderBackButton tintColor={tintColor} label={label} onPress={leave} />,
+            headerLeft: () => <BackPill onPress={leave} label={`Back to ${label}`} style={{ marginLeft: -8 }} />,
         })
     }, [ownBack, label, leave, navigation])
 

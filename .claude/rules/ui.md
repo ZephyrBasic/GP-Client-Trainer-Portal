@@ -12,3 +12,5 @@ paths: ["app/**", "components/**", "constants/Colors.ts", "constants/Motion.ts"]
 - Routing guard is declarative (`useProtectedRoute` returns a `<Redirect>`). Never use an
   imperative `router.replace()` in an effect. Folder tabs set `headerShown: false`.
 - `YouTubePlayer.tsx` native path can't be tested on web; it needs a device.
+- Forms: on a failed submit, show every error under its own field and focus the first invalid one.
+  Clear a field's error when it changes (`components/FieldError.tsx`).

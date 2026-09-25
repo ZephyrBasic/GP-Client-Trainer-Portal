@@ -37,7 +37,9 @@ export const summariseSets = (sets) => {
 }
 
 /**
- * What a Client was asked for, said in one line and labelled as the target.
+ * What a Client was asked for, said in one line and labelled as the target -
+ * "Target 4 × 5 reps × 50 kg", with no colon, on every screen that shows one
+ * (the review found four spellings of this one line).
  *
  * The prefix is spelled here rather than at each call site because both screens
  * that show a prescription beside an editable copy of it - performing a Session
@@ -50,7 +52,7 @@ export const summariseSets = (sets) => {
  */
 export const targetSummary = (sets) => {
     const summary = summariseSets(sets)
-    return summary && `Target: ${summary}`
+    return summary && `Target ${summary}`
 }
 
 // Both of these are private: a Set's duration and distance are only ever

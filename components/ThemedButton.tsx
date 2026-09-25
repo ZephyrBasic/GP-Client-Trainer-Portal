@@ -1,11 +1,11 @@
 import {
-    Pressable,
     StyleSheet,
     useColorScheme,
     type PressableProps,
     type StyleProp,
     type ViewStyle,
 } from 'react-native'
+import Pressable from './Touchable'
 import { Colors } from '../constants/Colors'
 import { Radius, Space } from '../constants/Layout'
 
@@ -36,7 +36,7 @@ import { Radius, Space } from '../constants/Layout'
  *
  * `style` is narrowed to a plain style object rather than Pressable's
  * style-or-callback union: this component already owns the callback form in
- * order to fold in the pressed and disabled states, and callers only ever append.
+ * order to fold in the disabled state; pressed feedback is Touchable's state layer.
  */
 export type ButtonVariant = 'primary' | 'ghost' | 'danger' | 'destructive'
 
@@ -64,26 +64,39 @@ const ThemedButton = ({ style, disabled, variant = 'primary', ...props }: Themed
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
 
-    const skin =
-        variant === 'primary'
-            ? { backgroundColor: theme.primary, borderColor: theme.primary }
-            : variant === 'destructive'
-              ? { backgroundColor: theme.danger, borderColor: theme.danger }
-              : variant === 'danger'
-              ? { backgroundColor: 'transparent', borderColor: theme.dangerTint }
-              : { backgroundColor: 'transparent', borderColor: theme.line }
+    const filled = variant === 'primary' || variant === 'destructive'
+
+    // Outlines use `outline`, not the `line` hairline: a button's edge has to
+    // clear 3:1 against the page (WCAG 1.4.11), and at `line` "Add set" and
+    // "Keep training" read as faint shapes rather than buttons.
+    //
+    // Disabled swaps the fill for grey rather than fading the green: a faded
+    // green still reads as pressable, which Material's disabled treatment
+    // (a neutral container) exists to avoid.
+    const skin = disabled && filled
+        ? { backgroundColor: theme.faint, borderColor: theme.faint }
+        : variant === 'primary'
+          ? { backgroundColor: theme.primary, borderColor: theme.primary }
+          : variant === 'destructive'
+            ? { backgroundColor: theme.danger, borderColor: theme.danger }
+            : variant === 'danger'
+              ? { backgroundColor: 'transparent', borderColor: theme.danger }
+              : { backgroundColor: 'transparent', borderColor: theme.outline }
 
     return (
         <Pressable
-            style={({ pressed }) => [
+            style={[
                 styles.btn,
-                variant === 'primary' || variant === 'destructive' ? styles.filled : styles.outline,
+                filled ? styles.filled : styles.outline,
                 skin,
                 disabled && styles.disabled,
-                pressed && !disabled && styles.pressed,
                 style,
             ]}
+            // The pressed tint is mixed from the label's colour, so it shows
+            // on a green fill as well as on an empty outline.
+            stateColor={filled ? theme.onPrimary : undefined}
             disabled={disabled}
+            accessibilityState={{ disabled: Boolean(disabled) }}
             {...props}
         />
     )
@@ -105,6 +118,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
+        minHeight: 48,
     },
     filled: {
         borderRadius: Radius.button,
@@ -112,10 +126,7 @@ const styles = StyleSheet.create({
     outline: {
         borderRadius: Radius.pill,
     },
-    pressed: {
-        opacity: 0.8,
-    },
     disabled: {
-        opacity: 0.5,
+        opacity: 0.6,
     },
 })

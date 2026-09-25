@@ -160,3 +160,18 @@ export const formatAgo = (seconds: number): string => {
     const days = Math.floor(hours / 24)
     return days === 1 ? 'yesterday' : `${days} days ago`
 }
+
+// Longer than any workout, with room for a phone left running through lunch.
+// Past this, the figure is a typo (999999) rather than a long day.
+const MAX_SESSION_SECONDS = 12 * 3600
+
+/**
+ * What is wrong with a Session's duration box, or null when it can be saved -
+ * blank included, which records the duration as unknown.
+ */
+export const durationError = (value: string): string | null => {
+    const seconds = parseDurationInput(value)
+    if (seconds === undefined) return 'Enter minutes and seconds, as 45:00, or leave it blank.'
+    if (seconds != null && seconds > MAX_SESSION_SECONDS) return 'That is over 12 hours. Check the duration, or leave it blank.'
+    return null
+}

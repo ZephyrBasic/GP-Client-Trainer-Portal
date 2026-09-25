@@ -1,4 +1,5 @@
-import { Modal, Pressable, ScrollView, StyleSheet, useColorScheme, View } from 'react-native'
+import { Modal, ScrollView, StyleSheet, useColorScheme, View } from 'react-native'
+import Pressable from './Touchable'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 

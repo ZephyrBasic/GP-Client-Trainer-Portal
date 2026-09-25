@@ -40,6 +40,39 @@ export type ExerciseWithSets = {
     sets: StoredSet[]
 }
 
+/**
+ * Measurements that can be fractional. A 22.5 kg plate load and a 1.5 km run
+ * are real; half a rep and half a second are typos.
+ */
+const DECIMAL_FIELDS: SetField[] = ['weightKg', 'distanceMeters']
+
+// Long enough for any real figure (a 10000 m run, a 250.5 kg lift), short
+// enough that a held key can't fill a box with a number no Set ever had.
+const MAX_SET_INPUT_LENGTH = 6
+
+/**
+ * What a Set box keeps of a keystroke: digits, and one decimal point where the
+ * measurement can have one.
+ *
+ * Filtered as it is typed rather than rejected at save, because every screen
+ * with a Set box saves differently - the live Session only at the end, the
+ * Trainer's targets in one write - and "abc" or "-4" typed into any of them
+ * was being accepted, ticked and stored (the minus sign) or silently dropped
+ * (the letters). A box that cannot hold a bad value needs no error message.
+ * A comma becomes a point, since some phone keyboards offer only the comma.
+ */
+export const cleanSetInput = (field: SetField, text: string): string => {
+    const decimal = DECIMAL_FIELDS.includes(field)
+    const kept = text.replace(/,/g, '.').replace(decimal ? /[^0-9.]/g : /[^0-9]/g, '')
+    const [whole, ...fraction] = kept.split('.')
+    const single = fraction.length ? `${whole}.${fraction.join('')}` : whole
+    return single.slice(0, MAX_SET_INPUT_LENGTH)
+}
+
+/** The phone keyboard for a Set box: with a decimal key only where one is allowed. */
+export const setInputKeyboard = (field: SetField): 'decimal-pad' | 'number-pad' =>
+    DECIMAL_FIELDS.includes(field) ? 'decimal-pad' : 'number-pad'
+
 /** A blank row for an Exercise: one empty box per measurement it declares. */
 export const emptySetDraft = (fields: SetField[]): SetDraft =>
     fields.reduce((acc, field) => ({ ...acc, [field]: '' }), {})
@@ -89,3 +122,16 @@ export const storedSetFrom = (draft: SetDraft, fields: SetField[]): StoredSet =>
  */
 export const hasMeasurement = (set: StoredSet): boolean =>
     Object.values(set).some((value) => value != null)
+
+/**
+ * Why a Template's Exercise can't be saved yet, or null.
+ *
+ * A target Set may leave a measurement blank - "3 sets, pick your own weight"
+ * is a real prescription - but not every measurement: a row with nothing in
+ * it gives the Client nothing to aim at, and on a reps-only Exercise the one
+ * blank box was the whole target.
+ */
+export const blankTargetError = (sets: SetDraft[], fields: SetField[]): string | null =>
+    sets.some((set) => !hasMeasurement(storedSetFrom(set, fields)))
+        ? 'Give every set at least one target, or remove the empty ones.'
+        : null

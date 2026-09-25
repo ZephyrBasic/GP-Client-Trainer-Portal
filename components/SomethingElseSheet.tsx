@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, useColorScheme } from 'react-native'
+import { StyleSheet, useColorScheme } from 'react-native'
+import Pressable from './Touchable'
 
 import BottomSheet from './BottomSheet'
 import ThemedText from './ThemedText'

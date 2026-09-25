@@ -1,5 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react'
-import { FlatList, Modal, Pressable, StyleSheet, TextInput, useColorScheme, View } from 'react-native'
+import { FlatList, Modal, StyleSheet, TextInput, useColorScheme, View } from 'react-native'
+import Pressable from './Touchable'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 

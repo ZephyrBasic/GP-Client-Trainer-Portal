@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { ScrollView, StyleSheet, TextInput, View, useColorScheme } from 'react-native'
+import Pressable from '../../../../components/Touchable'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { useLocalSearchParams, useNavigation } from 'expo-router'
@@ -12,6 +13,8 @@ import ThemedButton from '../../../../components/ThemedButton'
 import ThemedCard from '../../../../components/ThemedCard'
 import Checkbox from '../../../../components/Checkbox'
 import DateField from '../../../../components/DateField'
+import FieldError from '../../../../components/FieldError'
+import AddButton from '../../../../components/AddButton'
 import OfflineBanner from '../../../../components/OfflineBanner'
 import { PlaceholderRows } from '../../../../components/Placeholder'
 import BackPill from '../../../../components/BackPill'
@@ -35,36 +38,23 @@ import {
     templateExercisesFrom,
     useTemplateVersion,
 } from '../../../../hooks/useWorkoutTemplates'
-import { DATE_INPUT_FORMAT, toDateInput, parseDateInput } from '../../../../utils/dateInput'
+import { toDateInput, parseDateInput, sessionDateError } from '../../../../utils/dateInput'
 import { compareSession, resolveTargets } from '../../../../utils/prescription'
 import {
+    durationError,
     elapsedSecondsBetween,
     formatDurationInput,
     formatElapsed,
     minutesFromSeconds,
     parseDurationInput,
 } from '../../../../utils/elapsed'
-import { summariseSets } from '../../../../utils/formatSet'
+import { targetSummary } from '../../../../utils/formatSet'
 import {
     clearLiveSessionDraft,
     getLiveSessionDraft,
     saveLiveSessionDraft,
 } from '../../../../utils/liveSessionDraft'
 import { hasMeasurement, storedSetFrom } from '../../../../utils/setDraft'
-
-/**
- * "Target 5 × 5 reps × 60 kg", said once for the live header.
- *
- * Built from `summariseSets` rather than the shared `targetSummary` in
- * utils/formatSet: that helper's "Target: ..." colon reads fine as a form
- * label on manual entry, which still uses it, but Signal's header sets the
- * word itself apart with tone rather than punctuation. Kept local rather than
- * changed at the source, since two other screens still want the colon.
- */
-const targetLine = (sets) => {
-    const summary = summariseSets(sets)
-    return summary ? `Target ${summary}` : undefined
-}
 
 /**
  * Opens the targets for performing: the shared draft builder, plus the two
@@ -78,7 +68,7 @@ const draftsFromTargets = (targetExercises) =>
     draftsFrom(targetExercises).map((draft, index) => ({
         ...draft,
         checked: draft.sets.map(() => false),
-        target: targetLine(targetExercises[index].sets),
+        target: targetSummary(targetExercises[index].sets),
         // The original prescribed values, held apart from `sets` - which
         // mutates as the Client edits and ticks - so a departed row can still
         // say what it was asked for after being typed over. Untouched by
@@ -208,8 +198,17 @@ const LiveSession = () => {
     const [duration, setDuration] = useState('')
     const [date, setDate] = useState('')
     const [notes, setNotes] = useState('')
-    const [error, setError] = useState('')
+    // One slot per field, so each complaint is drawn under the box it is
+    // about and every problem shows at once (see .claude/rules/ui.md).
+    // `form` belongs to no field: nothing ticked, or the write itself failing.
+    const [errors, setErrors] = useState<{ form?: string; duration?: string; date?: string; templateName?: string }>({})
+    const clearError = (field: 'form' | 'duration' | 'date' | 'templateName') =>
+        setErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev))
     const [saving, setSaving] = useState(false)
+    const scrollRef = useRef<ScrollView>(null)
+    const durationRef = useRef<TextInput>(null)
+    const dateRef = useRef<TextInput>(null)
+    const templateNameRef = useRef<TextInput>(null)
     // Offered only on a Self-Directed Session (see the finish card below): a
     // Session performed against a plan already has a Template, and saving a
     // second copy of it under the Client's own name is how one workout becomes
@@ -382,7 +381,7 @@ const LiveSession = () => {
     const selfDirected = Boolean(session) && !session.templateId
 
     const openFinish = () => {
-        setError('')
+        setErrors({})
         setDuration(formatDurationInput(elapsedSeconds))
         // The day it started, not the day it ends. A Session begun at 23:50 was
         // Tuesday's training however long it ran.
@@ -391,11 +390,13 @@ const LiveSession = () => {
         // must not overwrite a name they have already typed.
         setTemplateName((prev) => prev || suggestedTemplateName(exercises))
         setFinishing(true)
+        // The card is added at the end of the scroll, under the fixed footer,
+        // so without this FINISH looked like it had done nothing. Next frame,
+        // once the card has laid out.
+        requestAnimationFrame(() => scrollRef.current?.scrollToEnd({ animated: true }))
     }
 
     const handleFinish = async () => {
-        setError('')
-
         const performed = exercises
             .map((ex) => ({
                 exerciseId: ex.exerciseId,
@@ -413,36 +414,30 @@ const LiveSession = () => {
             }))
             .filter((ex) => ex.sets.length > 0)
 
-        if (performed.length === 0) {
-            setError('Check off at least one set before finishing.')
-            return
-        }
-
-        const parsedDate = parseDateInput(date)
-        if (!parsedDate) {
-            setError(`Enter a valid date (${DATE_INPUT_FORMAT}).`)
-            return
-        }
-
-        // The same standard as the date beside it. A box the Client cleared
-        // saves as null - the duration wasn't recorded - rather than being
-        // coerced to a 0-minute workout, which is a fact about training that
-        // never happened.
-        const parsedSeconds = parseDurationInput(duration)
-        if (parsedSeconds === undefined) {
-            setError('Enter a duration as minutes and seconds (4:30), or leave it blank.')
-            return
-        }
-
         // Checked before the Session is written, not after: a Template needs a
         // name, and discovering that afterwards would mean the workout is
         // already saved and this screen has already navigated away from it.
         const wantsTemplate = selfDirected && saveAsTemplate
         const trimmedTemplateName = templateName.trim()
-        if (wantsTemplate && !trimmedTemplateName) {
-            setError('Give the template a name, or untick "Save this as a template".')
-            return
+
+        // Every problem at once, each under its own box, and the cursor put in
+        // the first bad one. A cleared duration is fine: it saves as
+        // unrecorded rather than as a workout that took no time.
+        const found = {
+            form: performed.length === 0 ? 'Tick at least one set before saving.' : undefined,
+            duration: durationError(duration) ?? undefined,
+            date: sessionDateError(date) ?? undefined,
+            templateName:
+                wantsTemplate && !trimmedTemplateName ? 'Name the template, or untick "Save this as a template".' : undefined,
         }
+        setErrors(found)
+        if (found.duration) return durationRef.current?.focus()
+        if (found.date) return dateRef.current?.focus()
+        if (found.templateName) return templateNameRef.current?.focus()
+        if (found.form) return
+
+        const parsedDate = parseDateInput(date)
+        const parsedSeconds = parseDurationInput(duration)
 
         setSaving(true)
         try {
@@ -492,7 +487,7 @@ const LiveSession = () => {
             // would otherwise flash the finished state on the way out.
             openSummary()
         } catch (err) {
-            setError(err.message || 'Failed to save this session.')
+            setErrors({ form: err.message || 'Failed to save this session.' })
             setSaving(false)
         }
     }
@@ -597,6 +592,7 @@ const LiveSession = () => {
             </FadeIn>
 
             <ScrollView
+                ref={scrollRef}
                 contentContainerStyle={[
                     styles.scrollContent,
                     { paddingBottom: insets.bottom + Space.xxl * 2 },
@@ -669,21 +665,7 @@ const LiveSession = () => {
                     start), so it keeps a place here, styled the same as the
                     pills under each Exercise. */}
                 <Spacer height={Space.lg} />
-                <Pressable
-                    onPress={() => setPickerOpen(true)}
-                    disabled={saving}
-                    style={[styles.addExercisePill, { backgroundColor: theme.uiBackground, borderColor: theme.line }]}
-                >
-                    <Ionicons name="add" size={14} color={theme.text} />
-                    <ThemedText variant="small" tone="body">Add exercise</ThemedText>
-                </Pressable>
-
-                {error ? (
-                    <>
-                        <Spacer height={16} />
-                        <ThemedText style={{ color: theme.danger }}>{error}</ThemedText>
-                    </>
-                ) : null}
+                <AddButton label="Add exercise" onPress={() => setPickerOpen(true)} disabled={saving} />
 
                 {finishing ? (
                     <>
@@ -701,12 +683,18 @@ const LiveSession = () => {
                                 here is character-for-character the one the Client has
                                 been watching in the header. */}
                             <ThemedTextInput
+                                ref={durationRef}
+                                accessibilityLabel="Duration"
                                 value={duration}
-                                onChangeText={setDuration}
-                                placeholder="4:30"
+                                onChangeText={(text) => {
+                                    setDuration(text)
+                                    clearError('duration')
+                                }}
+                                placeholder="mm:ss"
                                 keyboardType="numbers-and-punctuation"
                                 editable={!saving}
                             />
+                            <FieldError>{errors.duration}</FieldError>
 
                             <Spacer height={16} />
                             {/* "Date", not "Counts for". The old label was
@@ -716,7 +704,16 @@ const LiveSession = () => {
                                 the box is prefilled correctly already, so
                                 nobody has to know. */}
                             <ThemedText variant="meta" tone="muted" style={styles.label}>Date</ThemedText>
-                            <DateField value={date} onChange={setDate} editable={!saving} />
+                            <DateField
+                                value={date}
+                                onChange={(text) => {
+                                    setDate(text)
+                                    clearError('date')
+                                }}
+                                editable={!saving}
+                                error={errors.date}
+                                inputRef={dateRef}
+                            />
 
                             <Spacer height={16} />
                             <ThemedText variant="meta" tone="muted" style={styles.label}>Notes</ThemedText>
@@ -765,12 +762,18 @@ const LiveSession = () => {
                                         <>
                                             <Spacer height={10} />
                                             <ThemedTextInput
+                                                ref={templateNameRef}
+                                                accessibilityLabel="Template name"
                                                 value={templateName}
-                                                onChangeText={setTemplateName}
+                                                onChangeText={(text) => {
+                                                    setTemplateName(text)
+                                                    clearError('templateName')
+                                                }}
                                                 placeholder="Name this workout"
                                                 autoCapitalize="words"
                                                 editable={!saving}
                                             />
+                                            <FieldError>{errors.templateName}</FieldError>
                                         </>
                                     ) : null}
                                 </>
@@ -785,6 +788,8 @@ const LiveSession = () => {
                                 Saving the {totalChecked} set{totalChecked === 1 ? '' : 's'} you checked off. Anything
                                 left unchecked isn&apos;t recorded.
                             </ThemedText>
+
+                            <FieldError>{errors.form}</FieldError>
 
                             <Spacer height={16} />
                             <ThemedButton onPress={handleFinish} disabled={saving}>
@@ -809,8 +814,11 @@ const LiveSession = () => {
 
             {/* Fixed, like the header, and arriving a beat behind it: the one
                 answer this screen is for, naming what it will do rather than
-                just "Finish". While `finishing` is open, FINISH re-opens that
-                same form instead of a second, competing save path. */}
+                just "Finish". */}
+            {/* Gone while the finish card is open: the card's own Save is the
+                answer then, and two filled buttons doing one job made the
+                screen ask the same question twice. */}
+            {finishing ? null : (
             <FadeIn rise={12} delay={STAGGER_MS}>
                 <View
                     style={[
@@ -824,7 +832,7 @@ const LiveSession = () => {
                 >
                     <ThemedButton
                         style={styles.finishButton}
-                        onPress={finishing ? handleFinish : openFinish}
+                        onPress={openFinish}
                         disabled={saving}
                     >
                         <ThemedText variant="label" tone="onPrimary">
@@ -836,6 +844,7 @@ const LiveSession = () => {
                     </ThemedButton>
                 </View>
             </FadeIn>
+            )}
 
             <ExercisePicker
                 visible={pickerOpen}

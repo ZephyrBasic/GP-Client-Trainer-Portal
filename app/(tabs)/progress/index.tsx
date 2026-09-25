@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { FlatList, Image, Pressable, StyleSheet, View, useColorScheme } from 'react-native'
+import { FlatList, Image, StyleSheet, View, useColorScheme } from 'react-native'
+import Pressable from '../../../components/Touchable'
 import { useRouter } from 'expo-router'
 import * as ImagePicker from 'expo-image-picker'
 

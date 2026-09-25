@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, useColorScheme, type StyleProp, type ViewStyle } from 'react-native'
+import { StyleSheet, useColorScheme, type StyleProp, type ViewStyle } from 'react-native'
+import Pressable from './Touchable'
 import { Ionicons } from '@expo/vector-icons'
 
 import { Colors } from '../constants/Colors'
@@ -12,14 +13,14 @@ type Props = {
 }
 
 /**
- * The back control for the two screens that draw their own header instead of
- * the Stack's - a live Session and a Trainer's Client.
+ * The app's one back control: every Stack header uses it (hooks/useHeaderOptions),
+ * and so do the two screens that draw their own header - a live Session and a
+ * Trainer's Client.
  *
- * Top left, where the Stack's own arrow is, because a Client should not have
- * to look for it in a different corner on every screen; the live Session used
- * to keep it in the footer beside FINISH. A pill rather than React
- * Navigation's bare chevron, since these headers have no bar behind them for a
- * bare arrow to sit on.
+ * A bare chevron in a 48px circle. 48 rather than 44 because the live Session
+ * is one of its homes, and the tap-size decision (UI review, issue 5) was 48
+ * wherever a Client is mid-workout. Real size, not hitSlop: react-native-web's
+ * Pressable ignores hitSlop, so the 36px pill this replaced was 36px on the web.
  */
 const BackPill = ({ onPress, style, label }: Props) => {
     const colorScheme = useColorScheme()
@@ -28,12 +29,11 @@ const BackPill = ({ onPress, style, label }: Props) => {
     return (
         <Pressable
             onPress={onPress}
-            hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel={label}
-            style={[styles.pill, { backgroundColor: theme.uiBackground, borderColor: theme.line }, style]}
+            style={[styles.hit, style]}
         >
-            <Ionicons name="chevron-back" size={17} color={theme.text} />
+            <Ionicons name="chevron-back" size={24} color={theme.title} />
         </Pressable>
     )
 }
@@ -41,11 +41,10 @@ const BackPill = ({ onPress, style, label }: Props) => {
 export default BackPill
 
 const styles = StyleSheet.create({
-    pill: {
-        width: 36,
-        height: 36,
+    hit: {
+        width: 48,
+        height: 48,
         borderRadius: Radius.pill,
-        borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },

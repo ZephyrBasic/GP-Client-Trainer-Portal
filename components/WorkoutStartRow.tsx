@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import { Pressable, StyleSheet, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
+import Pressable from './Touchable'
 
 import ThemedText from './ThemedText'
 import ThemedCard from './ThemedCard'

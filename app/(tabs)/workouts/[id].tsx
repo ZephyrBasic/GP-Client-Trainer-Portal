@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
+import { ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
+import Pressable from '../../../components/Touchable'
 import { useLocalSearchParams } from 'expo-router'
 import { deleteDoc, doc, onSnapshot } from 'firebase/firestore'
 

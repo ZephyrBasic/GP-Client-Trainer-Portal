@@ -1,14 +1,17 @@
 import { useEffect, useRef } from 'react'
-import { Animated, Pressable, StyleSheet, useColorScheme } from 'react-native'
-import ThemedText from './ThemedText'
+import { Animated, StyleSheet, View, useColorScheme } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import Pressable from './Touchable'
 import { Colors } from '../constants/Colors'
 import { NATIVE_DRIVER } from '../constants/Motion'
 import { useReducedMotion } from '../hooks/useReducedMotion'
 
-// (44 - 30) / 2: the padding hitSlop needs on each side to bring a 30px
-// circle up to the 44pt minimum tap target, without drawing a visibly larger
-// circle to get there.
-const HIT_SLOP = 7
+// The circle is drawn at 30 and tapped at 48: the tap-size decision from the
+// UI review was 48 wherever a Client is mid-workout. Real padding rather than
+// hitSlop, which react-native-web's Pressable ignores - on the web the old
+// "30px plus hitSlop" was a 30px target, and a tap 6px outside it missed.
+const CIRCLE = 30
+const TARGET = 48
 
 /**
  * The check-off control: a tap target, not a decoration. Signal draws every
@@ -29,11 +32,14 @@ const Checkbox = ({
     onPress,
     disabled,
     tone = 'accent',
+    label,
 }: {
     value: boolean
     onPress?: () => void
     disabled?: boolean
     tone?: 'accent' | 'amber'
+    /** What is being ticked, for a screen reader - "Set 2". */
+    label?: string
 }) => {
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
@@ -63,18 +69,22 @@ const Checkbox = ({
             <Pressable
                 onPress={onPress}
                 disabled={disabled}
-                hitSlop={HIT_SLOP}
                 accessibilityRole="checkbox"
-                accessibilityState={{ checked: value }}
-                style={[
-                    styles.circle,
-                    { borderColor: value ? fill : theme.iconColor },
-                    value && { backgroundColor: fill },
-                ]}
+                accessibilityState={{ checked: value, disabled }}
+                accessibilityLabel={label}
+                style={styles.target}
             >
-                {value ? (
-                    <ThemedText style={[styles.mark, { color: theme.background }]}>✓</ThemedText>
-                ) : null}
+                <View
+                    style={[
+                        styles.circle,
+                        { borderColor: value ? fill : theme.outline },
+                        value && { backgroundColor: fill },
+                    ]}
+                >
+                    {/* Drawn, not typed: a "✓" character took the UI font's
+                        own glyph, which in Plex reads as a square root. */}
+                    {value ? <Ionicons name="checkmark" size={20} color={theme.background} /> : null}
+                </View>
             </Pressable>
         </Animated.View>
     )
@@ -82,16 +92,19 @@ const Checkbox = ({
 export default Checkbox
 
 const styles = StyleSheet.create({
-    circle: {
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        borderWidth: 1.5,
+    target: {
+        width: TARGET,
+        height: TARGET,
+        borderRadius: TARGET / 2,
         alignItems: 'center',
         justifyContent: 'center',
     },
-    mark: {
-        fontSize: 15,
-        fontWeight: 'bold',
+    circle: {
+        width: CIRCLE,
+        height: CIRCLE,
+        borderRadius: CIRCLE / 2,
+        borderWidth: 1.5,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 })

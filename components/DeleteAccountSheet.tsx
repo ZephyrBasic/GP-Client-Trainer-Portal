@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Pressable, ScrollView, StyleSheet } from 'react-native'
+import { ScrollView, StyleSheet } from 'react-native'
+import Pressable from './Touchable'
 
 import BottomSheet from './BottomSheet'
 import Spacer from './Spacer'

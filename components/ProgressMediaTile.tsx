@@ -1,4 +1,5 @@
-import { Image, Pressable, StyleSheet, View, useColorScheme } from 'react-native'
+import { Image, StyleSheet, View, useColorScheme } from 'react-native'
+import Pressable from './Touchable'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors } from '../constants/Colors'
 import { useDownloadURL } from '../hooks/useDownloadURL'

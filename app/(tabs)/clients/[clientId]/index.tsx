@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
-import { FlatList, Pressable, StyleSheet, View, useColorScheme } from 'react-native'
+import { FlatList, StyleSheet, View, useColorScheme } from 'react-native'
+import Pressable from '../../../../components/Touchable'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { doc } from 'firebase/firestore'

@@ -1,18 +1,11 @@
 import { Stack } from 'expo-router'
-import { useColorScheme } from 'react-native'
-import { Colors } from '../../../constants/Colors'
+import { useHeaderOptions } from '../../../hooks/useHeaderOptions'
 
 const ClientsLayout = () => {
-    const colorScheme = useColorScheme()
-    const theme = Colors[colorScheme] ?? Colors.light
+    const headerOptions = useHeaderOptions()
 
     return (
-        <Stack
-            screenOptions={{
-                headerStyle: { backgroundColor: theme.navBackground },
-                headerTintColor: theme.title,
-            }}
-        >
+        <Stack screenOptions={headerOptions}>
             <Stack.Screen name="index" options={{ title: 'Clients' }} />
             {/* [clientId] is a folder with a Stack of its own, so it draws its
                 own header - the same reason the tabs set headerShown: false on

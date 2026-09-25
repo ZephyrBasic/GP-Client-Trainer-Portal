@@ -49,7 +49,11 @@ export const Type: Record<string, TextStyle> = {
     cardTitle: { fontFamily: FontFamily.heading, fontSize: 16, letterSpacing: -0.24 },
     body: { fontFamily: FontFamily.body, fontSize: 13 },
     meta: { fontFamily: FontFamily.body, fontSize: 12 },
-    small: { fontFamily: FontFamily.body, fontSize: 11 },
-    label: { fontFamily: FontFamily.label, fontSize: 10, letterSpacing: 1.4, textTransform: 'uppercase' },
-    micro: { fontFamily: FontFamily.label, fontSize: 9, letterSpacing: 1.08, textTransform: 'uppercase' },
+    // 12, not the artboards' 11: this carries real data (history meta,
+    // performed Sets), and Material's floor for body text is 12.
+    small: { fontFamily: FontFamily.body, fontSize: 12 },
+    // Nothing below 11 (Material's label-small). The artboards' 10 and 9
+    // were unreadable in the faint grey these usually take.
+    label: { fontFamily: FontFamily.label, fontSize: 11, letterSpacing: 1.54, textTransform: 'uppercase' },
+    micro: { fontFamily: FontFamily.label, fontSize: 11, letterSpacing: 1.1, textTransform: 'uppercase' },
 }
