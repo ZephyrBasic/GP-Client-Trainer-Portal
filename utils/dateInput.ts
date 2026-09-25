@@ -104,3 +104,17 @@ export const sessionDateError = (value: string): string | null => {
     endOfToday.setHours(23, 59, 59, 999)
     return parsed > endOfToday ? "That date hasn't happened yet." : null
 }
+
+/**
+ * What the date box keeps of a keystroke: up to eight digits, with the dashes
+ * put in for you - 25092026 reads back as 25-09-2026.
+ *
+ * So the box can open the phone's number pad, which has no dash key. It used
+ * to open the full keyboard (letters, emoji and all) just to reach one.
+ */
+export const maskDateInput = (text: string): string => {
+    const digits = text.replace(/\D/g, '').slice(0, 8)
+    if (digits.length <= 2) return digits
+    if (digits.length <= 4) return `${digits.slice(0, 2)}-${digits.slice(2)}`
+    return `${digits.slice(0, 2)}-${digits.slice(2, 4)}-${digits.slice(4)}`
+}

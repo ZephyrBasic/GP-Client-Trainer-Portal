@@ -267,10 +267,10 @@ const styles = StyleSheet.create({
     },
     container: {
         flexGrow: 1,
-        padding: Space.xl,
+        padding: Space.lg,
     },
     fallback: {
-        padding: Space.xl,
+        padding: Space.lg,
     },
     inviteCode: {
         letterSpacing: 2,

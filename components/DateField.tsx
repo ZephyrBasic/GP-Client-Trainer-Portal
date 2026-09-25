@@ -12,6 +12,7 @@ import { FontFamily } from '../constants/Type'
 import {
     DATE_INPUT_FORMAT,
     longDateLabel,
+    maskDateInput,
     parseDateInput,
     toDateInput,
 } from '../utils/dateInput'
@@ -138,9 +139,11 @@ const DateField = ({
                     ref={inputRef}
                     accessibilityLabel="Date"
                     value={value}
-                    onChangeText={onChange}
+                    onChangeText={(text) => onChange(maskDateInput(text))}
                     placeholder={DATE_INPUT_FORMAT}
-                    keyboardType="numbers-and-punctuation"
+                    keyboardType="number-pad"
+                    inputMode="numeric"
+                    autoComplete="off"
                     editable={editable}
                     style={styles.input}
                 />

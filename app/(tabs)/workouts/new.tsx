@@ -28,7 +28,7 @@ import { useOffline } from '../../../hooks/useOffline'
 import { createManualSession, useSessions } from '../../../hooks/useSessions'
 import { useTemplateVersion, useWorkoutTemplates } from '../../../hooks/useWorkoutTemplates'
 import { toDateInput, parseDateInput, sessionDateError } from '../../../utils/dateInput'
-import { durationError, minutesFromSeconds, parseDurationInput } from '../../../utils/elapsed'
+import { durationError, maskDurationInput, minutesFromSeconds, parseDurationInput } from '../../../utils/elapsed'
 import { buildExerciseHistory, prefillSetsFor, previousSetSummary } from '../../../utils/exerciseHistory'
 import { targetSummary } from '../../../utils/formatSet'
 import AddButton from '../../../components/AddButton'
@@ -310,11 +310,13 @@ const LogWorkout = () => {
                         accessibilityLabel="Duration"
                         value={duration}
                         onChangeText={(text) => {
-                            setDuration(text)
+                            setDuration(maskDurationInput(text))
                             clearError('duration')
                         }}
                         placeholder="mm:ss"
-                        keyboardType="numbers-and-punctuation"
+                        keyboardType="number-pad"
+                        inputMode="numeric"
+                        autoComplete="off"
                         editable={!saving}
                     />
                     {errors.duration ? (

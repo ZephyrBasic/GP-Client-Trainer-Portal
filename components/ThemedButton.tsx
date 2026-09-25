@@ -88,6 +88,7 @@ const ThemedButton = ({ style, disabled, variant = 'primary', ...props }: Themed
             style={[
                 styles.btn,
                 filled ? styles.filled : styles.outline,
+                (variant === 'danger' || variant === 'destructive') && styles.tall,
                 skin,
                 disabled && styles.disabled,
                 style,
@@ -105,7 +106,8 @@ export default ThemedButton
 
 const styles = StyleSheet.create({
     btn: {
-        padding: Space.md,
+        paddingHorizontal: Space.md,
+        paddingVertical: Space.sm + 2,
         borderWidth: 1,
         // Both axes. `alignItems` alone centred the label horizontally and left
         // it stacked from the top, which is invisible on a button sized by its
@@ -118,6 +120,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
+        // 44, Apple's floor; the live Session and anything destructive keep
+        // 48 (UI review decision 5) - see `tall` below.
+        minHeight: 44,
+    },
+    tall: {
         minHeight: 48,
     },
     filled: {

@@ -1,11 +1,10 @@
-import { Tabs, useGlobalSearchParams, useSegments } from 'expo-router'
+import { Tabs, useSegments } from 'expo-router'
 import { useColorScheme } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { FontFamily } from '../../constants/Type'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors } from '../../constants/Colors'
 import { useAuth } from '../../contexts/AuthContext'
-import { isFromToday } from '../../hooks/useLeave'
 
 const TabsLayout = () => {
     const colorScheme = useColorScheme()
@@ -21,11 +20,11 @@ const TabsLayout = () => {
     // screen-owned flag, since a flag would need plumbing through a navigator
     // that does not otherwise know what its screens are doing.
     const inLiveSession = segments[1] === 'workouts' && segments[2] === 'session'
-    // The same goes for anything else Today opens in the Workouts tab - logging
-    // a past workout, writing or editing their own. Its back goes to Today
-    // (hooks/useLeave), and a tab bar lighting up History underneath says the
-    // Client is somewhere they are not.
-    const onTodayDetour = isFromToday(useGlobalSearchParams())
+    //
+    // Only there. It was also hidden on the screens Today opens in the
+    // Workouts tab, keyed off a `from=today` search param - which outlived
+    // those screens, so History could come up later with no tab bar and, as a
+    // tab root, no back arrow: no way off the screen at all.
 
     // Tabs whose route is a folder render their own Stack header (with the back
     // button and per-screen title), so the Tabs header is switched off for those
@@ -44,7 +43,7 @@ const TabsLayout = () => {
                 // is a light grey that glared on the dark theme. The height is
                 // explicit because the default was 4px short of its items on
                 // the web, clipping every label and scrolling the page.
-                tabBarStyle: inLiveSession || onTodayDetour
+                tabBarStyle: inLiveSession
                     ? { display: 'none' }
                     : {
                           backgroundColor: theme.navBackground,

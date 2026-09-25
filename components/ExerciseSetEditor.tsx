@@ -58,15 +58,6 @@ type Props = {
      * Session, which have nothing to tick off.
      */
     checked?: boolean[]
-    /**
-     * What each Set was prescribed, parallel to `sets` and read only - only
-     * meaningful alongside `checked`. A ticked row compares itself against
-     * its own entry field by field: matching, its edge is the accent;
-     * differing, it and its tick go amber and the departed figure carries its
-     * struck-through target beside it. A row past the prescribed count has no
-     * entry and renders on-target, since there is nothing to depart from.
-     */
-    targets?: SetDraft[]
     onToggleSet?: (setIndex: number) => void
     /**
      * What the control that drops this Exercise is called. Live, a prescribed
@@ -89,21 +80,6 @@ type Props = {
     error?: string | null
 }
 
-/** A box read as a number, or null for empty/unparseable - never NaN. */
-const numeric = (value?: string): number | null => {
-    const trimmed = (value ?? '').trim()
-    if (trimmed === '') return null
-    const parsed = Number(trimmed)
-    return Number.isFinite(parsed) ? parsed : null
-}
-
-/**
- * Whether a performed measurement differs from what it was asked to be.
- * Numeric rather than string comparison, so "50" and "50.0" still match.
- */
-const departedField = (performed: string | undefined, target: string | undefined): boolean =>
-    numeric(performed) !== numeric(target)
-
 /**
  * One Exercise and its editable Sets: a column per measurement the Exercise
  * declares, a row per Set, and the controls to add or drop either.
@@ -120,6 +96,10 @@ const departedField = (performed: string | undefined, target: string | undefined
  * tick live, a ✕ elsewhere - because only the live Session has a moment to
  * tick anything off in.
  *
+ * A changed number is not coloured or compared while the Client trains: a
+ * ticked row is ticked, whatever it says. Whether the Session departed from
+ * the plan is judged once, at completion, and shown on the summary.
+ *
  * Only the columns this Exercise declares are drawn. A plank has no weight
  * column at all: an unused measurement is absent, never a zero.
  *
@@ -134,7 +114,6 @@ const ExerciseSetEditor = ({
     editable = true,
     progress,
     checked,
-    targets,
     onToggleSet,
     removeLabel,
     onChangeSet,
@@ -190,13 +169,6 @@ const ExerciseSetEditor = ({
             <View style={styles.rows}>
                 {sets.map((set, setIndex) => {
                     const isChecked = checked?.[setIndex] === true
-                    const targetSet = targets?.[setIndex]
-                    // Only a ticked row with a target to measure against can have
-                    // departed from one - an untouched row isn't a claim yet.
-                    const departedFields =
-                        isChecked && targetSet ? fields.filter((field) => departedField(set[field], targetSet[field])) : []
-                    const departed = departedFields.length > 0
-                    const edgeColor = departed ? theme.amber : theme.iconColorFocused
 
                     return (
                         // Swipe stays as a shortcut; the ✕ (or, live, the Skip
@@ -212,7 +184,7 @@ const ExerciseSetEditor = ({
                                 style={[
                                     styles.row,
                                     isChecked
-                                        ? [styles.rowTicked, { backgroundColor: theme.uiBackground, borderLeftColor: edgeColor }]
+                                        ? [styles.rowTicked, { backgroundColor: theme.uiBackground, borderLeftColor: theme.iconColorFocused }]
                                         : [styles.rowUnticked, { backgroundColor: theme.uiBackground, borderColor: theme.line }],
                                 ]}
                             >
@@ -222,17 +194,17 @@ const ExerciseSetEditor = ({
 
                                 <View style={styles.fieldGrid}>
                                     {fields.map((field) => {
-                                        const fieldDeparted = departedFields.includes(field)
-                                        const target = targetSet?.[field]
                                         return (
-                                            // The struck-through target sits beside
-                                            // the value, not under it, so a departed
-                                            // row never grows and shoves the rows below.
                                             <View key={field} style={styles.valueCell}>
                                                 <TextInput
                                                     value={set[field] ?? ''}
                                                     onChangeText={(text) => onChangeSet(setIndex, field, cleanSetInput(field, text))}
                                                     keyboardType={setInputKeyboard(field)}
+                                                    // Explicit for the web, and autofill off: iOS
+                                                    // was offering saved cards over a reps box.
+                                                    inputMode={setInputKeyboard(field) === 'decimal-pad' ? 'decimal' : 'numeric'}
+                                                    autoComplete="off"
+                                                    autoCorrect={false}
                                                     editable={editable}
                                                     selectTextOnFocus
                                                     accessibilityLabel={`Set ${setIndex + 1}, ${FIELD_NAMES[field]}`}
@@ -249,15 +221,10 @@ const ExerciseSetEditor = ({
                                                             // Unticked values are real, editable
                                                             // numbers - body ink, not the mid-grey
                                                             // that read as disabled.
-                                                            color: fieldDeparted ? theme.amber : isChecked || !live ? theme.title : theme.text,
+                                                            color: isChecked || !live ? theme.title : theme.text,
                                                         },
                                                     ]}
                                                 />
-                                                {fieldDeparted && target ? (
-                                                    <ThemedText variant="small" tone="muted" style={styles.targetStrike}>
-                                                        {target}
-                                                    </ThemedText>
-                                                ) : null}
                                             </View>
                                         )
                                     })}
@@ -268,7 +235,6 @@ const ExerciseSetEditor = ({
                                         value={isChecked}
                                         onPress={() => onToggleSet?.(setIndex)}
                                         disabled={!editable}
-                                        tone={departed ? 'amber' : 'accent'}
                                         label={`Set ${setIndex + 1} done`}
                                     />
                                 ) : canRemoveSet ? (
@@ -341,7 +307,7 @@ const styles = StyleSheet.create({
         gap: Space.xs,
     },
     name: {
-        fontSize: 18,
+        fontSize: 17,
     },
     progress: {
         flexDirection: 'row',
@@ -409,9 +375,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 0,
         borderBottomWidth: 1,
         textAlign: 'left',
-    },
-    targetStrike: {
-        textDecorationLine: 'line-through',
     },
     removeSet: {
         width: TRAIL_WIDTH,

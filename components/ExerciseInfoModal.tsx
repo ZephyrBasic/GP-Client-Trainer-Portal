@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
     },
     body: {
-        paddingHorizontal: Space.xl,
+        paddingHorizontal: Space.lg,
         paddingTop: Space.xl,
     },
     roleRow: {

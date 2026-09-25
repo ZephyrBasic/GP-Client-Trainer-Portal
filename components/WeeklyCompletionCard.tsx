@@ -101,7 +101,7 @@ export default WeeklyCompletionCard
 
 const styles = StyleSheet.create({
     card: {
-        padding: Space.xl,
+        padding: Space.lg,
         gap: Space.lg,
     },
     figureRow: {

@@ -10,6 +10,7 @@ import ThemedButton from '../../components/ThemedButton'
 import PasswordField from '../../components/PasswordField'
 import SegmentedControl from '../../components/SegmentedControl'
 import FieldError from '../../components/FieldError'
+import FieldLabel from '../../components/FieldLabel'
 import LegalLinks from '../../components/LegalLinks'
 import Spacer from '../../components/Spacer'
 
@@ -46,7 +47,7 @@ const Register = () => {
         const code = role === 'client' ? inviteCode.trim() : trainerCode.trim()
         const found: Partial<Record<Field, string>> = {
             name: name.trim() ? undefined : 'Enter your name.',
-            email: !email.trim() ? 'Enter your email.' : !looksLikeEmail(email) ? "That doesn't look like an email address." : undefined,
+            email: !email.trim() ? 'Enter your email.' : !looksLikeEmail(email) ? "That isn't an email address." : undefined,
             password: password.length < MIN_PASSWORD ? `Use at least ${MIN_PASSWORD} characters.` : undefined,
             // Only that it is present. Whether it is *right* is a question only
             // firestore.rules can answer, because the code is deliberately not
@@ -105,10 +106,8 @@ const Register = () => {
                     disabled={submitting}
                 />
 
-                <Spacer height={Space.lg} />
-                <ThemedText variant="meta" tone="muted" style={styles.label}>
-                    Name
-                </ThemedText>
+                <Spacer height={Space.md} />
+                <FieldLabel error={errors.name}>Name</FieldLabel>
                 <ThemedTextInput
                     ref={nameRef}
                     accessibilityLabel="Name"
@@ -124,12 +123,9 @@ const Register = () => {
                     invalid={Boolean(errors.name)}
                     editable={!submitting}
                 />
-                <FieldError>{errors.name}</FieldError>
 
-                <Spacer height={Space.lg} />
-                <ThemedText variant="meta" tone="muted" style={styles.label}>
-                    Email
-                </ThemedText>
+                <Spacer height={Space.md} />
+                <FieldLabel error={errors.email}>Email</FieldLabel>
                 <ThemedTextInput
                     ref={emailRef}
                     accessibilityLabel="Email"
@@ -147,12 +143,9 @@ const Register = () => {
                     invalid={Boolean(errors.email)}
                     editable={!submitting}
                 />
-                <FieldError>{errors.email}</FieldError>
 
-                <Spacer height={Space.lg} />
-                <ThemedText variant="meta" tone="muted" style={styles.label}>
-                    Password
-                </ThemedText>
+                <Spacer height={Space.md} />
+                <FieldLabel error={errors.password}>Password</FieldLabel>
                 <PasswordField
                     inputRef={passwordRef}
                     accessibilityLabel="Password"
@@ -168,22 +161,16 @@ const Register = () => {
                     invalid={Boolean(errors.password)}
                     editable={!submitting}
                 />
-                {errors.password ? (
-                    <FieldError>{errors.password}</FieldError>
-                ) : (
-                    <ThemedText variant="small" tone="muted" style={styles.hint}>
-                        At least {MIN_PASSWORD} characters.
-                    </ThemedText>
-                )}
+                <ThemedText variant="small" tone="muted" style={styles.hint}>
+                    At least {MIN_PASSWORD} characters.
+                </ThemedText>
 
                 {/* Two codes, one box. A client's names one trainer and is
                     theirs to hand out; the trainer one is shared, rotated by us,
                     and is the only thing standing between a public signup page
                     and a stranger with a trainer account. */}
-                <Spacer height={Space.lg} />
-                <ThemedText variant="meta" tone="muted" style={styles.label}>
-                    {role === 'client' ? 'Trainer invite code' : 'Trainer signup code'}
-                </ThemedText>
+                <Spacer height={Space.md} />
+                <FieldLabel error={errors.code}>{role === 'client' ? 'Trainer invite code' : 'Trainer signup code'}</FieldLabel>
                 <ThemedTextInput
                     ref={codeRef}
                     accessibilityLabel={role === 'client' ? 'Trainer invite code' : 'Trainer signup code'}
@@ -200,7 +187,6 @@ const Register = () => {
                     invalid={Boolean(errors.code)}
                     editable={!submitting}
                 />
-                <FieldError>{errors.code}</FieldError>
 
                 {/* Above the button, not below it. Consent has to be available
                     *before* the act it consents to, and these open as plain web
@@ -239,8 +225,8 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     container: {
-        paddingHorizontal: Space.xl,
-        paddingTop: 72,
+        paddingHorizontal: Space.lg,
+        paddingTop: 64,
         paddingBottom: Space.xl,
     },
     label: {

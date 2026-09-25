@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: Radius.hero,
         borderTopRightRadius: Radius.hero,
         paddingTop: Space.sm,
-        paddingHorizontal: Space.xl,
+        paddingHorizontal: Space.lg,
     },
     grabber: {
         alignSelf: 'center',

@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, TextInput, View, useColorScheme } from 'react-n
 import Pressable from '../../../../components/Touchable'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
-import { useLocalSearchParams, useNavigation } from 'expo-router'
+import { Redirect, useLocalSearchParams, useNavigation } from 'expo-router'
 import type { NavigationProp, ParamListBase } from '@react-navigation/native'
 
 import ThemedView from '../../../../components/ThemedView'
@@ -42,6 +42,7 @@ import { toDateInput, parseDateInput, sessionDateError } from '../../../../utils
 import { compareSession, resolveTargets } from '../../../../utils/prescription'
 import {
     durationError,
+    maskDurationInput,
     elapsedSecondsBetween,
     formatDurationInput,
     formatElapsed,
@@ -511,19 +512,14 @@ const LiveSession = () => {
         )
     }
 
-    // Reached by a stale link, a back-navigation into a Session finished on
-    // another device, or the Client's own history. Nothing here is editable
-    // afterwards, so send them to the record rather than reopening the workout.
+    // Reached by going back into a Session already finished - the browser's
+    // or the phone's back gesture from its summary, which walks history
+    // rather than the Stack - or by a stale link. It used to stop on a
+    // "This session is finished" page; nothing here is editable afterwards,
+    // so it goes straight on to History, where the record is. Declarative, as
+    // the routing rule asks (.claude/rules/ui.md).
     if (!isActiveSession(session) && !saving) {
-        return (
-            <ThemedView style={styles.container}>
-                <ThemedText>This session is finished.</ThemedText>
-                <Spacer height={16} />
-                <ThemedButton onPress={openSummary}>
-                    <ThemedText variant="body" tone="onPrimary" style={styles.primaryBtnText}>View session</ThemedText>
-                </ThemedButton>
-            </ThemedView>
-        )
+        return <Redirect href="/workouts" />
     }
 
     // The eyebrow says what this Session is, in place of the separate title +
@@ -554,22 +550,20 @@ const LiveSession = () => {
                         { paddingTop: insets.top + Space.sm, borderBottomColor: theme.line, backgroundColor: theme.background },
                     ]}
                 >
+                    {/* The eyebrow sits over the clock, and the back arrow on the
+                        clock's own line, level with its green dot - it used to
+                        centre on eyebrow and clock together and float between
+                        them. Top left, like every other screen's back arrow. */}
                     <View style={styles.headerTop}>
-                        {/* Top left, like every other screen's back arrow. It
-                            sat in the footer beside FINISH, which put the way
-                            out of a workout in a corner it is in nowhere else
-                            in the app. */}
-                        <BackPill onPress={leave} label="Back to Today" />
-                        <View style={styles.headerEyebrowWrap}>
-                            <ThemedText variant="label" tone="faint" numberOfLines={1}>
-                                {eyebrow}
+                        <ThemedText variant="label" tone="faint" numberOfLines={1} style={styles.eyebrow}>
+                            {eyebrow}
+                        </ThemedText>
+                        <View style={styles.clockRow}>
+                            <BackPill onPress={leave} label="Back to Today" style={styles.back} />
+                            <View style={[styles.dot, { backgroundColor: theme.iconColorFocused }]} />
+                            <ThemedText variant="display" tone="title" style={styles.tabular}>
+                                {formatElapsed(elapsedSeconds)}
                             </ThemedText>
-                            <View style={styles.clockRow}>
-                                <View style={[styles.dot, { backgroundColor: theme.iconColorFocused }]} />
-                                <ThemedText variant="display" tone="title" style={styles.tabular}>
-                                    {formatElapsed(elapsedSeconds)}
-                                </ThemedText>
-                            </View>
                         </View>
                         {/* The artboard puts a Pause pill here and there deliberately
                             isn't one. Elapsed is always (now - startedAt), so pausing
@@ -647,7 +641,6 @@ const LiveSession = () => {
                             hint={exercise.target}
                             progress={{ done: checkedCount(exercise), total: exercise.sets.length }}
                             checked={exercise.checked}
-                            targets={exercise.targetSets}
                             editable={!saving}
                             onToggleSet={(setIndex) => toggleSet(exIndex, setIndex)}
                             onChangeSet={(setIndex, field, value) => updateSet(exIndex, setIndex, field, value)}
@@ -687,11 +680,13 @@ const LiveSession = () => {
                                 accessibilityLabel="Duration"
                                 value={duration}
                                 onChangeText={(text) => {
-                                    setDuration(text)
+                                    setDuration(maskDurationInput(text))
                                     clearError('duration')
                                 }}
                                 placeholder="mm:ss"
-                                keyboardType="numbers-and-punctuation"
+                                keyboardType="number-pad"
+                        inputMode="numeric"
+                        autoComplete="off"
                                 editable={!saving}
                             />
                             <FieldError>{errors.duration}</FieldError>
@@ -868,14 +863,16 @@ const styles = StyleSheet.create({
         gap: Space.md,
     },
     headerTop: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: Space.sm,
+        gap: 0,
     },
-    headerEyebrowWrap: {
-        flex: 1,
-        gap: 2,
+    // Starts where the dot does: past the back arrow's 48px, less the 12px
+    // the arrow is pulled into the screen margin.
+    eyebrow: {
+        marginLeft: 40,
+    },
+    back: {
+        marginLeft: -12,
+        marginRight: -4,
     },
     clockRow: {
         flexDirection: 'row',

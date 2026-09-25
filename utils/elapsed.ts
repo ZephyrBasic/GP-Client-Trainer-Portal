@@ -175,3 +175,16 @@ export const durationError = (value: string): string | null => {
     if (seconds != null && seconds > MAX_SESSION_SECONDS) return 'That is over 12 hours. Check the duration, or leave it blank.'
     return null
 }
+
+/**
+ * What the duration box keeps of a keystroke: digits, with the colons put in
+ * for you from the right - 4530 is 45:30, 13000 is 1:30:00, and two digits
+ * or fewer stay a plain number of minutes, as `parseDurationInput` reads them.
+ * Lets the box use the number pad, which has no colon.
+ */
+export const maskDurationInput = (text: string): string => {
+    const digits = text.replace(/\D/g, '').replace(/^0+(?=\d{3})/, '').slice(0, 6)
+    if (digits.length <= 2) return digits
+    if (digits.length <= 4) return `${digits.slice(0, -2)}:${digits.slice(-2)}`
+    return `${digits.slice(0, -4)}:${digits.slice(-4, -2)}:${digits.slice(-2)}`
+}

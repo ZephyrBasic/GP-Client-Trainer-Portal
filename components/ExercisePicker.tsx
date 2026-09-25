@@ -390,7 +390,9 @@ const ExercisePicker = ({ visible, onSelect, onClose }) => {
                                 onChangeText={setQuery}
                                 placeholder={`Search ${totalCount} exercises`}
                                 placeholderTextColor={theme.iconColor}
-                                autoFocus
+                                // Not autofocused: plenty of people scroll or
+                                // filter first, and on a phone a focused box
+                                // throws the keyboard over half the list.
                                 autoCorrect={false}
                                 autoCapitalize="none"
                                 accessibilityLabel="Search exercises"
@@ -703,7 +705,7 @@ export default ExercisePicker
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: Space.xl,
+        paddingHorizontal: Space.lg,
     },
     headerRow: {
         flexDirection: 'row',

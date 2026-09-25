@@ -8,6 +8,7 @@ import ThemedText from '../../components/ThemedText'
 import ThemedTextInput from '../../components/ThemedTextInput'
 import ThemedButton from '../../components/ThemedButton'
 import PasswordField from '../../components/PasswordField'
+import FieldLabel from '../../components/FieldLabel'
 import FieldError from '../../components/FieldError'
 import Spacer from '../../components/Spacer'
 
@@ -21,17 +22,25 @@ const Login = () => {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    // Per field, under the field, all at once (.claude/rules/ui.md). `form` is
+    // Per field, all at once (.claude/rules/ui.md), drawn on the label line -
+    // see components/FieldLabel for why not under the box. `form` is
     // Firebase's answer, which is about the pair rather than either box.
     const [errors, setErrors] = useState<{ email?: string; password?: string; form?: string }>({})
     const [submitting, setSubmitting] = useState(false)
     const emailRef = useRef<TextInput>(null)
     const passwordRef = useRef<TextInput>(null)
 
-    const handleLogin = async () => {
+    // Takes the values rather than reading state, so an autofill (below) can
+    // log in with what it just filled before state has caught up.
+    const handleLogin = async (emailValue = email, passwordValue = password) => {
+        if (submitting) return
         const found = {
-            email: !email.trim() ? 'Enter your email.' : !looksLikeEmail(email) ? "That doesn't look like an email address." : undefined,
-            password: !password ? 'Enter your password.' : undefined,
+            email: !emailValue.trim()
+                ? 'Enter your email.'
+                : !looksLikeEmail(emailValue)
+                  ? "That isn't an email address."
+                  : undefined,
+            password: !passwordValue ? 'Enter your password.' : undefined,
         }
         setErrors(found)
         if (found.email) return emailRef.current?.focus()
@@ -39,7 +48,7 @@ const Login = () => {
 
         setSubmitting(true)
         try {
-            await signIn(email.trim(), password)
+            await signIn(emailValue.trim(), passwordValue)
             // Successful sign-in flips the auth state; the root layout's route
             // guard takes it from here.
         } catch (err) {
@@ -48,19 +57,26 @@ const Login = () => {
         }
     }
 
-    // Left-aligned like every other screen, and top-weighted rather than
-    // vertically centred, so an error appearing never shoves the whole block.
+    const changePassword = (text: string) => {
+        // A whole password arriving in one change is a password manager
+        // filling it - nobody types six characters in one keystroke - and
+        // someone who picked their saved login wants to be logged in, not to
+        // find the Log in button afterwards.
+        const filled = text.length - password.length > 1 && text.length >= 6
+        setPassword(text)
+        setErrors((prev) => ({ ...prev, password: undefined, form: undefined }))
+        if (filled && looksLikeEmail(email)) handleLogin(email, text)
+    }
+
     return (
         <ThemedView style={styles.container}>
             <ThemedText variant="title" tone="title" role="heading">
                 Log in
             </ThemedText>
 
-            <Spacer height={Space.xl} />
+            <Spacer height={Space.lg} />
 
-            <ThemedText variant="meta" tone="muted" style={styles.label}>
-                Email
-            </ThemedText>
+            <FieldLabel error={errors.email}>Email</FieldLabel>
             {/* Labelled, typed and autocompleted so the phone offers the email
                 keyboard and a password manager can pair the two boxes. Enter
                 moves on, then signs in. */}
@@ -81,32 +97,27 @@ const Login = () => {
                 invalid={Boolean(errors.email)}
                 editable={!submitting}
             />
-            <FieldError>{errors.email}</FieldError>
 
-            <Spacer height={Space.lg} />
-            <ThemedText variant="meta" tone="muted" style={styles.label}>
-                Password
-            </ThemedText>
+            <Spacer height={Space.md} />
+            <FieldLabel error={errors.password}>Password</FieldLabel>
             <PasswordField
                 inputRef={passwordRef}
                 accessibilityLabel="Password"
                 value={password}
-                onChangeText={(text) => {
-                    setPassword(text)
-                    setErrors((prev) => ({ ...prev, password: undefined, form: undefined }))
-                }}
+                onChangeText={changePassword}
                 autoComplete="current-password"
                 textContentType="password"
                 returnKeyType="go"
-                onSubmitEditing={handleLogin}
+                onSubmitEditing={() => handleLogin()}
                 invalid={Boolean(errors.password)}
                 editable={!submitting}
             />
-            <FieldError>{errors.password}</FieldError>
+            {/* Firebase's answer comes back after the keyboard is down, so
+                under the box is safe for this one. */}
             <FieldError>{errors.form}</FieldError>
 
-            <Spacer height={Space.xl} />
-            <ThemedButton onPress={handleLogin} disabled={submitting}>
+            <Spacer height={Space.lg} />
+            <ThemedButton onPress={() => handleLogin()} disabled={submitting}>
                 <ThemedText variant="cardTitle" tone="onPrimary">
                     {submitting ? 'Logging in...' : 'Log in'}
                 </ThemedText>
@@ -115,7 +126,7 @@ const Login = () => {
             {/* Above "Register" rather than below it: the person who needs this
                 link has an account and is stuck, which is a worse place to be
                 than not having one yet. */}
-            <Spacer height={Space.md} />
+            <Spacer height={Space.sm} />
             <Link href="/forgot-password" style={styles.link}>
                 <ThemedText variant="body" tone="accent">
                     Forgot your password?
@@ -135,11 +146,8 @@ export default Login
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: Space.xl,
-        paddingTop: 96,
-    },
-    label: {
-        marginBottom: Space.sm,
+        paddingHorizontal: Space.lg,
+        paddingTop: 80,
     },
     // 44 tall: these were 15px lines of text to aim at.
     link: {

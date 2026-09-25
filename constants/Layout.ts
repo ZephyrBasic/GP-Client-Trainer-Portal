@@ -29,5 +29,6 @@ export const Space = {
 }
 
 // Horizontal padding every screen body uses, so edges line up across routes
-// without each screen re-deciding it.
-export const SCREEN_PADDING = 20
+// without each screen re-deciding it. 16, Material's compact margin - 20 read
+// as slightly loose on a phone (UI review follow-up, 2026-09-25).
+export const SCREEN_PADDING = 16

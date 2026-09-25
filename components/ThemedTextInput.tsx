@@ -51,14 +51,16 @@ const styles = StyleSheet.create({
     input: {
         borderWidth: 1,
         borderRadius: Radius.card,
-        padding: Space.md,
+        paddingHorizontal: Space.md,
+        paddingVertical: Space.sm + 2,
         minHeight: 44,
         width: '100%',
     },
     // One pixel more border, one less padding, so focusing never shifts text.
     focused: {
         borderWidth: 2,
-        padding: Space.md - 1,
+        paddingHorizontal: Space.md - 1,
+        paddingVertical: Space.sm + 1,
         // RN-web only; ignored on native.
         outlineStyle: 'none',
     } as object,

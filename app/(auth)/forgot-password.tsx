@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { StyleSheet } from 'react-native'
+import { useRef, useState } from 'react'
+import { StyleSheet, TextInput } from 'react-native'
 import { Link } from 'expo-router'
 
 // themed components
@@ -13,7 +13,7 @@ import { Space } from '../../constants/Layout'
 import { useAuth } from '../../contexts/AuthContext'
 import { getAuthErrorMessage } from '../../utils/firebaseErrors'
 import { looksLikeEmail } from '../../utils/email'
-import FieldError from '../../components/FieldError'
+import FieldLabel from '../../components/FieldLabel'
 
 /**
  * The way back in for someone who mistyped a password once.
@@ -33,12 +33,14 @@ const ForgotPassword = () => {
     const [error, setError] = useState('')
     const [sent, setSent] = useState(false)
     const [submitting, setSubmitting] = useState(false)
+    const emailRef = useRef<TextInput>(null)
 
     const handleSend = async () => {
         setError('')
 
         if (!email.trim() || !looksLikeEmail(email)) {
-            setError(email.trim() ? "That doesn't look like an email address." : 'Enter your email.')
+            setError(email.trim() ? "That isn't an email address." : 'Enter your email.')
+            emailRef.current?.focus()
             return
         }
 
@@ -86,10 +88,9 @@ const ForgotPassword = () => {
                     </ThemedText>
 
                     <Spacer height={Space.lg} />
-                    <ThemedText variant="meta" tone="muted" style={styles.label}>
-                        Email
-                    </ThemedText>
+                    <FieldLabel error={error}>Email</FieldLabel>
                     <ThemedTextInput
+                        ref={emailRef}
                         accessibilityLabel="Email"
                         value={email}
                         onChangeText={(text) => {
@@ -105,7 +106,6 @@ const ForgotPassword = () => {
                         invalid={Boolean(error)}
                         editable={!submitting}
                     />
-                    <FieldError>{error}</FieldError>
 
                     <Spacer height={Space.xl} />
                     <ThemedButton onPress={handleSend} disabled={submitting}>
@@ -132,8 +132,8 @@ const styles = StyleSheet.create({
     // Top- and left-aligned, like the rest of the app.
     container: {
         flex: 1,
-        paddingHorizontal: Space.xl,
-        paddingTop: 96,
+        paddingHorizontal: Space.lg,
+        paddingTop: 80,
     },
     label: {
         marginBottom: Space.sm,

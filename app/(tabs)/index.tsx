@@ -522,8 +522,8 @@ const styles = StyleSheet.create({
         gap: Space.md,
     },
     hero: {
-        padding: Space.xl,
-        gap: Space.lg,
+        padding: Space.lg,
+        gap: Space.md,
     },
     heroTop: {
         gap: Space.sm,
