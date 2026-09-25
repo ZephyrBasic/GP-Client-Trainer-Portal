@@ -49,12 +49,10 @@ const TabsLayout = () => {
                     : {
                           backgroundColor: theme.navBackground,
                           borderTopColor: theme.line,
-                          height: 60 + insets.bottom,
-                          paddingTop: 6,
-                          paddingBottom: insets.bottom + 6,
+                          height: 64 + insets.bottom,
+                          paddingTop: 4,
+                          paddingBottom: insets.bottom + 4,
                       },
-                // The items' own default padding made each 52px in a 47px bar.
-                tabBarItemStyle: { paddingVertical: 0, height: 48 },
                 tabBarActiveTintColor: theme.iconColorFocused,
                 tabBarInactiveTintColor: theme.iconColor,
             }}
