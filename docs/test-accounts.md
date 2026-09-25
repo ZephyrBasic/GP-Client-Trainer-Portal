@@ -1,7 +1,7 @@
 # Test accounts and seeded data
 
-Created by `scripts/seed-test-data.js` against the live `gp-client-trainer-portal` project on
-2026-08-28. **No sessions exist for these five accounts**, deliberately — each seeded client's history is
+Created by `scripts/seed-test-data.js` against the live `gp-client-trainer-portal` project, and
+last re-seeded on 2026-09-25 when the accounts moved to `@greenpulse.fit`. **No sessions exist for these five accounts**, deliberately — each seeded client's history is
 empty, so the first session anyone logs is one you can watch being written. The `sessions`
 collection is not empty overall: it holds the 5 documents the migration copied across from a
 pre-existing account, which are nobody's here.
@@ -13,9 +13,9 @@ Sign in at `npm run web`.
 These are throwaway accounts on the dev project. The password is shared, weak, and committed on
 purpose so anyone can pick the fixture up. The addresses are on the project's own domain and are
 sign-in identifiers, not mailboxes — nothing is ever sent to them, and the seeder marks each one
-verified so Firebase does not try to. They replaced `@greenpulse.test` on 2026-09-25; the accounts
-under the old domain are deleted by `--reset` (see the script) and nothing is left behind. Delete them before this project holds anything real:
-`node scripts/seed-test-data.js --reset`.
+verified so Firebase does not try to. They replaced `@greenpulse.test` on 2026-09-25, and that
+re-seed deleted the accounts under the old domain, so nothing is left behind. Delete these before
+this project holds anything real: `node scripts/seed-test-data.js --reset`.
 
 **The app-store reviewer accounts are a separate cohort and are not any of these.** They live behind
 `--review` in the same script, their passwords are never committed, and `--reset` above does not
@@ -24,16 +24,16 @@ review. See `docs/store-listing.md`.
 
 ## Accounts
 
-The UIDs below are the ones the 2026-08-28 seed minted. A `--reset` and re-seed mints new ones, so
-they are a convenience for reading the Auth console, not identifiers to rely on.
+The UIDs below are the ones the 2026-09-25 re-seed minted. Another `--reset` and re-seed mints new
+ones, so they are a convenience for reading the Auth console, not identifiers to rely on.
 
 | Who | Email | Role | Trainer | UID |
 |---|---|---|---|---|
-| PT Zephyr | `pt.zephyr@greenpulse.fit` | trainer | — | `BDssvM6hyGeDCZZEGKXme5jX8M42` |
-| PT Patrick | `pt.patrick@greenpulse.fit` | trainer | — | `GVoZs88SFNS08jQYc2ekyrLIPh13` |
-| Maya Adeyemi | `maya@greenpulse.fit` | client | Zephyr | `Y96jSekSgyaFwvSrtuWD9ZibK7N2` |
-| Tom Brennan | `tom@greenpulse.fit` | client | Patrick | `INT7Qt3Bm4cvUn8GfNJtBxeT4Dz2` |
-| Priya Raman | `priya@greenpulse.fit` | client | Patrick | `qJAPBnIhLhcRfaGayX5wivZ9SLU2` |
+| PT Zephyr | `pt.zephyr@greenpulse.fit` | trainer | — | `9na64FGCuZYsbGhnWdMGxZOgCUp2` |
+| PT Patrick | `pt.patrick@greenpulse.fit` | trainer | — | `hNMptF2KbjWAKeDwUBKho3ZdYhs2` |
+| Maya Adeyemi | `maya@greenpulse.fit` | client | Zephyr | `TF7hkoVT92YfYGpPJ2msj0FsVU33` |
+| Tom Brennan | `tom@greenpulse.fit` | client | Patrick | `T0tESvcM1dfZC2qdnl8nMydJwlC2` |
+| Priya Raman | `priya@greenpulse.fit` | client | Patrick | `sxfXHynpIJYnwEUVSNJRtKDLV4E2` |
 
 Trainer invite codes: **Zephyr `ZEPHYR`**, **Patrick `PATRK2`** — use these if you register a
 further client through the app's own signup flow.
@@ -97,7 +97,7 @@ case that matters most: authorship grants a client nothing, only an assignment d
 leaks templates by trainer rather than by assignment shows up as Tom seeing Conditioning.
 
 Assignment ids are the derived pair `templateId_clientId`, e.g.
-`test-zephyr-lower-a_Y96jSekSgyaFwvSrtuWD9ZibK7N2`. That derivation is what makes the template read
+`test-zephyr-lower-a_TF7hkoVT92YfYGpPJ2msj0FsVU33`. That derivation is what makes the template read
 rule possible at all — rules cannot run queries, so "is this client assigned?" has to be a path that
 can be built and tested for existence.
 
