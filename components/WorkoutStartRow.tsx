@@ -46,8 +46,11 @@ const WorkoutStartRow = ({
     onEdit?: () => void
     disabled?: boolean
 }) => (
-    <Pressable onPress={onStart} disabled={disabled}>
-        <ThemedCard muted={disabled}>
+    // The card holds two siblings rather than one button inside another:
+    // a button nested in a button is invalid on the web, and a screen reader
+    // cannot reach the inner one.
+    <ThemedCard muted={disabled}>
+        <Pressable onPress={onStart} disabled={disabled} accessibilityLabel={`Start ${name}`} style={styles.startHit}>
             <View style={styles.row}>
                 <View style={styles.left}>
                     <ThemedText
@@ -65,6 +68,7 @@ const WorkoutStartRow = ({
                 </View>
                 {right}
             </View>
+        </Pressable>
 
             {onEdit ? (
                 // Its own tap target rather than a swipe or a long press:
@@ -74,19 +78,25 @@ const WorkoutStartRow = ({
                 // padding only widens the tap target without widening the
                 // row - a short line of text plus 8px of slop still fell
                 // short.
-                <Pressable onPress={onEdit} hitSlop={8} style={styles.edit}>
-                    <ThemedText variant="small" tone="accent">
-                        Edit workout →
+                <Pressable onPress={onEdit} style={styles.edit}>
+                    <ThemedText variant="meta" tone="accent">
+                        Edit template →
                     </ThemedText>
                 </Pressable>
             ) : null}
-        </ThemedCard>
-    </Pressable>
+    </ThemedCard>
 )
 
 export default WorkoutStartRow
 
 const styles = StyleSheet.create({
+    // Pulls the tap area out to the card's edges, so the pressed tint fills
+    // the card rather than a box inside its padding.
+    startHit: {
+        margin: -12,
+        padding: 12,
+        borderRadius: 10,
+    },
     row: {
         flexDirection: 'row',
         alignItems: 'center',

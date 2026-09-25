@@ -131,7 +131,7 @@ const ClientDetail = () => {
                         {clientProfile?.name ?? 'Client'}
                     </ThemedText>
                     <ThemedText variant="small" tone="muted">
-                        {activeAssignments.length} workout{activeAssignments.length === 1 ? '' : 's'} prescribed
+                        {activeAssignments.length} workout template{activeAssignments.length === 1 ? '' : 's'} prescribed
                     </ThemedText>
                 </View>
             </View>
@@ -164,7 +164,7 @@ const ClientDetail = () => {
                 ListEmptyComponent={
                     !loading && (
                         <ThemedText variant="body" tone="muted" style={styles.empty}>
-                            This client hasn&apos;t logged any workouts yet.
+                            This client hasn&apos;t logged any sessions yet.
                         </ThemedText>
                     )
                 }

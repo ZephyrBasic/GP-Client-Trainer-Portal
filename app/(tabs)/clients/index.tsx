@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { FlatList, StyleSheet, View } from 'react-native'
+import { FlatList, StyleSheet, View, useColorScheme } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
 import Pressable from '../../../components/Touchable'
 import { Redirect, useRouter } from 'expo-router'
 
@@ -12,6 +13,7 @@ import ScreenSubtitle from '../../../components/ScreenSubtitle'
 import Spacer from '../../../components/Spacer'
 import FadeIn from '../../../components/FadeIn'
 import { PlaceholderRows } from '../../../components/Placeholder'
+import { Colors } from '../../../constants/Colors'
 import { Space, SCREEN_PADDING } from '../../../constants/Layout'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useClients } from '../../../hooks/useClients'
@@ -97,6 +99,8 @@ const ClientRosterRow = ({
 }) => {
     const { sessions, loading, offline } = useSessions(client.uid)
     const completion = weeklyCompletion(sessions, assignments)
+    const colorScheme = useColorScheme()
+    const theme = Colors[colorScheme] ?? Colors.light
 
     useEffect(() => {
         onReport(client.uid, { completion, loading, offline })
@@ -122,6 +126,9 @@ const ClientRosterRow = ({
                         </ThemedText>
                     </View>
                     <RosterFigure completion={completion} />
+                    {/* Says the row opens something, like every other
+                        tappable row that leads to another screen. */}
+                    <Ionicons name="chevron-forward" size={18} color={theme.iconColor} />
                 </ThemedCard>
             </Pressable>
         </FadeIn>

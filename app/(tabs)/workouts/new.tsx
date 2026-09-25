@@ -22,6 +22,7 @@ import { Radius, Space, SCREEN_PADDING } from '../../../constants/Layout'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useAssignment, useClientAssignments } from '../../../hooks/useAssignments'
 import { draftsFrom, useExerciseDraft } from '../../../hooks/useExerciseDraft'
+import { useConfirmLeave } from '../../../hooks/useConfirmLeave'
 import { useLeave } from '../../../hooks/useLeave'
 import { useOffline } from '../../../hooks/useOffline'
 import { createManualSession, useSessions } from '../../../hooks/useSessions'
@@ -193,6 +194,9 @@ const LogWorkout = () => {
         )
     }
 
+    const dirty = exercises.length > 0 || Boolean(notes.trim()) || Boolean(duration.trim())
+    const { allowLeave } = useConfirmLeave(dirty, 'Discard this session?', "What you've entered hasn't been saved.")
+
     const handlePickExercise = (exercise) => {
         setPickerOpen(false)
         pickExercise(exercise)
@@ -252,6 +256,7 @@ const LogWorkout = () => {
                 // did not compare rather than compared and found nothing to say.
                 comparison: compareSession(cleanedExercises, targets),
             })
+            allowLeave()
             leave()
             showToast('Session saved')
         } catch (err) {

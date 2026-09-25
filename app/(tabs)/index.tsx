@@ -460,7 +460,7 @@ const Today = () => {
                 >
                     <Ionicons name="add" size={16} color={theme.text} />
                     <ThemedText variant="body" tone="body">
-                        Start, log or plan a workout
+                        Start, log or plan
                     </ThemedText>
                 </Pressable>
 
