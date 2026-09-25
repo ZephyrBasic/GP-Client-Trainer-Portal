@@ -210,23 +210,6 @@ const REVIEW_STORES = [
     },
 ]
 
-// One-time cleanup, and safe to delete once it has run everywhere: these
-// accounts were seeded under @greenpulse.test before 2026-09-25. A reset looks
-// its cohort up by the addresses in this file, so without this it would recreate
-// and delete the new ones and leave the old five - and their users/{uid}
-// documents, which the rules still serve - sitting in Auth forever.
-const LEGACY_DOMAIN_EMAILS = [
-    'pt.zephyr@greenpulse.test',
-    'pt.patrick@greenpulse.test',
-    'maya@greenpulse.test',
-    'tom@greenpulse.test',
-    'priya@greenpulse.test',
-    'apple.trainer@review.greenpulse.test',
-    'apple.client@review.greenpulse.test',
-    'google.trainer@review.greenpulse.test',
-    'google.client@review.greenpulse.test',
-]
-
 const REVIEW_TRAINERS = REVIEW_STORES.map((s) => s.trainer)
 const REVIEW_CLIENTS = REVIEW_STORES.map((s) => s.client)
 
@@ -501,19 +484,6 @@ const main = async () => {
         }
     }
 
-    // See LEGACY_DOMAIN_EMAILS. Every failure here is ignored on purpose: the
-    // ordinary case, once this has run once, is that none of them exist.
-    const deleteLegacyDomainAccounts = async () => {
-        for (const email of LEGACY_DOMAIN_EMAILS) {
-            try {
-                const record = await auth.getUserByEmail(email)
-                await db.doc(`users/${record.uid}`).delete()
-                await auth.deleteUser(record.uid)
-                console.log(`  deleted      ${email.padEnd(38)} ${record.uid}  (old domain)`)
-            } catch {}
-        }
-    }
-
     const ensureUser = async (person) => {
         const password = passwordFor(person)
         const store = REVIEW_STORES.find((s) => s.trainer.key === person.key || s.client.key === person.key)
@@ -529,6 +499,15 @@ const main = async () => {
             uids[person.key] = record.uid
             if (setPassword && !dry) await auth.updateUser(record.uid, { password })
             console.log(`  exists       ${person.email.padEnd(38)} ${record.uid}${setPassword ? '  (password set)' : ''}`)
+            return
+        }
+        // Nothing to create when the point of the run is to delete: a reset
+        // used to mint the whole cohort seconds before removing it again, which
+        // left a log that read as though it had seeded and a trail of accounts
+        // in the Auth console's audit. Absent is the outcome a reset wants, so
+        // the deletes below skip a person with no uid.
+        if (reset) {
+            console.log(`  absent       ${person.email}`)
             return
         }
         if (dry) {
@@ -559,6 +538,10 @@ const main = async () => {
             // client's history pointed at a template that had gone.
             for (const s of COHORT.sessions) await db.doc(`sessions/${s.id}`).delete()
             for (const a of COHORT.assignments) {
+                // An Assignment's id is derived from the Client's uid, so an
+                // absent Client leaves nothing to address - and an id built
+                // from `undefined` would name a document that never existed.
+                if (!uids[a.client]) continue
                 const t = findTemplate(a)
                 await db.doc(`assignments/${templateId(t)}_${uids[a.client]}`).delete()
             }
@@ -567,10 +550,10 @@ const main = async () => {
                 await db.doc(`workoutTemplates/${templateId(t)}`).delete()
             }
             for (const p of [...COHORT.trainers, ...COHORT.clients]) {
+                if (!uids[p.key]) continue
                 await db.doc(`users/${uids[p.key]}`).delete()
                 await auth.deleteUser(uids[p.key]).catch(() => {})
             }
-            await deleteLegacyDomainAccounts()
         }
         console.log('Reset complete.')
         if (!review) console.log('The review accounts were not touched. Use --review --reset for those.')
