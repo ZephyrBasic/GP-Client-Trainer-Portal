@@ -69,7 +69,13 @@ type Props = {
      */
     targets?: SetDraft[]
     onToggleSet?: (setIndex: number) => void
-    /** "Remove" while authoring; unused live, where skipping is its own pill. */
+    /**
+     * What the control that drops this Exercise is called. "Remove" while
+     * authoring, and live it is the difference between the two kinds of
+     * Exercise on the screen: a prescribed one is *skipped* (work that was
+     * asked for and not done), one the Client added mid-Session is *deleted*,
+     * since nothing ever asked for it.
+     */
     removeLabel?: string
     onChangeSet: (setIndex: number, field: SetField, value: string) => void
     /**
@@ -140,7 +146,7 @@ const ExerciseSetEditor = ({
     checked,
     targets,
     onToggleSet,
-    removeLabel = 'Remove',
+    removeLabel,
     onChangeSet,
     onAddSet,
     onRemoveSet,
@@ -162,6 +168,7 @@ const ExerciseSetEditor = ({
                 checked={checked}
                 targets={targets}
                 onToggleSet={onToggleSet}
+                removeLabel={removeLabel}
                 onChangeSet={onChangeSet}
                 onAddSet={onAddSet}
                 onRemoveSet={onRemoveSet}
@@ -186,7 +193,7 @@ const ExerciseSetEditor = ({
                 {onRemoveExercise ? (
                     <Pressable onPress={onRemoveExercise} hitSlop={8} style={styles.removeExercise}>
                         <ThemedText style={[styles.removeExerciseText, { color: theme.danger }]}>
-                            {removeLabel}
+                            {removeLabel ?? 'Remove'}
                         </ThemedText>
                     </Pressable>
                 ) : null}
@@ -292,6 +299,7 @@ const LiveExercise = ({
     checked,
     targets,
     onToggleSet,
+    removeLabel,
     onChangeSet,
     onAddSet,
     onRemoveSet,
@@ -307,6 +315,7 @@ const LiveExercise = ({
     checked: boolean[]
     targets?: SetDraft[]
     onToggleSet?: (setIndex: number) => void
+    removeLabel?: string
     onChangeSet: (setIndex: number, field: SetField, value: string) => void
     onAddSet?: () => void
     onRemoveSet?: (setIndex: number) => void
@@ -472,7 +481,7 @@ const LiveExercise = ({
                             disabled={!editable}
                             style={[styles.livePill, { backgroundColor: theme.uiBackground, borderColor: theme.line }]}
                         >
-                            <ThemedText variant="small" tone="body">Skip exercise</ThemedText>
+                            <ThemedText variant="small" tone="body">{removeLabel ?? 'Skip exercise'}</ThemedText>
                         </Pressable>
                     ) : null}
                 </View>

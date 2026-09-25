@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
-import { Redirect, useRouter } from 'expo-router'
+import { Redirect, useFocusEffect, useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { doc } from 'firebase/firestore'
@@ -257,11 +257,21 @@ const Today = () => {
         try {
             const sessionId = await start()
             router.push(`/workouts/session/${sessionId}`, SINGLE_SESSION_ROUTE)
+            // Left true on the way out, and cleared on the way back in (below).
+            // The new Session's snapshot lands here before the live screen has
+            // finished arriving, and `starting` is what holds its banner back:
+            // otherwise "SESSION IN PROGRESS" appeared on this screen, under
+            // the entrance, announcing a workout the Client can already see.
+            return
         } catch (err) {
             setError(err.message || 'Could not start this session.')
         }
         setStarting(false)
     }
+
+    // Back on Today - having left the Session or finished it - the banner is
+    // wanted again, and says whichever of the two is true.
+    useFocusEffect(useCallback(() => setStarting(false), []))
 
     // The Template's current Version is captured here, at the moment of
     // starting, and travels with the Session for the rest of its life (ADR
@@ -380,7 +390,7 @@ const Today = () => {
                     discard arrived already asking to be discarded. */}
                 <ActiveSessionBanner
                     key={activeSession?.id}
-                    session={activeSession}
+                    session={starting ? null : activeSession}
                     onResume={() => router.push(`/workouts/session/${activeSession.id}`, SINGLE_SESSION_ROUTE)}
                     onDiscard={handleDiscard}
                     discarding={discarding}

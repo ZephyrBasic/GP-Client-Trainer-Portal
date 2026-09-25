@@ -6,6 +6,7 @@ import {
     doc,
     query,
     serverTimestamp,
+    setDoc,
     Timestamp,
     updateDoc,
     where,
@@ -159,6 +160,22 @@ const verdictFields = (comparison?: SessionComparison | null) =>
  * Nothing performed is written here. The document is the open-session marker and
  * the start of the clock; the Sets a Client checks off stay in local state until
  * completeSession writes the lot in one go.
+ *
+ * ## Why this does not wait for the write
+ *
+ * The id is minted on the device and returned at once, and the write is left to
+ * settle on its own. It used to be an awaited `addDoc`, whose promise resolves
+ * only when the *server* has acknowledged the document - so tapping START did
+ * nothing at all for a round trip, and in a gym basement that is the difference
+ * between a stopwatch and a spinner. No transition can cover that gap; the only
+ * fix is not to have it.
+ *
+ * Nothing is lost by not waiting. Firestore applies the write to its local
+ * cache immediately, so the live screen's snapshot has the Session on its first
+ * frame, offline included - and the clock is the device's own `startedAt`
+ * (above), never the server's. A write that is ultimately rejected is a bug in
+ * the rules rather than something a Client can cause or fix, so it is logged;
+ * the screen it lands on already says the Session is not there.
  */
 export const startSession = async ({
     clientId,
@@ -172,7 +189,8 @@ export const startSession = async ({
     versionId?: string | null
     templateName?: string | null
 }): Promise<string> => {
-    const ref = await addDoc(collection(db, SESSIONS), {
+    const ref = doc(collection(db, SESSIONS))
+    setDoc(ref, {
         clientId,
         status: 'active' as SessionStatus,
         // The device's clock, deliberately, where createdAt is the server's. The
@@ -195,7 +213,7 @@ export const startSession = async ({
         notes: '',
         ...prescribedFields(templateId, versionId, templateName),
         createdAt: serverTimestamp(),
-    })
+    }).catch((err) => console.warn('[session] start was not accepted:', err))
 
     return ref.id
 }

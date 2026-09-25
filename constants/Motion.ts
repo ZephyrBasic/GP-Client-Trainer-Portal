@@ -20,6 +20,15 @@ export const Duration = {
     enter: 260,
 }
 
+// One beat between things arriving together, so a screen's content lands in the
+// order it is read instead of all at once. Deliberately small: four rows at
+// this offset are all in before the Client's thumb is back on the glass, and
+// anything slower turns "crafted" into "waiting". Cap the total rather than
+// multiplying it out row by row - a twelve-exercise Session must not take a
+// second and a half to appear.
+export const STAGGER_MS = 45
+export const STAGGER_MAX_MS = 180
+
 // Decelerating in, accelerating out: arrivals settle, exits get out of the way.
 export const Ease = {
     out: Easing.out(Easing.cubic),

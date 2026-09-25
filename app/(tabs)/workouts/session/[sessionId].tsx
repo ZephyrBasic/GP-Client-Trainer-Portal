@@ -14,13 +14,15 @@ import Checkbox from '../../../../components/Checkbox'
 import DateField from '../../../../components/DateField'
 import OfflineBanner from '../../../../components/OfflineBanner'
 import { PlaceholderRows } from '../../../../components/Placeholder'
+import BackPill from '../../../../components/BackPill'
+import FadeIn from '../../../../components/FadeIn'
 import ProgressBar from '../../../../components/ProgressBar'
-import ScreenEnter from '../../../../components/ScreenEnter'
 import Spacer from '../../../../components/Spacer'
 import ExercisePicker from '../../../../components/ExercisePicker'
 import ExerciseSetEditor from '../../../../components/ExerciseSetEditor'
 import { Colors } from '../../../../constants/Colors'
 import { Radius, Space, SCREEN_PADDING } from '../../../../constants/Layout'
+import { STAGGER_MAX_MS, STAGGER_MS } from '../../../../constants/Motion'
 import { FontFamily } from '../../../../constants/Type'
 import { useAssignment } from '../../../../hooks/useAssignments'
 import { draftsFrom, useExerciseDraft } from '../../../../hooks/useExerciseDraft'
@@ -542,9 +544,13 @@ const LiveSession = () => {
 
     return (
         <ThemedView style={styles.container}>
-                {/* Only reached once the Session has loaded, so the screen that
-                rises in is the workout, never its placeholder. */}
-            <ScreenEnter>
+                {/* The workout arrives in the order it is read: the clock and the
+                progress first, then the Exercises behind it (below), then the
+                one button that ends it. Nothing here waits on the network -
+                see startSession - so this is the whole of what tapping START
+                looks like, and it wants to look deliberate rather than like a
+                screen being replaced. */}
+            <FadeIn rise={12}>
                 {/* Outside the ScrollView on purpose: the clock is the one thing that
                     must stay visible however far down the workout the Client is. */}
                 <View
@@ -554,6 +560,11 @@ const LiveSession = () => {
                     ]}
                 >
                     <View style={styles.headerTop}>
+                        {/* Top left, like every other screen's back arrow. It
+                            sat in the footer beside FINISH, which put the way
+                            out of a workout in a corner it is in nowhere else
+                            in the app. */}
+                        <BackPill onPress={leave} label="Back to Today" />
                         <View style={styles.headerEyebrowWrap}>
                             <ThemedText variant="label" tone="faint" numberOfLines={1}>
                                 {eyebrow}
@@ -583,209 +594,224 @@ const LiveSession = () => {
                         </ThemedText>
                     </View>
                 </View>
+            </FadeIn>
 
-                <ScrollView
-                    contentContainerStyle={[
-                        styles.scrollContent,
-                        { paddingBottom: insets.bottom + Space.xxl * 2 },
-                    ]}
-                    keyboardShouldPersistTaps="handled"
-                >
-                    <OfflineBanner visible={offline} onRetry={retry} />
+            <ScrollView
+                contentContainerStyle={[
+                    styles.scrollContent,
+                    { paddingBottom: insets.bottom + Space.xxl * 2 },
+                ]}
+                keyboardShouldPersistTaps="handled"
+            >
+                <OfflineBanner visible={offline} onRetry={retry} />
 
-                    {/* Three states, and the middle one is the whole point: the plan
-                        has not arrived, the Client is training anyway, and they are
-                        told so rather than left looking at an empty screen. Nothing
-                        below is disabled while it says this - what they record here
-                        is kept, and the targets slot in underneath if the Version
-                        reaches the phone later. */}
-                    {!planApplied ? (
-                        <ThemedText variant="meta" tone="muted" style={styles.hint}>
-                            {/* `hydrated` is in the test because the Version read
-                                reports "not loading" for the frame before it starts:
-                                its ref is null until the Session document names a
-                                Template, so without this the wording would flash the
-                                failure copy on the way to the normal path. */}
-                            {!hydrated || versionLoading || assignmentLoading
-                                ? 'Loading your workout...'
-                                : "This workout's plan hasn't reached your phone. Add what you do — it's all kept, and the plan fills in below if it arrives."}
-                        </ThemedText>
-                    ) : exercises.length === 0 ? (
-                        <ThemedText variant="meta" tone="muted" style={styles.hint}>
-                            Nothing here yet. Add an exercise as you do it — the timer is already running.
-                        </ThemedText>
-                    ) : null}
+                {/* Three states, and the middle one is the whole point: the plan
+                    has not arrived, the Client is training anyway, and they are
+                    told so rather than left looking at an empty screen. Nothing
+                    below is disabled while it says this - what they record here
+                    is kept, and the targets slot in underneath if the Version
+                    reaches the phone later. */}
+                {!planApplied ? (
+                    <ThemedText variant="meta" tone="muted" style={styles.hint}>
+                        {/* `hydrated` is in the test because the Version read
+                            reports "not loading" for the frame before it starts:
+                            its ref is null until the Session document names a
+                            Template, so without this the wording would flash the
+                            failure copy on the way to the normal path. */}
+                        {!hydrated || versionLoading || assignmentLoading
+                            ? 'Loading your workout...'
+                            : "This workout's plan hasn't reached your phone. Add what you do — it's all kept, and the plan fills in below if it arrives."}
+                    </ThemedText>
+                ) : exercises.length === 0 ? (
+                    <ThemedText variant="meta" tone="muted" style={styles.hint}>
+                        Nothing here yet. Add an exercise as you do it — the timer is already running.
+                    </ThemedText>
+                ) : null}
 
-                    {exercises.map((exercise, exIndex) => (
-                        <View key={`${exercise.exerciseId}-${exIndex}`}>
-                            <Spacer height={Space.xxl} />
-                            <ExerciseSetEditor
-                                name={exercise.name}
-                                fields={exercise.fields}
-                                sets={exercise.sets}
-                                hint={exercise.target}
-                                progress={{ done: checkedCount(exercise), total: exercise.sets.length }}
-                                checked={exercise.checked}
-                                targets={exercise.targetSets}
-                                editable={!saving}
-                                onToggleSet={(setIndex) => toggleSet(exIndex, setIndex)}
-                                onChangeSet={(setIndex, field, value) => updateSet(exIndex, setIndex, field, value)}
-                                onAddSet={() => addSet(exIndex)}
-                                onRemoveSet={(setIndex) => deleteSet(exIndex, setIndex)}
-                                onRemoveExercise={() => skipExercise(exIndex)}
-                            />
-                        </View>
-                    ))}
+                {/* Each Exercise lands a beat after the one above it, capped
+                    so a long workout still appears at once (constants/Motion).
+                    They arrive when the plan does, which is a moment after the
+                    header either way - so the stagger costs nothing and the
+                    screen reads top to bottom as it fills.
 
-                    {/* Not in the reference artboards, which only frame the fixed
-                        prescribed Exercises - but adding one mid-workout is real
-                        functionality (a Self-Directed Session has no other way to
-                        start), so it keeps a place here, styled the same as the
-                        pills under each Exercise. */}
-                    <Spacer height={Space.lg} />
-                    <Pressable
-                        onPress={() => setPickerOpen(true)}
-                        disabled={saving}
-                        style={[styles.addExercisePill, { backgroundColor: theme.uiBackground, borderColor: theme.line }]}
+                    `removeLabel` is the one thing that differs between the two
+                    kinds of row here: skipping is something only a prescribed
+                    Exercise can be, so one the Client added mid-Session offers
+                    to delete itself instead. */}
+                {exercises.map((exercise, exIndex) => (
+                    <FadeIn
+                        key={`${exercise.exerciseId}-${exIndex}`}
+                        delay={Math.min(exIndex * STAGGER_MS, STAGGER_MAX_MS)}
                     >
-                        <Ionicons name="add" size={14} color={theme.text} />
-                        <ThemedText variant="small" tone="body">Add exercise</ThemedText>
-                    </Pressable>
+                        <Spacer height={Space.xxl} />
+                        <ExerciseSetEditor
+                            name={exercise.name}
+                            fields={exercise.fields}
+                            sets={exercise.sets}
+                            hint={exercise.target}
+                            progress={{ done: checkedCount(exercise), total: exercise.sets.length }}
+                            checked={exercise.checked}
+                            targets={exercise.targetSets}
+                            editable={!saving}
+                            onToggleSet={(setIndex) => toggleSet(exIndex, setIndex)}
+                            onChangeSet={(setIndex, field, value) => updateSet(exIndex, setIndex, field, value)}
+                            onAddSet={() => addSet(exIndex)}
+                            onRemoveSet={(setIndex) => deleteSet(exIndex, setIndex)}
+                            removeLabel={exercise.targetSets ? 'Skip exercise' : 'Delete exercise'}
+                            onRemoveExercise={() => skipExercise(exIndex)}
+                        />
+                    </FadeIn>
+                ))}
 
-                    {error ? (
-                        <>
+                {/* Not in the reference artboards, which only frame the fixed
+                    prescribed Exercises - but adding one mid-workout is real
+                    functionality (a Self-Directed Session has no other way to
+                    start), so it keeps a place here, styled the same as the
+                    pills under each Exercise. */}
+                <Spacer height={Space.lg} />
+                <Pressable
+                    onPress={() => setPickerOpen(true)}
+                    disabled={saving}
+                    style={[styles.addExercisePill, { backgroundColor: theme.uiBackground, borderColor: theme.line }]}
+                >
+                    <Ionicons name="add" size={14} color={theme.text} />
+                    <ThemedText variant="small" tone="body">Add exercise</ThemedText>
+                </Pressable>
+
+                {error ? (
+                    <>
+                        <Spacer height={16} />
+                        <ThemedText style={{ color: theme.danger }}>{error}</ThemedText>
+                    </>
+                ) : null}
+
+                {finishing ? (
+                    <>
+                        <Spacer height={Space.xl} />
+                        <ThemedCard raised>
+                            <ThemedText variant="cardTitle" tone="title">
+                                Finish session
+                            </ThemedText>
+
                             <Spacer height={16} />
-                            <ThemedText style={{ color: theme.danger }}>{error}</ThemedText>
-                        </>
-                    ) : null}
+                            <ThemedText variant="meta" tone="muted" style={styles.label}>Duration</ThemedText>
+                            {/* Defaulted from the timer and editable, because a phone
+                                left running through lunch should not ruin the record.
+                                Filled in the clock's own mm:ss so the figure offered
+                                here is character-for-character the one the Client has
+                                been watching in the header. */}
+                            <ThemedTextInput
+                                value={duration}
+                                onChangeText={setDuration}
+                                placeholder="4:30"
+                                keyboardType="numbers-and-punctuation"
+                                editable={!saving}
+                            />
 
-                    {finishing ? (
-                        <>
-                            <Spacer height={Space.xl} />
-                            <ThemedCard raised>
-                                <ThemedText variant="cardTitle" tone="title">
-                                    Finish session
-                                </ThemedText>
+                            <Spacer height={16} />
+                            {/* "Date", not "Counts for". The old label was
+                                explaining a rule - that a Session begun at
+                                23:50 counts for the day it started - and a
+                                form label is the wrong place to teach one:
+                                the box is prefilled correctly already, so
+                                nobody has to know. */}
+                            <ThemedText variant="meta" tone="muted" style={styles.label}>Date</ThemedText>
+                            <DateField value={date} onChange={setDate} editable={!saving} />
 
-                                <Spacer height={16} />
-                                <ThemedText variant="meta" tone="muted" style={styles.label}>Duration</ThemedText>
-                                {/* Defaulted from the timer and editable, because a phone
-                                    left running through lunch should not ruin the record.
-                                    Filled in the clock's own mm:ss so the figure offered
-                                    here is character-for-character the one the Client has
-                                    been watching in the header. */}
-                                <ThemedTextInput
-                                    value={duration}
-                                    onChangeText={setDuration}
-                                    placeholder="4:30"
-                                    keyboardType="numbers-and-punctuation"
-                                    editable={!saving}
-                                />
+                            <Spacer height={16} />
+                            <ThemedText variant="meta" tone="muted" style={styles.label}>Notes</ThemedText>
+                            <ThemedTextInput
+                                value={notes}
+                                onChangeText={setNotes}
+                                placeholder="How did it feel?"
+                                multiline
+                                numberOfLines={3}
+                                style={styles.notesInput}
+                                editable={!saving}
+                            />
 
-                                <Spacer height={16} />
-                                {/* "Date", not "Counts for". The old label was
-                                    explaining a rule - that a Session begun at
-                                    23:50 counts for the day it started - and a
-                                    form label is the wrong place to teach one:
-                                    the box is prefilled correctly already, so
-                                    nobody has to know. */}
-                                <ThemedText variant="meta" tone="muted" style={styles.label}>Date</ThemedText>
-                                <DateField value={date} onChange={setDate} editable={!saving} />
+                            {/* Only for a Session with no plan. One that ran a
+                                Template already has one, and the Client's
+                                answer to "do that again" is to start it again
+                                rather than to fork it. */}
+                            {selfDirected ? (
+                                <>
+                                    <Spacer height={16} />
+                                    <View style={[styles.templateRow, { borderColor: theme.line }]}>
+                                        <Checkbox
+                                            value={saveAsTemplate}
+                                            onPress={() => setSaveAsTemplate((prev) => !prev)}
+                                            disabled={saving}
+                                        />
+                                        <Pressable
+                                            onPress={() => setSaveAsTemplate((prev) => !prev)}
+                                            disabled={saving}
+                                            style={styles.templateLabel}
+                                        >
+                                            <ThemedText variant="body" tone="title">
+                                                Save this as a template
+                                            </ThemedText>
+                                            <ThemedText variant="small" tone="muted">
+                                                Keeps what you just did as a workout you can start again.
+                                            </ThemedText>
+                                        </Pressable>
+                                    </View>
 
-                                <Spacer height={16} />
-                                <ThemedText variant="meta" tone="muted" style={styles.label}>Notes</ThemedText>
-                                <ThemedTextInput
-                                    value={notes}
-                                    onChangeText={setNotes}
-                                    placeholder="How did it feel?"
-                                    multiline
-                                    numberOfLines={3}
-                                    style={styles.notesInput}
-                                    editable={!saving}
-                                />
-
-                                {/* Only for a Session with no plan. One that ran a
-                                    Template already has one, and the Client's
-                                    answer to "do that again" is to start it again
-                                    rather than to fork it. */}
-                                {selfDirected ? (
-                                    <>
-                                        <Spacer height={16} />
-                                        <View style={[styles.templateRow, { borderColor: theme.line }]}>
-                                            <Checkbox
-                                                value={saveAsTemplate}
-                                                onPress={() => setSaveAsTemplate((prev) => !prev)}
-                                                disabled={saving}
+                                    {/* The name box appears only once the box is
+                                        ticked. An always-visible field would
+                                        read as required on a card whose whole
+                                        job is saving the Session. */}
+                                    {saveAsTemplate ? (
+                                        <>
+                                            <Spacer height={10} />
+                                            <ThemedTextInput
+                                                value={templateName}
+                                                onChangeText={setTemplateName}
+                                                placeholder="Name this workout"
+                                                autoCapitalize="words"
+                                                editable={!saving}
                                             />
-                                            <Pressable
-                                                onPress={() => setSaveAsTemplate((prev) => !prev)}
-                                                disabled={saving}
-                                                style={styles.templateLabel}
-                                            >
-                                                <ThemedText variant="body" tone="title">
-                                                    Save this as a template
-                                                </ThemedText>
-                                                <ThemedText variant="small" tone="muted">
-                                                    Keeps what you just did as a workout you can start again.
-                                                </ThemedText>
-                                            </Pressable>
-                                        </View>
+                                        </>
+                                    ) : null}
+                                </>
+                            ) : null}
 
-                                        {/* The name box appears only once the box is
-                                            ticked. An always-visible field would
-                                            read as required on a card whose whole
-                                            job is saving the Session. */}
-                                        {saveAsTemplate ? (
-                                            <>
-                                                <Spacer height={10} />
-                                                <ThemedTextInput
-                                                    value={templateName}
-                                                    onChangeText={setTemplateName}
-                                                    placeholder="Name this workout"
-                                                    autoCapitalize="words"
-                                                    editable={!saving}
-                                                />
-                                            </>
-                                        ) : null}
-                                    </>
-                                ) : null}
+                            <Spacer height={16} />
+                            {/* Said plainly before the button, not discovered
+                                afterwards: prefilled targets mean every row looks
+                                complete, and only the ticks say what was actually
+                                performed. */}
+                            <ThemedText variant="meta" tone="muted">
+                                Saving the {totalChecked} set{totalChecked === 1 ? '' : 's'} you checked off. Anything
+                                left unchecked isn&apos;t recorded.
+                            </ThemedText>
 
-                                <Spacer height={16} />
-                                {/* Said plainly before the button, not discovered
-                                    afterwards: prefilled targets mean every row looks
-                                    complete, and only the ticks say what was actually
-                                    performed. */}
-                                <ThemedText variant="meta" tone="muted">
-                                    Saving the {totalChecked} set{totalChecked === 1 ? '' : 's'} you checked off. Anything
-                                    left unchecked isn&apos;t recorded.
+                            <Spacer height={16} />
+                            <ThemedButton onPress={handleFinish} disabled={saving}>
+                                <ThemedText variant="body" tone="onPrimary" style={styles.primaryBtnText}>
+                                    {saving ? 'Saving...' : 'Save session'}
                                 </ThemedText>
+                            </ThemedButton>
 
-                                <Spacer height={16} />
-                                <ThemedButton onPress={handleFinish} disabled={saving}>
-                                    <ThemedText variant="body" tone="onPrimary" style={styles.primaryBtnText}>
-                                        {saving ? 'Saving...' : 'Save session'}
-                                    </ThemedText>
-                                </ThemedButton>
+                            <Spacer height={10} />
+                            <ThemedButton
+                                variant="ghost"
+                                onPress={() => setFinishing(false)}
+                                disabled={saving}
+                            >
+                                <ThemedText>Keep training</ThemedText>
+                            </ThemedButton>
+                        </ThemedCard>
+                    </>
+                ) : null}
+                <Spacer height={20} />
+            </ScrollView>
 
-                                <Spacer height={10} />
-                                <ThemedButton
-                                    variant="ghost"
-                                    onPress={() => setFinishing(false)}
-                                    disabled={saving}
-                                >
-                                    <ThemedText>Keep training</ThemedText>
-                                </ThemedButton>
-                            </ThemedCard>
-                        </>
-                    ) : null}
-                    <Spacer height={20} />
-                </ScrollView>
-
-                {/* Fixed, like the header - a back button that simply leaves (the
-                    draft above already persists everything ticked so far) and the
-                    one answer this screen is for, naming what it will do rather
-                    than just "Finish". While `finishing` is open, FINISH re-opens
-                    that same form instead of a second, competing save path. */}
+            {/* Fixed, like the header, and arriving a beat behind it: the one
+                answer this screen is for, naming what it will do rather than
+                just "Finish". While `finishing` is open, FINISH re-opens that
+                same form instead of a second, competing save path. */}
+            <FadeIn rise={12} delay={STAGGER_MS}>
                 <View
                     style={[
                         styles.footer,
@@ -796,13 +822,6 @@ const LiveSession = () => {
                         },
                     ]}
                 >
-                    <Pressable
-                        onPress={leave}
-                        hitSlop={4}
-                        style={[styles.backButton, { backgroundColor: theme.uiBackground, borderColor: theme.line }]}
-                    >
-                        <Ionicons name="arrow-back" size={20} color={theme.text} />
-                    </Pressable>
                     <ThemedButton
                         style={styles.finishButton}
                         onPress={finishing ? handleFinish : openFinish}
@@ -816,7 +835,7 @@ const LiveSession = () => {
                         </ThemedText>
                     </ThemedButton>
                 </View>
-                </ScreenEnter>
+            </FadeIn>
 
             <ExercisePicker
                 visible={pickerOpen}
@@ -846,6 +865,7 @@ const styles = StyleSheet.create({
         gap: Space.sm,
     },
     headerEyebrowWrap: {
+        flex: 1,
         gap: 2,
     },
     clockRow: {
@@ -911,22 +931,10 @@ const styles = StyleSheet.create({
     },
     footer: {
         borderTopWidth: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: Space.md,
         paddingHorizontal: SCREEN_PADDING,
         paddingTop: Space.md,
     },
-    backButton: {
-        width: 52,
-        height: 52,
-        borderRadius: Radius.pill,
-        borderWidth: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
     finishButton: {
-        flex: 1,
         height: 52,
         padding: 0,
         gap: 1,

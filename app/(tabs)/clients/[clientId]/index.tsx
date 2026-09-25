@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react'
 import { FlatList, Pressable, StyleSheet, View, useColorScheme } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Ionicons } from '@expo/vector-icons'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { doc } from 'firebase/firestore'
 
 import ThemedView from '../../../../components/ThemedView'
 import ThemedText from '../../../../components/ThemedText'
+import BackPill from '../../../../components/BackPill'
 import ThemedButton from '../../../../components/ThemedButton'
 import WeeklyCompletionCard from '../../../../components/WeeklyCompletionCard'
 import WorkoutListItem from '../../../../components/WorkoutListItem'
@@ -15,7 +15,7 @@ import OfflineBanner from '../../../../components/OfflineBanner'
 import SectionLabel from '../../../../components/SectionLabel'
 import Spacer from '../../../../components/Spacer'
 import { Colors } from '../../../../constants/Colors'
-import { Radius, Space, SCREEN_PADDING } from '../../../../constants/Layout'
+import { Space, SCREEN_PADDING } from '../../../../constants/Layout'
 import { FontFamily } from '../../../../constants/Type'
 import { db } from '../../../../firebase/config'
 import { useAuth } from '../../../../contexts/AuthContext'
@@ -135,13 +135,7 @@ const ClientDetail = () => {
     return (
         <ThemedView style={styles.container}>
             <View style={[styles.header, { paddingTop: insets.top + Space.md }]}>
-                <Pressable
-                    onPress={leave}
-                    hitSlop={4}
-                    style={[styles.backButton, { backgroundColor: theme.uiBackground, borderColor: theme.line }]}
-                >
-                    <Ionicons name="chevron-back" size={17} color={theme.text} />
-                </Pressable>
+                <BackPill onPress={leave} label="Back to the Roster" />
                 <View style={styles.headerText}>
                     <ThemedText variant="title" tone="title" numberOfLines={1}>
                         {clientProfile?.name ?? 'Client'}
@@ -231,14 +225,6 @@ const styles = StyleSheet.create({
         gap: Space.md + 2,
         paddingHorizontal: SCREEN_PADDING,
         paddingBottom: Space.lg,
-    },
-    backButton: {
-        width: 36,
-        height: 36,
-        borderRadius: Radius.pill,
-        borderWidth: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
     },
     headerText: {
         gap: 2,
