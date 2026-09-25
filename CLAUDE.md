@@ -1,269 +1,86 @@
-## Project Overview
+# GreenPulse
 
-GreenPulse Client Trainer Portal is a workout tracker. Trainers prescribe workouts to their clients; clients then check off sets and exercises as they work through a session in real time. Clients can also start a self-directed session, so they can track their training without a prescribed workout.
+A workout tracker. Trainers author Workout Templates, publish immutable Versions, and assign them
+to Clients. Clients perform live Sessions (prescribed or self-directed); each finished Session is
+judged *As Prescribed* or *Modified*. Live at app.greenpulse.fit (Cloudflare Pages).
 
-## Current scope
+Expo / React Native (iOS, Android, web), TypeScript. Firebase (Auth, Firestore, Storage) is the
+whole backend. There is no server of our own. Firebase project: `gp-client-trainer-portal`.
 
-The whole prescribe/perform/review loop is built: a Trainer authors Workout Templates
-(`app/(tabs)/workouts/templates/`), publishes immutable Versions, and assigns them to Clients with
-per-Client target loads; a Client performs a live Session against a Version or starts a
-self-directed one, and each completed Session is judged *As Prescribed* or *Modified* and diffed.
-The domain model behind all of it is settled in `CONTEXT.md` and `docs/adr/0001`–`0005`, which are
-**authoritative** — read those before touching workouts, templates, or sessions.
+## Source of truth
 
-Two shipped features are switched off while the core loop is finished — `href: null` on their tabs
-in `app/(tabs)/_layout.tsx`, code and rules left intact, so re-enabling is a one-line change.
-**Messaging** (`app/(tabs)/messages/`) and **progress media** (`app/(tabs)/progress/` plus the
-trainer's client-progress route) are both gated; each carries a comment saying what switching it
-back on takes, since progress was client-only and messaging was not.
-
-**Custom exercises** are the one out-of-scope feature still live: `components/ExercisePicker.tsx`
-sources them via `useCustomExercises`. Once dropped, templates draw only from
-`constants/exercises.json`, so prescribing a movement outside the catalog means editing that file
-and shipping a build.
-
-### Known divergences between the glossary and the code
-
-`CONTEXT.md` is authoritative and the code has not caught up. This one is deliberate — don't "fix"
-either side to match the other without a decision:
-
-- **Session** is the domain term for a performed workout. The collection and its hook now match
-  (`sessions`, `hooks/useSessions.ts`), but the **routes deliberately do not**: the Workouts tab
-  (`app/(tabs)/workouts/`) is named for the tab, not for the collection, and now holds both a
-  Client's session history and the Trainer's `templates/` authoring routes. Renaming the folder
-  would produce `sessions/templates/`, which is wrong. URL segments stay `workouts`.
-
-The **Work Volume** divergence that used to sit above this is resolved. `utils/workoutStats.ts`
-summed Work Volume across Exercises, which CONTEXT.md is explicit that the term does not mean; that
-arithmetic fed one summary card and one figure on the Trainer's review screen, and phase 12 (Signal)
-removed both screens without removing the code. It is now deleted down to `sessionsThisWeek`, so
-the glossary and the code agree again — see the module comment before growing a summary back.
-
-## What this is
-
-GreenPulse — an Expo / React Native app (iOS, Android, web) pairing personal trainers with their
-clients. Firebase (Auth + Firestore + Storage) is the whole backend; there is no server of our own.
-Firebase project id: `gp-client-trainer-portal`.
-
-Source is TypeScript (`.tsx`/`.ts`), with the deliberate exception of `scripts/`, which stays plain
-`.js` so it runs under bare `node` with no build step (`tsconfig.json` excludes it).
+- `CONTEXT.md` is the glossary. Use its words and avoid the synonyms it lists.
+- `docs/adr/0001`–`0006` are settled decisions, cited by number in code comments. Read the ones
+  that touch your change. If you contradict one, say so rather than overriding it quietly.
+- Deliberate mismatch: the domain term is **Session**, but routes stay under `app/(tabs)/workouts/`,
+  named for the tab. Renaming would give `sessions/templates/`, which is wrong.
 
 ## Commands
 
 ```bash
-npm start                # expo start (all platforms)
-npm run web              # expo start --web — the usual dev loop (port 8081, see .claude/launch.json)
-npm run ios / android
-
-npm run build:web        # expo export -p web, then scripts/fix-web-assets.js — what Pages must run
-node scripts/generate-web-icons.js         # after replacing assets/icon.png, the single icon source
-firebase deploy --only firestore:rules     # after editing firestore.rules
-firebase deploy --only storage             # after editing storage.rules
+npm run web          # dev loop, port 8081
+npm run typecheck    # gate 1
+node scripts/validate-exercises.js   # gate 2
+npx expo export -p web               # gate 3: compiles every route; catches bad imports
+npm run build:web    # the deploy build (export + scripts/fix-web-assets.js)
 ```
 
-**`npm run build:web` is the deploy build, not `expo export` on its own.** Cloudflare Pages skips
-`node_modules` when it uploads a build output, and `expo export` names every asset by its path from
-the project root — so all four font files and the Ionicons glyph file land under
-`dist/assets/node_modules/…` and are never uploaded. Nothing 404s (with no top-level `404.html`,
-Pages answers an unmatched path with `index.html`), so the fonts come back as 200 `text/html` and
-the whole web app silently renders in the system serif with tofu boxes for icons.
-`scripts/fix-web-assets.js` moves that directory to `assets/pkg/` and rewrites the bundle's
-references; `--check` fails an export that still needs it.
-
-Exercise catalog and its tooling:
-
-```bash
-npm run typecheck                          # tsc --noEmit; must stay clean
-node scripts/validate-exercises.js         # after editing constants/exercises.json
-node scripts/validate-exercises.js --stats # ... plus facet coverage
-npm run gen:types                          # after editing scripts/exerciseVocab.js
-
-npm run verify:videos                      # how-to demo coverage; offline
-npm run verify:videos -- --long            # ... demos over 60s, or of unknown length; offline
-npm run verify:videos -- --oembed          # ... live/embeddable check, no API key
-npm run verify:videos -- --online          # ... duration + channel checks (needs YOUTUBE_API_KEY)
-npm run verify:videos -- --learn           # print each video's channel, to seed APPROVED_CHANNELS
-
-python scripts/find-exercise-videos.py     # search YouTube -> constants/videoCandidates.json (gitignored)
-node scripts/promote-videos.js --dry       # preview which candidates enter the catalog
-node scripts/promote-videos.js             # ... and write them in
-
-node scripts/review-catalog.js             # the human review pass: opens a local page
-node scripts/review-catalog.js --all       # ... revisiting records already decided
-```
-
-**`review-catalog.js` is where a demo is chosen, not `promote-videos.js`.** The
-harvester ranks and `promote-videos.js` seeds a best guess, but no score can tell whether a clip
-shows the movement, or whether a record's name and tags are *right* rather than merely well-formed.
-The review page plays each demo, offers the ranked alternatives, and writes the verdict into the
-catalog as it is made — progress is saved per record, so it is resumable across sittings. Verdicts
-live in `.claude/review-state.json` (disposable); everything that outlives the pass is in the
-catalog, and git is the undo. The demo house rule and why it is a ceiling with no floor are in
-`docs/adr/0006`.
-
-Against the live Firebase project, with the Admin SDK. These touch real data — **Zephyr runs
-these, not the assistant**. Credentials come from `secrets/service-account.json`, pointed at by
-`GOOGLE_APPLICATION_CREDENTIALS` in `.env`; `bash scripts/setup-admin-credentials.sh` walks you
-through obtaining them.
-
-```bash
-node scripts/seed-test-data.js             # the five test accounts (docs/test-accounts.md)
-node scripts/seed-test-data.js --reset     # ... and delete them again
-node scripts/seed-test-data.js --review    # store-reviewer accounts; --reset without --review leaves them alone
-node scripts/smoke-test-rules.js           # signs in as each account, asserts firestore.rules; expect 45 passed
-node scripts/migrate-workouts-to-sessions.js --dry   # the workouts -> sessions rename; already run
-```
-
-## Tests and checks
-
-There is **no test runner and no linter**. Three commands gate a commit, all exiting non-zero:
-`npm run typecheck`, `node scripts/validate-exercises.js`, and `npx expo export -p web`.
-
-- **`npx expo export -p web` is the third gate and easy to forget.** It compiles every screen
-  module, where `typecheck` only checks types — it is what catches a bad import in a route nobody
-  has opened. Run it before calling a branch done.
-- `node scripts/smoke-test-rules.js` is not a gate (it needs the network and the seeded fixture)
-  but it is the only real check on `firestore.rules`, and it is Zephyr's to run.
-
-- Typechecking is **off the dev loop**. Metro compiles via Babel, which strips types without
-  checking them, so `expo start` and Fast Refresh never invoke tsc. Running `npm run typecheck` is a
-  separate, deliberate act (`incremental` is on). Don't wire it into the dev server.
-- `verify-videos.js` is deliberately **not** a gate: it needs the network and an API key, so it can
-  run neither offline nor in CI without a secret. It's periodic maintenance for demos that rotted.
-- `npm run gen:types` is manual too, and not wired into `typecheck`. Editing `exerciseVocab.js`
-  without regenerating leaves the types stale (the validator still catches bad data).
-- The native video path can't be exercised from a dev machine — web takes the `<iframe>` branch and
-  never loads the native library — so changes to `YouTubePlayer.tsx` need a device or simulator.
-
-## Configuration
-
-`.env` (gitignored; copy `.env.example`) holds `EXPO_PUBLIC_FIREBASE_*`, read in `firebase/config.ts`.
-`EXPO_PUBLIC_SENTRY_DSN` and `EXPO_PUBLIC_FIREBASE_APPCHECK_SITE_KEY` are optional and **inert when
-blank** — a build without them must behave exactly like one without the feature. App Check is web
-only (the JS SDK cannot attest native), so its console enforcement stays in monitor.
-
-`YOUTUBE_API_KEY` in `.env` is intentionally *not* `EXPO_PUBLIC_` — only `scripts/verify-videos.js`
-reads it, under bare node, and it must never be bundled into the app.
-
-Trainer registration is gated by a shared code at Firestore `config/trainerSignup` (field `code`,
-a string), checked by `firestore.rules` and readable by no client. If that doc is missing, no one can
-register as a trainer — a deliberate fail-closed. Rotate it by editing the field in the console.
-
-## Technology choices
-
-| Area | Choice |
-|---|---|
-| Routing | expo-router, file-based, typed routes (`app.json` → `experiments.typedRoutes`) |
-| Backend | Firebase JS SDK (`firebase@^12`) — Auth, Firestore, Storage. No custom server |
-| State | React context + hooks. No state library |
-| Styling | `StyleSheet.create` + themed primitives. No styling library |
-| YouTube demos | `react-native-youtube-iframe` on native; a plain `<iframe>` on web |
-| Direct media | `expo-video` on all platforms |
-| Connectivity | **No connectivity library** (`expo-network`, NetInfo). Offline is derived from Firestore snapshot metadata, never from asking the OS |
-| Scripts | Plain `.js` under bare node; the video harvester is Python only because yt-dlp is |
+There is no test runner and no linter. Run all three gates before calling work done. Metro doesn't
+typecheck, so don't wire tsc into the dev server.
 
 ## Layout
 
 ```
-app/            expo-router routes: (auth), (tabs) — one tab navigator serves both roles
-components/     default-export function components
-contexts/       AuthContext (auth user + live users/{uid} profile)
-hooks/          useFirestoreSnapshot + one domain hook per collection
-utils/          pure helpers, no React Native runtime needed
-constants/      Colors.ts, exercises.json (~317 records) + its typed wrapper
-types/          hand-written types; exerciseVocab.generated.ts is generated
-scripts/        node/python maintenance and validation tooling
-firestore.rules / storage.rules      the real authorization layer
+app/          expo-router routes: (auth), (tabs). One tab navigator serves both roles
+components/   default-export function components; Themed* primitives
+hooks/        useFirestoreSnapshot + one domain hook per collection
+utils/        pure helpers
+constants/    Colors.ts, Motion.ts, exercises.json + exerciseCatalog.ts
+scripts/      plain .js under bare node (not in tsconfig); one Python harvester
 ```
 
 ## Conventions
 
-**Data fetching.** Every Firestore read goes through `hooks/useFirestoreSnapshot.ts` —
-`useFirestoreQuery` for a collection, `useFirestoreDoc` for a document. Don't call `onSnapshot` from
-a hook or screen (`AuthContext` is the one documented exception). Each returns
-`{ data, loading, offline, error, retry }`, owns one subscription, and cleans up on unmount. Add new
-reads as a domain hook in `hooks/` that wraps the helper and renames `data` (`useSessions` returns
-`sessions`). Sort client-side via the `sort` option rather than `orderBy`, so no composite index is
-needed — `firestore.indexes.json` is deliberately empty.
+- **State:** React context + hooks. No state or styling library.
+- **TypeScript:** `strict: false` is deliberate. Annotate props and exports, infer locals. Firestore
+  rows are `any`. Route params use `useLocalSearchParams<{ id: string }>()`.
+- **Comments:** explain *why* (tradeoffs, races, platform quirks), never restate the code.
+- **Scoped rules** in `.claude/rules/` load when you touch their files: data/Firestore, UI,
+  exercise catalog, web deploy.
 
-**Offline UI.** Surface the flag with `<OfflineBanner visible={offline} onRetry={retry} />`, and wrap
-it in `useOffline(...)` rather than passing a hook's `offline` straight through — most reads key off
-`profile.uid`, so a failed profile leaves leaf hooks truthfully reporting "not offline".
+## Scope switches
 
-**Routing.** The guard is declarative: `app/_layout.tsx` renders the `<Redirect>` returned by
-`useProtectedRoute()`. Don't replace it with an imperative `router.replace()` in an effect — that
-races the navigator. Tabs whose route is a folder set `headerShown: false`, since the nested `Stack`
-renders its own header.
+- Messaging (`app/(tabs)/messages/`) and progress media (`app/(tabs)/progress/`) are switched off
+  with `href: null` in `app/(tabs)/_layout.tsx`. The code is intact; comments there say how to
+  switch them back on.
+- Custom exercises (`hooks/useCustomExercises.ts`, used by `ExercisePicker`) are still live but
+  out of scope.
 
-**TypeScript.** `strict: false` is deliberate (see the comments in `tsconfig.json`).
-- Type the boundaries, infer the insides: props and exported signatures carry annotations, locals don't.
-- Themed primitives **extend** RN's prop types (`ViewProps`, `TextProps`, …) rather than redeclaring `style`.
-- Route params use the generic: `useLocalSearchParams<{ id: string }>()`.
-- Firestore snapshot rows are annotated `any`; a real `Session`/`ProgressMedia` type is the upgrade path.
-- Asset modules are declared in `types/assets.d.ts` (committed on purpose; `expo-env.d.ts` is generated).
-- `firebase/config.ts` needs one `@ts-expect-error` for `getReactNativePersistence`. Don't "fix" it.
+## Config
 
-**UI.** Use the themed primitives instead of raw RN ones, so light/dark keeps working; they index
-`Colors[colorScheme]` from `constants/Colors.ts`. `ThemedView`/`ThemedText`/`ThemedButton`/
-`ThemedCard`/`ThemedTextInput` are the base layer; `ThemedChip`, `SectionLabel`, `ScreenSubtitle`
-and `Spacer` are the shared vocabulary the screens were redesigned onto — reach for one of those
-before inventing a per-screen style. No six-digit hex literal belongs outside `constants/Colors.ts`.
-A read still out renders `PlaceholderRows`/`PlaceholderInline` (`components/Placeholder.tsx`), never
-"Loading..." text or a count/empty state that may change its mind; bottom sheets use
-`components/BottomSheet.tsx`; motion takes its timings from `constants/Motion.ts` and checks
-`useReducedMotion`.
-Route auth failures through `utils/firebaseErrors.ts` rather than surfacing raw Firebase codes.
+- `.env` (copy `.env.example`) holds `EXPO_PUBLIC_FIREBASE_*`. The Sentry DSN and App Check site
+  key are optional and must be **inert when blank**. App Check is web-only; enforcement stays in monitor.
+- `YOUTUBE_API_KEY` is intentionally not `EXPO_PUBLIC_`, so it is never bundled.
+- Trainer signup is gated by Firestore `config/trainerSignup.code`. If it is missing, nobody can
+  register as a trainer (fail-closed by design).
 
-**Exercise catalog.** Import from `constants/exerciseCatalog.ts`, never `exercises.json` directly —
-a raw JSON import is inferred structurally and loses the closed tag vocabularies. `scripts/exerciseVocab.js`
-is the single source of truth for those vocabularies; `types/exerciseVocab.generated.ts` is generated
-from it — **do not edit it**. Store unused measurement fields as `null`, never `0`: "no weight" must
-stay distinguishable from "lifted 0 kg".
+## Live project: Zephyr runs these, not you
 
-**Firestore rules** are the real authorization layer and carry their reasoning in comments; anything
-not explicitly matched is denied. When adding a collection, add its rules in the same change.
+`firebase deploy`, `scripts/seed-test-data.js`, `scripts/smoke-test-rules.js` (expect 45 passed),
+migrations, and anything using `secrets/service-account.json`. Give the exact command and what to
+expect. Non-interactive ones can go through `!`; interactive scripts need a real terminal.
 
-**Migrations**, if ever needed, are one-off Node scripts in `scripts/` run with the Admin SDK against
-a service account — idempotent and `--dry`-capable.
+## Workflow
 
-**Comments** explain *why* a non-obvious choice was made (rule tradeoffs, race conditions, platform
-quirks) rather than restating the code. Match that density when adding new ones.
-
-**History** is a linear sequence of `Phase N: <feature>` commits, made on `phase-N-...` branches and
-merged into `main`. Commits *within* a branch are plain-English sentences about what changed and for
-whom — no `feat:`/`fix:` prefixes (see `git log --oneline -8`).
-
-## Tickets
-
-Tickets are markdown files under `.claude/tickets/`, gitignored. Status is the folder — `new/`,
-`in-progress/`, `done/` — and moving a file is the only thing that changes when a ticket's state
-does. Name them `NN-<slug>.md`.
-
-**A ticket is at most 25 lines and four fields — What / Where (files, with line numbers) / Done when
-(observable outcomes, not steps) / Notes (usually omit).** When it lands, append at most three lines
-under `## Answer` and move it to `done/`. Longer reasoning goes where this repo already keeps it:
-the commit message and why-comments in the code.
-
-Four things are deliberately absent, because fifteen tickets proved they cost more than they
-returned: **no separate plan file** (for a ticket this size the ticket is the plan — a plan document
-was the single most expensive artefact in this repo's history); no comment logs, triage labels or
-blocked-by graphs unless a dependency genuinely exists; **tickets touching the same screen go to one
-agent in one dispatch**, since a cold-starting agent re-reads this whole file before doing the work
-and fifteen separate dispatches paid that fixed cost fifteen times; and a feature splits into
-**roughly 3–7 chunky tickets** — fourteen was too many.
-
-A handoff, where a phase genuinely needs one outliving its tickets, goes in `docs/` and is **deleted
-when that phase merges** — a finished handoff has no readers and goes stale silently. Don't write a
-spec document at all; the tickets and the ADRs carry what one would have said.
-
-## Domain docs
-
-Everything under `docs/` is tracked documentation for whoever reads the code — not agent
-instructions, which belong in this file. `.claude/` is the reverse: tool config, tickets and working
-notes, mostly gitignored, disposable.
-
-`CONTEXT.md` is the glossary and `docs/adr/0001`–`0005` are the settled decisions; both are
-authoritative and both are short. Read the ADRs that touch what you're about to change — twenty
-code comments cite them by number, so contradicting one is usually a mistake rather than a choice.
-If your change does contradict an ADR, say so explicitly rather than quietly overriding it. Use the
-glossary's words in code, tickets and commits, and avoid the synonyms it names.
+- Git: `phase-N-<slug>` branches merge to `main` as `Phase N: <feature>`. Commits inside a branch
+  are plain-English sentences, with no `feat:`/`fix:` prefixes.
+- **Pushing `main` deploys production.** The Cloudflare Pages GitHub app builds every push to
+  `main` (`npm run build:web`). No manual step. cPanel (VentraIP) hosts only the apex greenpulse.fit.
+- Browser testing: phones use `http://<laptop LAN IP>:8081` (`ipconfig`), never localhost.
+  Claude-in-Chrome tabs are hidden, so rAF/timers stall: verify motion by screenshot, swipe via TouchEvents.
+- No ticket files, plan files or spec docs. Put the full spec in the subagent brief.
+- Run subagents **one at a time**: they share one working tree and parallel ones collide.
+- Tracked docs live in `docs/`. `.claude/` is disposable tool state, mostly gitignored.
+- Context budget (reset 2026-09-25): this file ≤100 lines; it plus `.claude/rules/`, memory and
+  `~/.claude/CLAUDE.md` ≤200. Add a line only when learned and earning its keep; delete stale ones.
+  No process plugins or skills (cook, mattpocock and Superpowers were removed).
