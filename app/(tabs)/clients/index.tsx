@@ -40,12 +40,14 @@ const RosterFigure = ({ completion }: { completion: WeeklyCompletion }) => {
         )
     }
 
-    const behind = completed < expected
+    // Plain until met, then the accent. Never amber, which means Modified
+    // and nothing else (UI review, issue 14) - mid-week is not a warning.
+    const met = completed >= expected
 
     return (
         <View style={styles.figure}>
-            <ThemedText variant="small" tone={behind ? 'amber' : 'body'}>
-                <ThemedText variant="cardTitle" tone={behind ? 'amber' : 'title'} style={styles.tabular}>
+            <ThemedText variant="small" tone={met ? 'accent' : 'muted'}>
+                <ThemedText variant="cardTitle" tone={met ? 'accent' : 'title'} style={styles.tabular}>
                     {completed}
                 </ThemedText>{' '}
                 of {expected}

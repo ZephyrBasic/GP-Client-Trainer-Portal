@@ -1,6 +1,5 @@
-import { useState } from 'react'
-import { ScrollView, StyleSheet, useColorScheme } from 'react-native'
-import Pressable from '../../components/Touchable'
+import { useRef, useState } from 'react'
+import { ScrollView, StyleSheet, TextInput } from 'react-native'
 import { Link } from 'expo-router'
 
 // themed components
@@ -8,45 +7,56 @@ import ThemedView from '../../components/ThemedView'
 import ThemedText from '../../components/ThemedText'
 import ThemedTextInput from '../../components/ThemedTextInput'
 import ThemedButton from '../../components/ThemedButton'
+import PasswordField from '../../components/PasswordField'
+import SegmentedControl from '../../components/SegmentedControl'
+import FieldError from '../../components/FieldError'
 import LegalLinks from '../../components/LegalLinks'
 import Spacer from '../../components/Spacer'
 
-import { Colors } from '../../constants/Colors'
-import { Radius, Space } from '../../constants/Layout'
+import { Space } from '../../constants/Layout'
 import { useAuth } from '../../contexts/AuthContext'
+import { looksLikeEmail } from '../../utils/email'
 import { getAuthErrorMessage } from '../../utils/firebaseErrors'
 
+// Firebase's own floor. Said up front, under the box, rather than discovered
+// as an error after pressing Register.
+const MIN_PASSWORD = 6
+
+type Field = 'name' | 'email' | 'password' | 'code' | 'form'
+
 const Register = () => {
-    const colorScheme = useColorScheme()
-    const theme = Colors[colorScheme] ?? Colors.light
     const { signUp } = useAuth()
 
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [role, setRole] = useState('client')
+    const [role, setRole] = useState<'client' | 'trainer'>('client')
     const [inviteCode, setInviteCode] = useState('')
     const [trainerCode, setTrainerCode] = useState('')
-    const [error, setError] = useState('')
+    const [errors, setErrors] = useState<Partial<Record<Field, string>>>({})
     const [submitting, setSubmitting] = useState(false)
+    const nameRef = useRef<TextInput>(null)
+    const emailRef = useRef<TextInput>(null)
+    const passwordRef = useRef<TextInput>(null)
+    const codeRef = useRef<TextInput>(null)
+
+    const clear = (field: Field) => setErrors((prev) => ({ ...prev, [field]: undefined, form: undefined }))
 
     const handleRegister = async () => {
-        setError('')
-
-        if (!name.trim() || !email.trim() || !password) {
-            setError('Please fill in your name, email, and password.')
-            return
+        const code = role === 'client' ? inviteCode.trim() : trainerCode.trim()
+        const found: Partial<Record<Field, string>> = {
+            name: name.trim() ? undefined : 'Enter your name.',
+            email: !email.trim() ? 'Enter your email.' : !looksLikeEmail(email) ? "That doesn't look like an email address." : undefined,
+            password: password.length < MIN_PASSWORD ? `Use at least ${MIN_PASSWORD} characters.` : undefined,
+            // Only that it is present. Whether it is *right* is a question only
+            // firestore.rules can answer, because the code is deliberately not
+            // readable by this app - see AuthContext.signUp.
+            code: code ? undefined : role === 'client' ? "Enter your trainer's invite code." : 'Enter the trainer signup code.',
         }
-        if (role === 'client' && !inviteCode.trim()) {
-            setError("Please enter your trainer's invite code.")
-            return
-        }
-        // Only that it is present. Whether it is *right* is a question only
-        // firestore.rules can answer, because the code is deliberately not
-        // readable by this app - see AuthContext.signUp.
-        if (role === 'trainer' && !trainerCode.trim()) {
-            setError('Please enter the trainer signup code.')
-            return
+        setErrors(found)
+        const first = (['name', 'email', 'password', 'code'] as const).find((field) => found[field])
+        if (first) {
+            return { name: nameRef, email: emailRef, password: passwordRef, code: codeRef }[first].current?.focus()
         }
 
         setSubmitting(true)
@@ -60,156 +70,164 @@ const Register = () => {
             // Successful sign-up flips the auth state; the root layout's route
             // guard takes it from here.
         } catch (err) {
-            setError(getAuthErrorMessage(err))
+            setErrors({ form: getAuthErrorMessage(err) })
             setSubmitting(false)
         }
     }
 
-    // A ScrollView now rather than a centred block: the form grew a role-specific
-    // code field and a consent line, and on a short screen with the keyboard up
-    // the Register button was the thing that went off the bottom.
+    // A ScrollView: the form has a role-specific code field and a consent
+    // line, and on a short screen with the keyboard up the Register button was
+    // the thing that went off the bottom. Top-aligned and left-aligned like
+    // the rest of the app, so an error never shoves the form around.
     return (
         <ThemedView style={styles.screen}>
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-            <Spacer />
-            <ThemedText variant="title" tone="title" style={styles.title}>
-                Register for an account
-            </ThemedText>
-
-            <Spacer height={Space.xl} />
-
-            <ThemedText variant="label" tone="muted" style={styles.label}>
-                Name
-            </ThemedText>
-            <ThemedTextInput value={name} onChangeText={setName} autoCapitalize="words" editable={!submitting} />
-
-            <Spacer height={Space.lg} />
-            <ThemedText variant="label" tone="muted" style={styles.label}>
-                Email
-            </ThemedText>
-            <ThemedTextInput
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                editable={!submitting}
-            />
-
-            <Spacer height={Space.lg} />
-            <ThemedText variant="label" tone="muted" style={styles.label}>
-                Password
-            </ThemedText>
-            <ThemedTextInput value={password} onChangeText={setPassword} secureTextEntry editable={!submitting} />
-
-            <Spacer height={Space.lg} />
-            <ThemedText variant="label" tone="muted" style={styles.label}>
-                I am a...
-            </ThemedText>
-            <Spacer height={Space.sm} />
-            <ThemedView style={styles.roleRow}>
-                <Pressable
-                    style={[
-                        styles.roleOption,
-                        { borderColor: theme.line },
-                        role === 'client' && { backgroundColor: theme.primary, borderColor: theme.primary },
-                    ]}
-                    onPress={() => setRole('client')}
-                    disabled={submitting}
-                >
-                    <ThemedText
-                        variant="body"
-                        tone={role === 'client' ? 'onPrimary' : 'body'}
-                    >
-                        Client
-                    </ThemedText>
-                </Pressable>
-                <Pressable
-                    style={[
-                        styles.roleOption,
-                        { borderColor: theme.line },
-                        role === 'trainer' && { backgroundColor: theme.primary, borderColor: theme.primary },
-                    ]}
-                    onPress={() => setRole('trainer')}
-                    disabled={submitting}
-                >
-                    <ThemedText
-                        variant="body"
-                        tone={role === 'trainer' ? 'onPrimary' : 'body'}
-                    >
-                        Trainer
-                    </ThemedText>
-                </Pressable>
-            </ThemedView>
-
-            {role === 'client' && (
-                <>
-                    <Spacer height={Space.lg} />
-                    <ThemedText variant="label" tone="muted" style={styles.label}>
-                        Trainer invite code
-                    </ThemedText>
-                    <ThemedTextInput
-                        value={inviteCode}
-                        onChangeText={(text) => setInviteCode(text.toUpperCase())}
-                        autoCapitalize="characters"
-                        placeholder="e.g. AB12CD"
-                        editable={!submitting}
-                    />
-                </>
-            )}
-
-            {/* The trainer side of the same gate. A client's code names one
-                trainer and is theirs to hand out; this one is shared, rotated
-                by us, and is the only thing standing between a public signup
-                page and a stranger with a trainer account. */}
-            {role === 'trainer' && (
-                <>
-                    <Spacer height={Space.lg} />
-                    <ThemedText variant="label" tone="muted" style={styles.label}>
-                        Trainer signup code
-                    </ThemedText>
-                    <ThemedTextInput
-                        value={trainerCode}
-                        onChangeText={setTrainerCode}
-                        autoCapitalize="none"
-                        placeholder="Ask us for this"
-                        editable={!submitting}
-                    />
-                </>
-            )}
-
-            {error ? (
-                <>
-                    <Spacer height={Space.lg} />
-                    <ThemedText variant="body" tone="danger">
-                        {error}
-                    </ThemedText>
-                </>
-            ) : null}
-
-            {/* Above the button, not below it. Consent has to be available
-                *before* the act it consents to, and these open as plain web
-                pages precisely so someone with no account yet can read them. */}
-            <Spacer height={Space.xl} />
-            <ThemedText variant="meta" tone="muted" style={styles.consent}>
-                By registering you agree to our terms, and to how we handle your data - including the
-                training data your trainer records about you.
-            </ThemedText>
-            <Spacer height={Space.sm} />
-            <LegalLinks />
-
-            <Spacer height={Space.lg} />
-            <ThemedButton onPress={handleRegister} disabled={submitting}>
-                <ThemedText variant="cardTitle" tone="onPrimary">
-                    {submitting ? 'Creating account...' : 'Register'}
+            <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+                <ThemedText variant="title" tone="title" role="heading">
+                    Create an account
                 </ThemedText>
-            </ThemedButton>
 
-            <Spacer height={Space.xl} />
-            <Link href="/login" style={styles.link}>
-                <ThemedText variant="body" tone="accent">
-                    Already have an account? Login
+                <Spacer height={Space.xl} />
+
+                <ThemedText variant="meta" tone="muted" style={styles.label}>
+                    I am a
                 </ThemedText>
-            </Link>
-        </ScrollView>
+                <SegmentedControl
+                    label="I am a"
+                    options={[
+                        { value: 'client', label: 'Client' },
+                        { value: 'trainer', label: 'Trainer' },
+                    ]}
+                    value={role}
+                    onChange={(value) => {
+                        setRole(value)
+                        clear('code')
+                    }}
+                    disabled={submitting}
+                />
+
+                <Spacer height={Space.lg} />
+                <ThemedText variant="meta" tone="muted" style={styles.label}>
+                    Name
+                </ThemedText>
+                <ThemedTextInput
+                    ref={nameRef}
+                    accessibilityLabel="Name"
+                    value={name}
+                    onChangeText={(text) => {
+                        setName(text)
+                        clear('name')
+                    }}
+                    autoCapitalize="words"
+                    autoComplete="name"
+                    returnKeyType="next"
+                    onSubmitEditing={() => emailRef.current?.focus()}
+                    invalid={Boolean(errors.name)}
+                    editable={!submitting}
+                />
+                <FieldError>{errors.name}</FieldError>
+
+                <Spacer height={Space.lg} />
+                <ThemedText variant="meta" tone="muted" style={styles.label}>
+                    Email
+                </ThemedText>
+                <ThemedTextInput
+                    ref={emailRef}
+                    accessibilityLabel="Email"
+                    value={email}
+                    onChangeText={(text) => {
+                        setEmail(text)
+                        clear('email')
+                    }}
+                    keyboardType="email-address"
+                    inputMode="email"
+                    autoComplete="email"
+                    textContentType="username"
+                    returnKeyType="next"
+                    onSubmitEditing={() => passwordRef.current?.focus()}
+                    invalid={Boolean(errors.email)}
+                    editable={!submitting}
+                />
+                <FieldError>{errors.email}</FieldError>
+
+                <Spacer height={Space.lg} />
+                <ThemedText variant="meta" tone="muted" style={styles.label}>
+                    Password
+                </ThemedText>
+                <PasswordField
+                    inputRef={passwordRef}
+                    accessibilityLabel="Password"
+                    value={password}
+                    onChangeText={(text) => {
+                        setPassword(text)
+                        clear('password')
+                    }}
+                    autoComplete="new-password"
+                    textContentType="newPassword"
+                    returnKeyType="next"
+                    onSubmitEditing={() => codeRef.current?.focus()}
+                    invalid={Boolean(errors.password)}
+                    editable={!submitting}
+                />
+                {errors.password ? (
+                    <FieldError>{errors.password}</FieldError>
+                ) : (
+                    <ThemedText variant="small" tone="muted" style={styles.hint}>
+                        At least {MIN_PASSWORD} characters.
+                    </ThemedText>
+                )}
+
+                {/* Two codes, one box. A client's names one trainer and is
+                    theirs to hand out; the trainer one is shared, rotated by us,
+                    and is the only thing standing between a public signup page
+                    and a stranger with a trainer account. */}
+                <Spacer height={Space.lg} />
+                <ThemedText variant="meta" tone="muted" style={styles.label}>
+                    {role === 'client' ? 'Trainer invite code' : 'Trainer signup code'}
+                </ThemedText>
+                <ThemedTextInput
+                    ref={codeRef}
+                    accessibilityLabel={role === 'client' ? 'Trainer invite code' : 'Trainer signup code'}
+                    value={role === 'client' ? inviteCode : trainerCode}
+                    onChangeText={(text) => {
+                        if (role === 'client') setInviteCode(text.toUpperCase())
+                        else setTrainerCode(text)
+                        clear('code')
+                    }}
+                    autoCapitalize={role === 'client' ? 'characters' : 'none'}
+                    placeholder={role === 'client' ? 'From your trainer' : 'Ask us for this'}
+                    returnKeyType="go"
+                    onSubmitEditing={handleRegister}
+                    invalid={Boolean(errors.code)}
+                    editable={!submitting}
+                />
+                <FieldError>{errors.code}</FieldError>
+
+                {/* Above the button, not below it. Consent has to be available
+                    *before* the act it consents to, and these open as plain web
+                    pages precisely so someone with no account yet can read them. */}
+                <Spacer height={Space.xl} />
+                <ThemedText variant="meta" tone="muted">
+                    By registering you agree to our terms, and to how we handle your data — including the
+                    training data your trainer records about you.
+                </ThemedText>
+                <Spacer height={Space.sm} />
+                <LegalLinks />
+
+                <FieldError>{errors.form}</FieldError>
+                <Spacer height={Space.lg} />
+                <ThemedButton onPress={handleRegister} disabled={submitting}>
+                    <ThemedText variant="cardTitle" tone="onPrimary">
+                        {submitting ? 'Creating account...' : 'Register'}
+                    </ThemedText>
+                </ThemedButton>
+
+                <Spacer height={Space.md} />
+                <Link href="/login" style={styles.link}>
+                    <ThemedText variant="body" tone="accent">
+                        Already have an account? Log in
+                    </ThemedText>
+                </Link>
+            </ScrollView>
         </ThemedView>
     )
 }
@@ -221,35 +239,17 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     container: {
-        // flexGrow rather than flex, so the form still centres on a tall screen
-        // and scrolls on a short one instead of being squashed.
-        flexGrow: 1,
-        justifyContent: 'center',
         paddingHorizontal: Space.xl,
+        paddingTop: 72,
         paddingBottom: Space.xl,
-    },
-    title: {
-        textAlign: 'center',
-        marginBottom: Space.sm,
-    },
-    consent: {
-        textAlign: 'center',
     },
     label: {
         marginBottom: Space.sm,
     },
-    roleRow: {
-        flexDirection: 'row',
-        gap: Space.md,
-    },
-    roleOption: {
-        flex: 1,
-        borderWidth: 1,
-        borderRadius: Radius.pill,
-        paddingVertical: Space.md,
-        alignItems: 'center',
+    hint: {
+        marginTop: Space.xs + 2,
     },
     link: {
-        textAlign: 'center',
+        paddingVertical: Space.md,
     },
 })

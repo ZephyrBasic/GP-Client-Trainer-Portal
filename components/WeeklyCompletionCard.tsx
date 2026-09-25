@@ -34,9 +34,9 @@ type WeeklyBreakdownItem = {
  * Clamping the figure would hide exactly the case a Trainer most wants to see.
  *
  * The breakdown colours each Template's own ratio rather than the line as a
- * whole, so a Trainer can see *which* prescription is behind rather than only
- * that the total is - the same amber the header figure would take if this were
- * the one Assignment on the Client's list.
+ * whole, so a Trainer can see *which* prescription is met rather than only
+ * that the total is: the accent once met, plain until then. Never amber, which
+ * means Modified and nothing else.
  */
 const WeeklyCompletionCard = ({
     completion,
@@ -74,7 +74,7 @@ const WeeklyCompletionCard = ({
                                     {item.name}{' '}
                                     <ThemedText
                                         variant="small"
-                                        tone={item.done < item.target ? 'amber' : 'title'}
+                                        tone={item.done >= item.target ? 'accent' : 'title'}
                                         style={styles.tabular}
                                     >
                                         {item.done} of {item.target}

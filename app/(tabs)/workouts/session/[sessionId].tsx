@@ -835,8 +835,8 @@ const LiveSession = () => {
                         onPress={openFinish}
                         disabled={saving}
                     >
-                        <ThemedText variant="label" tone="onPrimary">
-                            {saving ? 'SAVING' : 'FINISH'}
+                        <ThemedText variant="cardTitle" tone="onPrimary">
+                            {saving ? 'Saving...' : 'Finish'}
                         </ThemedText>
                         <ThemedText variant="small" tone="onPrimary" style={styles.finishSubLabel}>
                             saves {totalChecked} of {totalSets} sets

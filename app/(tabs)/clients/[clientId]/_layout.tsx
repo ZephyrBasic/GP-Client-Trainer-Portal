@@ -11,6 +11,7 @@ const ClientDetailLayout = () => {
                 reason Today and the live Session switch theirs off too. */}
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="progress" options={{ title: 'Progress' }} />
+            <Stack.Screen name="session/[id]" options={{ title: 'Session' }} />
         </Stack>
     )
 }

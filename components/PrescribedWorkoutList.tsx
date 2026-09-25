@@ -14,20 +14,20 @@ import { useWorkoutTemplate } from '../hooks/useWorkoutTemplates'
  * progress segments beneath it - the same figure the Today hero shows for
  * whichever Assignment is furthest behind, just smaller and per-row.
  *
- * Amber only when nothing is done this week, and only then: this is ordering,
- * not a deadline (ADR 0001), so a Client who has already started chipping away
- * gets the ordinary title colour, not a colour that fades back to "fine" the
- * moment they act.
+ * Never amber. Amber means Modified and nothing else (UI review, issue 14):
+ * drawing "0 of 2" in it on a Tuesday told a Client who was simply mid-week
+ * that something was wrong. Plain until the week's target is met, then the
+ * accent - this is ordering, not a deadline (ADR 0001).
  */
 const WeekFigure = ({ done, target }: { done: number; target: number }) => {
-    const behind = done === 0
+    const met = done >= target
 
     return (
         <View style={{ alignItems: 'flex-end', gap: Space.xs }}>
-            <ThemedText variant="small" tone={behind ? 'amber' : 'body'}>
+            <ThemedText variant="small" tone={met ? 'accent' : 'muted'}>
                 <ThemedText
                     variant="cardTitle"
-                    tone={behind ? 'amber' : 'title'}
+                    tone={met ? 'accent' : 'title'}
                     style={{ fontVariant: ['tabular-nums'] }}
                 >
                     {done}

@@ -29,6 +29,7 @@ import { useOffline } from '../../hooks/useOffline'
 import { FROM_TODAY } from '../../hooks/useLeave'
 import { discardSession, startSession, useSessions } from '../../hooks/useSessions'
 import { useClientAssignments } from '../../hooks/useAssignments'
+import { SHORT_MONTHS } from '../../utils/dateInput'
 import { useWorkoutTemplate, useWorkoutTemplates } from '../../hooks/useWorkoutTemplates'
 import { clearLiveSessionDraft } from '../../utils/liveSessionDraft'
 import { sessionsThisWeek } from '../../utils/workoutStats'
@@ -70,12 +71,19 @@ const HeroCard = ({
     fromLabel,
     onStart,
     disabled,
+    onResume,
 }: {
     assignment: any
     doneThisWeek: number
     fromLabel?: string | null
     onStart: (template: any) => void
     disabled?: boolean
+    /**
+     * Given when this very workout is the Session in progress. The hero then
+     * offers to carry on with it, rather than showing a disabled Start under
+     * a banner that says the same workout is running.
+     */
+    onResume?: () => void
 }) => {
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
@@ -125,8 +133,10 @@ const HeroCard = ({
             <View style={styles.heroWeek}>
                 <View style={styles.heroWeekRow}>
                     <SectionLabel>THIS WEEK</SectionLabel>
-                    <ThemedText variant="small" tone="body">
-                        <ThemedText variant="cardTitle" tone="title" style={styles.tabular}>
+                    {/* Plain until met, then the accent: never amber, which
+                        means Modified and nothing else (UI review, issue 14). */}
+                    <ThemedText variant="small" tone={doneThisWeek >= target ? 'accent' : 'body'}>
+                        <ThemedText variant="cardTitle" tone={doneThisWeek >= target ? 'accent' : 'title'} style={styles.tabular}>
                             {doneThisWeek}
                         </ThemedText>{' '}
                         of {target}
@@ -135,11 +145,15 @@ const HeroCard = ({
                 <ProgressSegments total={target} filled={done} />
             </View>
 
-            <ThemedButton variant="primary" onPress={() => onStart(template)} disabled={!startable}>
+            <ThemedButton
+                variant="primary"
+                onPress={onResume ?? (() => onStart(template))}
+                disabled={!onResume && !startable}
+            >
                 <View style={styles.startRow}>
                     <Ionicons name="play" size={16} color={theme.onPrimary} />
-                    <ThemedText variant="cardTitle" tone="onPrimary" style={styles.startLabel}>
-                        START
+                    <ThemedText variant="cardTitle" tone="onPrimary">
+                        {onResume ? 'Resume' : 'Start'}
                     </ThemedText>
                 </View>
             </ThemedButton>
@@ -328,7 +342,7 @@ const Today = () => {
                         <Spacer height={Space.xl} />
                         <ThemedButton onPress={signOut}>
                             <ThemedText variant="cardTitle" tone="onPrimary">
-                                Sign Out
+                                Sign out
                             </ThemedText>
                         </ThemedButton>
                     </>
@@ -346,8 +360,8 @@ const Today = () => {
 
     const eyebrowDate = (() => {
         const now = new Date()
-        const weekday = now.toLocaleDateString('en-US', { weekday: 'long' })
-        const month = now.toLocaleDateString('en-US', { month: 'short' })
+        const weekday = now.toLocaleDateString('en-AU', { weekday: 'long' })
+        const month = SHORT_MONTHS[now.getMonth()]
         return `${weekday} ${now.getDate()} ${month}`.toUpperCase()
     })()
 
@@ -411,6 +425,11 @@ const Today = () => {
                         fromLabel={heroFromLabel}
                         onStart={startPrescribed}
                         disabled={blocked}
+                        onResume={
+                            activeSession && !starting && activeSession.templateId === heroAssignment.templateId
+                                ? () => router.push(`/workouts/session/${activeSession.id}`, SINGLE_SESSION_ROUTE)
+                                : undefined
+                        }
                     />
                 ) : null}
 
@@ -435,10 +454,12 @@ const Today = () => {
 
                 <Pressable
                     onPress={() => setSheetOpen(true)}
-                    style={[styles.somethingElse, { borderColor: theme.lineSoft }]}
+                    // `outline`, not `lineSoft`: at 1.06:1 against the page the
+                    // dashed edge vanished and this read as loose text.
+                    style={[styles.somethingElse, { borderColor: theme.outline }]}
                 >
-                    <Ionicons name="add" size={15} color={theme.iconColor} />
-                    <ThemedText variant="body" tone="muted">
+                    <Ionicons name="add" size={16} color={theme.text} />
+                    <ThemedText variant="body" tone="body">
                         Start, log or plan a workout
                     </ThemedText>
                 </Pressable>
@@ -529,15 +550,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         gap: Space.sm,
     },
-    startLabel: {
-        letterSpacing: 1.2,
-    },
     somethingElse: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         gap: Space.sm,
-        minHeight: 44,
+        minHeight: 48,
         borderWidth: 1,
         borderStyle: 'dashed',
         borderRadius: Radius.card,

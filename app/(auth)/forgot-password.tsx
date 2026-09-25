@@ -12,6 +12,8 @@ import Spacer from '../../components/Spacer'
 import { Space } from '../../constants/Layout'
 import { useAuth } from '../../contexts/AuthContext'
 import { getAuthErrorMessage } from '../../utils/firebaseErrors'
+import { looksLikeEmail } from '../../utils/email'
+import FieldError from '../../components/FieldError'
 
 /**
  * The way back in for someone who mistyped a password once.
@@ -35,8 +37,8 @@ const ForgotPassword = () => {
     const handleSend = async () => {
         setError('')
 
-        if (!email.trim()) {
-            setError('Please enter your email address.')
+        if (!email.trim() || !looksLikeEmail(email)) {
+            setError(email.trim() ? "That doesn't look like an email address." : 'Enter your email.')
             return
         }
 
@@ -52,8 +54,7 @@ const ForgotPassword = () => {
 
     return (
         <ThemedView style={styles.container}>
-            <Spacer />
-            <ThemedText variant="title" tone="title" style={styles.title}>
+            <ThemedText variant="title" tone="title" role="heading">
                 Reset your password
             </ThemedText>
 
@@ -85,25 +86,26 @@ const ForgotPassword = () => {
                     </ThemedText>
 
                     <Spacer height={Space.lg} />
-                    <ThemedText variant="label" tone="muted" style={styles.label}>
+                    <ThemedText variant="meta" tone="muted" style={styles.label}>
                         Email
                     </ThemedText>
                     <ThemedTextInput
+                        accessibilityLabel="Email"
                         value={email}
-                        onChangeText={setEmail}
+                        onChangeText={(text) => {
+                            setEmail(text)
+                            setError('')
+                        }}
                         keyboardType="email-address"
+                        inputMode="email"
+                        autoComplete="email"
                         autoCapitalize="none"
+                        returnKeyType="send"
+                        onSubmitEditing={handleSend}
+                        invalid={Boolean(error)}
                         editable={!submitting}
                     />
-
-                    {error ? (
-                        <>
-                            <Spacer height={Space.lg} />
-                            <ThemedText variant="body" tone="danger">
-                                {error}
-                            </ThemedText>
-                        </>
-                    ) : null}
+                    <FieldError>{error}</FieldError>
 
                     <Spacer height={Space.xl} />
                     <ThemedButton onPress={handleSend} disabled={submitting}>
@@ -117,7 +119,7 @@ const ForgotPassword = () => {
             <Spacer height={Space.xl} />
             <Link href="/login" style={styles.link}>
                 <ThemedText variant="body" tone="accent">
-                    Back to login
+                    Back to log in
                 </ThemedText>
             </Link>
         </ThemedView>
@@ -127,19 +129,16 @@ const ForgotPassword = () => {
 export default ForgotPassword
 
 const styles = StyleSheet.create({
+    // Top- and left-aligned, like the rest of the app.
     container: {
         flex: 1,
-        justifyContent: 'center',
         paddingHorizontal: Space.xl,
-    },
-    title: {
-        textAlign: 'center',
-        marginBottom: Space.sm,
+        paddingTop: 96,
     },
     label: {
         marginBottom: Space.sm,
     },
     link: {
-        textAlign: 'center',
+        paddingVertical: Space.md,
     },
 })

@@ -51,8 +51,14 @@ export const longDateLabel = (date: Date): string =>
  * recognisable at a glance; the numeric `8/29/2026` this replaces reads as one
  * more count on a row that already has two.
  */
-export const shortDateLabel = (date: Date): string =>
-    date.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })
+export const shortDateLabel = (date: Date): string => `${date.getDate()} ${SHORT_MONTHS[date.getMonth()]}`
+
+/**
+ * Three letters, always. Spelled out here rather than asked of the locale:
+ * en-US puts the month first ("Sep 25"), and newer en-AU data says "Sept",
+ * so the app wrote one date three ways depending on the screen.
+ */
+export const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 /**
  * The inverse: local midnight on that day, or null if the box doesn't hold one.

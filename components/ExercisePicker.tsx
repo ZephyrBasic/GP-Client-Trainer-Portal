@@ -371,8 +371,8 @@ const ExercisePicker = ({ visible, onSelect, onClose }) => {
 
                         <Spacer height={Space.xl} />
                         <ThemedButton onPress={handleAdd} disabled={saving}>
-                            <ThemedText variant="label" tone="onPrimary">
-                                {saving ? 'ADDING' : 'ADD TO LIBRARY'}
+                            <ThemedText variant="cardTitle" tone="onPrimary">
+                                {saving ? 'Adding...' : 'Add to library'}
                             </ThemedText>
                         </ThemedButton>
                     </>
@@ -381,7 +381,7 @@ const ExercisePicker = ({ visible, onSelect, onClose }) => {
                         <View
                             style={[
                                 styles.searchWrap,
-                                { backgroundColor: theme.uiBackground, borderColor: theme.line },
+                                { backgroundColor: theme.uiBackground, borderColor: theme.outline },
                             ]}
                         >
                             <Ionicons name="search" size={16} color={theme.iconColor} />
@@ -393,7 +393,10 @@ const ExercisePicker = ({ visible, onSelect, onClose }) => {
                                 autoFocus
                                 autoCorrect={false}
                                 autoCapitalize="none"
-                                style={[Type.body, styles.searchInput, { color: theme.title }]}
+                                accessibilityLabel="Search exercises"
+                                // The pill around it is the field; the browser's
+                                // own square focus box inside it is not.
+                                style={[Type.body, styles.searchInput, { color: theme.title, outlineStyle: 'none' } as object]}
                             />
                         </View>
 
@@ -484,7 +487,7 @@ const ExercisePicker = ({ visible, onSelect, onClose }) => {
                                     <Spacer height={Space.xs + 2} />
                                     <ThemedText variant="small" tone="muted" style={styles.emptyText}>
                                         {!CUSTOM_EXERCISES_ENABLED
-                                            ? 'Try another name - the catalog is the only source of exercises.'
+                                            ? 'Try another name.'
                                             : canAddExercise
                                                 ? 'Add it to the library so your clients can log it.'
                                                 : 'Ask your trainer to add it to the library.'}
@@ -510,11 +513,17 @@ const ExercisePicker = ({ visible, onSelect, onClose }) => {
                                 const equipment = tagValues(item, 'equipment')[0]
                                 const pattern = tagValues(item, 'pattern')[0]
                                 const tagLine = [equipment, pattern].filter(Boolean).map(spaceCase).join(' · ')
-                                const meta = [units, tagLine].filter(Boolean).join('  |  ')
+                                // One separator throughout: "kg · reps | machine" mixed two.
+                                const meta = [units, tagLine].filter(Boolean).join(' · ')
 
                                 return (
+                                    // A checkbox rather than a button: it toggles, and
+                                    // the how-to button inside it can't nest in a button.
                                     <Pressable
                                         onPress={() => toggleSelect(item)}
+                                        accessibilityRole="checkbox"
+                                        accessibilityState={{ checked: isSelected }}
+                                        accessibilityLabel={item.name}
                                         style={[
                                             styles.row,
                                             { backgroundColor: theme.uiBackground },
@@ -538,11 +547,11 @@ const ExercisePicker = ({ visible, onSelect, onClose }) => {
                                                     // does not also mark this row selected.
                                                     <Pressable
                                                         onPress={() => setInfoExercise(item)}
-                                                        hitSlop={14}
                                                         accessibilityRole="button"
                                                         accessibilityLabel={`How to do ${item.name}`}
+                                                        style={styles.howTo}
                                                     >
-                                                        <Ionicons name="play-circle" size={13} color={theme.faint} />
+                                                        <Ionicons name="play-circle" size={20} color={theme.iconColorFocused} />
                                                     </Pressable>
                                                 ) : null}
                                                 {item.isCustom ? (
@@ -583,8 +592,8 @@ const ExercisePicker = ({ visible, onSelect, onClose }) => {
 
                         <View style={[styles.footer, { borderTopColor: theme.lineSoft, backgroundColor: theme.background }]}>
                             <ThemedButton onPress={handleCommit} disabled={!selected}>
-                                <ThemedText variant="label" tone="onPrimary">
-                                    {selected ? 'ADD 1 EXERCISE' : 'ADD EXERCISE'}
+                                <ThemedText variant="cardTitle" tone="onPrimary">
+                                    {selected ? `Add ${selected.name}` : 'Pick an exercise'}
                                 </ThemedText>
                             </ThemedButton>
                         </View>
@@ -820,6 +829,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: Space.xs + 2,
+    },
+    howTo: {
+        width: 36,
+        height: 36,
+        marginVertical: -8,
+        borderRadius: 18,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     rowNameText: {
         flexShrink: 1,

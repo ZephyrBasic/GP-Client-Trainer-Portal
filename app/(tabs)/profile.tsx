@@ -122,7 +122,7 @@ const Profile = () => {
                         <Spacer height={Space.xl} />
                         <ThemedButton onPress={signOut}>
                             <ThemedText variant="cardTitle" tone="onPrimary">
-                                Sign Out
+                                Sign out
                             </ThemedText>
                         </ThemedButton>
                     </>
@@ -224,10 +224,12 @@ const Profile = () => {
                 <ExternalLink href={feedbackHref} label="Send feedback or report a problem" />
                 <LegalLinks style={styles.legal} />
 
+                {/* Outlined, not filled: it was the heaviest thing on the
+                    screen, for the action least wanted by mistake. */}
                 <Spacer height={Space.xl} />
-                <ThemedButton onPress={signOut}>
-                    <ThemedText variant="cardTitle" tone="onPrimary">
-                        Sign Out
+                <ThemedButton variant="ghost" onPress={signOut}>
+                    <ThemedText variant="cardTitle" tone="body">
+                        Sign out
                     </ThemedText>
                 </ThemedButton>
 
