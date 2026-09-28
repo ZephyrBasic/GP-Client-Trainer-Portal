@@ -78,7 +78,8 @@ expect. Non-interactive ones can go through `!`; interactive scripts need a real
   `main` (`npm run build:web`). No manual step. cPanel (VentraIP) hosts only the apex greenpulse.fit.
 - Browser testing: phones use `http://<laptop LAN IP>:8081` (`ipconfig`), never localhost.
   Claude-in-Chrome tabs are hidden, so rAF/timers stall: verify motion by screenshot, swipe via TouchEvents.
-- No ticket files, plan files or spec docs. Put the full spec in the subagent brief.
+- Tickets live in `.claude/tickets/new/` (gitignored) and move to `done/` when shipped. No plan
+  files or spec docs; put the full spec in the subagent brief.
 - Run subagents **one at a time**: they share one working tree and parallel ones collide.
 - Tracked docs live in `docs/`. `.claude/` is disposable tool state, mostly gitignored.
 - Context budget (reset 2026-09-25): this file ≤100 lines; it plus `.claude/rules/`, memory and
