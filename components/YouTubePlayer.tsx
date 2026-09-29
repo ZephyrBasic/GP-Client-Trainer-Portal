@@ -1,8 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
-    Modal, Pressable, StyleSheet, View, useWindowDimensions,
-    type LayoutChangeEvent, type StyleProp, type ViewStyle,
+    Modal,
+    StyleSheet,
+    View,
+    useWindowDimensions,
+    type LayoutChangeEvent,
+    type StyleProp,
+    type ViewStyle,
 } from 'react-native'
+import Pressable from './Touchable'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import * as ScreenOrientation from 'expo-screen-orientation'

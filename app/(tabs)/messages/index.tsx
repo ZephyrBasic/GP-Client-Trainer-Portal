@@ -1,4 +1,5 @@
-import { FlatList, Pressable, StyleSheet } from 'react-native'
+import { FlatList, StyleSheet } from 'react-native'
+import Pressable from '../../../components/Touchable'
 import { useRouter } from 'expo-router'
 
 import ThemedView from '../../../components/ThemedView'

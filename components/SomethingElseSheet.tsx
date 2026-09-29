@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, useColorScheme } from 'react-native'
+import { StyleSheet, useColorScheme } from 'react-native'
+import Pressable from './Touchable'
 
 import BottomSheet from './BottomSheet'
 import ThemedText from './ThemedText'
@@ -57,7 +58,7 @@ const SomethingElseSheet = ({
             // the tap had done nothing at all.
             caption: startDisabled ? 'Finish or discard your open session first' : undefined,
         },
-        { label: 'Log a past workout', onPress: () => act(onLogPastWorkout) },
+        { label: 'Log a past session', onPress: () => act(onLogPastWorkout) },
         { label: 'Create a workout template', onPress: () => act(onSaveOwnWorkout) },
     ]
 

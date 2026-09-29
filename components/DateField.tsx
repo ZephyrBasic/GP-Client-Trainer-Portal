@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
-import { Pressable, StyleSheet, View, useColorScheme } from 'react-native'
+import { useEffect, useState, type Ref } from 'react'
+import { StyleSheet, View, useColorScheme, TextInput } from 'react-native'
+import Pressable from './Touchable'
 import { Ionicons } from '@expo/vector-icons'
 
 import ThemedText from './ThemedText'
+import FieldError from './FieldError'
 import ThemedTextInput from './ThemedTextInput'
 import { Colors } from '../constants/Colors'
 import { Radius, Space } from '../constants/Layout'
@@ -10,6 +12,7 @@ import { FontFamily } from '../constants/Type'
 import {
     DATE_INPUT_FORMAT,
     longDateLabel,
+    maskDateInput,
     parseDateInput,
     toDateInput,
 } from '../utils/dateInput'
@@ -83,11 +86,17 @@ const DateField = ({
     value,
     onChange,
     editable = true,
+    error,
+    inputRef,
 }: {
     /** DD-MM-YYYY as the box holds it, mid-edit included. */
     value: string
     onChange: (value: string) => void
     editable?: boolean
+    /** Set by the caller's save handler; replaces the read-back until the box changes. */
+    error?: string | null
+    /** So a failed save can put the cursor in the box (see .claude/rules/ui.md). */
+    inputRef?: Ref<TextInput>
 }) => {
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
@@ -127,10 +136,14 @@ const DateField = ({
         <View>
             <View style={styles.fieldRow}>
                 <ThemedTextInput
+                    ref={inputRef}
+                    accessibilityLabel="Date"
                     value={value}
-                    onChangeText={onChange}
+                    onChangeText={(text) => onChange(maskDateInput(text))}
                     placeholder={DATE_INPUT_FORMAT}
-                    keyboardType="numbers-and-punctuation"
+                    keyboardType="number-pad"
+                    inputMode="numeric"
+                    autoComplete="off"
                     editable={editable}
                     style={styles.input}
                 />
@@ -160,9 +173,15 @@ const DateField = ({
                 value is unreadable at a glance - 04-09 and 09-04 look alike -
                 so the day is spelled out under it whenever the box holds a real
                 one, and says so plainly when it does not. */}
-            <ThemedText variant="small" tone={selected ? 'muted' : 'amber'} style={styles.readback}>
-                {selected ? longDateLabel(selected) : `Not a date yet — ${DATE_INPUT_FORMAT}`}
-            </ThemedText>
+            {/* Muted while half-typed: that is a state, not an error. Only
+                the save handler turns it red, and says why. */}
+            {error ? (
+                <FieldError>{error}</FieldError>
+            ) : (
+                <ThemedText variant="small" tone="muted" style={styles.readback}>
+                    {selected ? longDateLabel(selected) : `Not a date yet — ${DATE_INPUT_FORMAT}`}
+                </ThemedText>
+            )}
 
             {open ? (
                 <View

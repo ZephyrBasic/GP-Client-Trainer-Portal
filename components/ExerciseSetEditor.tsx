@@ -1,33 +1,39 @@
-import { Pressable, StyleSheet, TextInput, useColorScheme, View } from 'react-native'
+import { StyleSheet, TextInput, useColorScheme, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 
 import Checkbox from './Checkbox'
+import FieldError from './FieldError'
 import SwipeToDelete from './SwipeToDelete'
-import ThemedCard from './ThemedCard'
 import ThemedText from './ThemedText'
+import Pressable from './Touchable'
 import { Colors } from '../constants/Colors'
 import { Radius, Space } from '../constants/Layout'
 import { FontFamily, Type } from '../constants/Type'
 import type { SetField } from '../types/exercise'
-import type { SetDraft } from '../utils/setDraft'
+import { cleanSetInput, setInputKeyboard, type SetDraft } from '../utils/setDraft'
 
-// Column headings, one per measurement. These name their unit
-// where ExerciseInfoModal's chips deliberately don't: a bare number typed into a
-// box is ambiguous in a way a read-only chip isn't.
+// Column headings, one per measurement, naming the unit: a bare number typed
+// into a box is ambiguous in a way a read-only chip isn't. Short, because
+// three of them share a phone's width with a set number and a tick.
 const FIELD_LABELS: Record<SetField, string> = {
     reps: 'Reps',
-    weightKg: 'Weight (kg)',
-    durationSeconds: 'Duration (s)',
-    distanceMeters: 'Distance (m)',
+    weightKg: 'Kg',
+    durationSeconds: 'Secs',
+    distanceMeters: 'Metres',
 }
 
-// The checkbox's own fixed diameter (see components/Checkbox.tsx) - the live
-// row's trailing column has to reserve exactly this much, not a rounder
-// number, so its column head lines up above a circle that never moves.
-const CHECKBOX_WIDTH = 30
+// Said in full to a screen reader, where the short heading has no column to sit in.
+const FIELD_NAMES: Record<SetField, string> = {
+    reps: 'reps',
+    weightKg: 'weight in kg',
+    durationSeconds: 'duration in seconds',
+    distanceMeters: 'distance in metres',
+}
 
-// Between authoring rows - named because a deleted row folds this away too.
-const GRID_GAP = 5
+// The trailing control on every row - the tick live, the remove ✕ otherwise -
+// is a 48px target (see components/Checkbox). The column head row reserves
+// the same width so headings sit over the boxes they name.
+const TRAIL_WIDTH = 48
 
 type Props = {
     /** The Exercise's display name, denormalised by the caller. */
@@ -41,100 +47,64 @@ type Props = {
     editable?: boolean
     /**
      * Sets ticked so far out of this Exercise's own count. Only the live
-     * Session passes this - authoring a Template or logging one after the
-     * fact has nothing to count off yet, which is also why this is a
-     * `{done,total}` pair rather than the pre-joined string it replaced: the
-     * live row needs the two numbers coloured differently, not just printed.
+     * Session passes this; a `{done,total}` pair because the two numbers are
+     * coloured differently.
      */
     progress?: { done: number; total: number }
     /**
-     * Per-Set check-off, parallel to `sets`. Given, each row gains a checkbox
-     * and turns into the live Session's row-per-set view; omitted, no
-     * checkbox column appears at all and the lead shows the Set number
-     * instead - authoring a Template and logging one after the fact have
-     * nothing to tick off, and an always-present column would imply
-     * otherwise.
+     * Per-Set check-off, parallel to `sets`. Given, each row ends in a tick -
+     * the live Session. Omitted, each row ends in a ✕ that removes the Set -
+     * authoring a Template, setting a Client's targets and logging a past
+     * Session, which have nothing to tick off.
      */
     checked?: boolean[]
-    /**
-     * What each Set was prescribed, parallel to `sets` and read only - only
-     * meaningful alongside `checked`. A ticked row compares itself against
-     * its own entry here field by field: matching, it fills with the accent;
-     * differing on any field, it and its checkbox go amber and the departed
-     * figure carries its struck-through target beside it. A row past the
-     * prescribed count - one the Client added by hand - has no entry here
-     * and renders on-target, since there is nothing it could have departed
-     * from. Absent entirely for a Self-Directed Session, where nothing was
-     * prescribed at all.
-     */
-    targets?: SetDraft[]
     onToggleSet?: (setIndex: number) => void
     /**
-     * What the control that drops this Exercise is called. "Remove" while
-     * authoring, and live it is the difference between the two kinds of
-     * Exercise on the screen: a prescribed one is *skipped* (work that was
-     * asked for and not done), one the Client added mid-Session is *deleted*,
-     * since nothing ever asked for it.
+     * What the control that drops this Exercise is called. Live, a prescribed
+     * Exercise is *skipped* (asked for and not done) and one the Client added
+     * is *deleted*; elsewhere it is removed.
      */
     removeLabel?: string
     onChangeSet: (setIndex: number, field: SetField, value: string) => void
     /**
-     * The three that change an Exercise's *shape* rather than its numbers, and
-     * the three that are optional: omit one and its control isn't rendered at
-     * all. Setting a Client's own target loads is the case that needs this -
-     * their numbers are theirs, but how many Sets and which Exercises are the
-     * Template's, shared with everyone else assigned it (ADR 0004). A disabled
-     * "+ Add Set" would imply it might become available; an absent one says
-     * this is not where that is decided.
+     * The three that change an Exercise's *shape* rather than its numbers, all
+     * optional: omit one and its control isn't rendered. Setting a Client's own
+     * target loads needs this - their numbers are theirs, but how many Sets and
+     * which Exercises are the Template's (ADR 0004). An absent control says this
+     * is not where that is decided; a disabled one would imply it might be.
      */
     onAddSet?: () => void
     onRemoveSet?: (setIndex: number) => void
     onRemoveExercise?: () => void
+    /** A save handler's complaint about this Exercise's Sets, drawn under them. */
+    error?: string | null
 }
-
-/** A box read as a number, or null for empty/unparseable - never NaN. */
-const numeric = (value?: string): number | null => {
-    const trimmed = (value ?? '').trim()
-    if (trimmed === '') return null
-    const parsed = Number(trimmed)
-    return Number.isFinite(parsed) ? parsed : null
-}
-
-/**
- * Whether a performed measurement differs from what it was asked to be.
- * Numeric rather than string comparison, so a target and a performed value
- * that happen to be typed differently but mean the same number still match -
- * the live row is read live, off whatever is in the box right now, unlike
- * `compareSession`'s comparison of the final stored numbers.
- */
-const departedField = (performed: string | undefined, target: string | undefined): boolean =>
-    numeric(performed) !== numeric(target)
 
 /**
  * One Exercise and its editable Sets: a column per measurement the Exercise
- * declares, a numbered row per Set, and the controls to add or drop either.
+ * declares, a row per Set, and the controls to add or drop either.
  *
- * It is handed drafts and callbacks rather than a document, and never reaches
- * for a Session or a Workout Template itself - target Sets and performed Sets
- * are the same thing on screen, so the three screens that need this block
- * (manual entry, authoring a Template, performing a Session) own the state and
- * this owns the layout.
+ * Handed drafts and callbacks rather than a document - target Sets and
+ * performed Sets are the same thing on screen, so the four screens that need
+ * this (live Session, manual entry, authoring, a Client's targets) own the
+ * state and this owns the layout.
  *
- * `checked` is the fork in that layout. Absent, this renders the authoring
- * grid every non-live screen shares - a boxed input per measurement, a Set
- * number for a lead, "+ Add Set" and "Remove" as plain links. Present, it
- * renders the live Session's row-per-set view instead: a numbered lead *and*
- * a checkbox, each row its own card, ticked rows lit by the accent or - if
- * they departed from target - by amber. The two views diverge this much
- * because only one of them has a moment to tick anything off in.
+ * One layout for all four. It used to fork: the live Session had Signal's
+ * card-per-Set rows with large numbers, the other three a grid of small boxed
+ * inputs that overflowed a phone (the ✕ ended up off-screen) and looked like a
+ * different app. Now the only difference is the row's trailing control - a
+ * tick live, a ✕ elsewhere - because only the live Session has a moment to
+ * tick anything off in.
  *
- * Only the columns this Exercise declares are drawn either way. A plank has a
- * duration and no weight, so there is no weight column at all: an unused
- * measurement is absent, never a zero, and "no weight" has to stay
- * distinguishable from "lifted 0 kg" on screen as well as in the document.
+ * A changed number is not coloured or compared while the Client trains: a
+ * ticked row is ticked, whatever it says. Whether the Session departed from
+ * the plan is judged once, at completion, and shown on the summary.
  *
- * Values stay strings for as long as they are on screen (see utils/setDraft):
- * a component handing back numbers would have to invent a 0 for an empty box.
+ * Only the columns this Exercise declares are drawn. A plank has no weight
+ * column at all: an unused measurement is absent, never a zero.
+ *
+ * Values stay strings while on screen (see utils/setDraft), and each keystroke
+ * is filtered to digits and one decimal point where the measurement has one.
  */
 const ExerciseSetEditor = ({
     name,
@@ -144,344 +114,174 @@ const ExerciseSetEditor = ({
     editable = true,
     progress,
     checked,
-    targets,
     onToggleSet,
     removeLabel,
     onChangeSet,
     onAddSet,
     onRemoveSet,
     onRemoveExercise,
+    error,
 }: Props) => {
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
-
-    if (checked) {
-        return (
-            <LiveExercise
-                theme={theme}
-                name={name}
-                fields={fields}
-                sets={sets}
-                hint={hint}
-                editable={editable}
-                progress={progress}
-                checked={checked}
-                targets={targets}
-                onToggleSet={onToggleSet}
-                removeLabel={removeLabel}
-                onChangeSet={onChangeSet}
-                onAddSet={onAddSet}
-                onRemoveSet={onRemoveSet}
-                onRemoveExercise={onRemoveExercise}
-            />
-        )
-    }
+    const live = Boolean(checked)
+    const done = progress?.done ?? (checked ?? []).filter(Boolean).length
+    const total = progress?.total ?? sets.length
+    const canRemoveSet = Boolean(onRemoveSet) && editable && sets.length > 1
 
     return (
-        <ThemedCard>
+        <View style={styles.exercise}>
             <View style={styles.headerRow}>
                 <View style={styles.nameWrap}>
-                    <ThemedText variant="cardTitle" tone="title" style={styles.name}>
+                    <ThemedText variant="cardTitle" tone="title" style={styles.name} numberOfLines={2} role="heading">
                         {name}
                     </ThemedText>
                     {hint ? (
-                        <ThemedText variant="meta" tone="muted" style={styles.hint}>
+                        <ThemedText variant="small" tone="muted">
                             {hint}
                         </ThemedText>
                     ) : null}
                 </View>
-                {onRemoveExercise ? (
-                    <Pressable onPress={onRemoveExercise} hitSlop={8} style={styles.removeExercise}>
-                        <ThemedText style={[styles.removeExerciseText, { color: theme.danger }]}>
-                            {removeLabel ?? 'Remove'}
+                {/* Top-aligned with the name rather than centred on the name and
+                    the hint together, which left it floating half a line low. */}
+                {progress ? (
+                    <View style={styles.progress}>
+                        <ThemedText variant="metric" tone={done > 0 ? 'accent' : 'muted'} style={styles.progressDone}>
+                            {done}
                         </ThemedText>
-                    </Pressable>
+                        <ThemedText variant="small" tone="muted"> / {total}</ThemedText>
+                    </View>
                 ) : null}
             </View>
 
-            <View style={styles.grid}>
-                <View style={styles.row}>
-                    {/* An empty cell over the Set-number column, so the
-                        headings sit above the boxes they name. */}
-                    <View style={styles.lead} />
+            <View style={styles.columnHeads}>
+                <View style={styles.lead} />
+                <View style={styles.fieldGrid}>
                     {fields.map((field) => (
-                        <ThemedText key={field} variant="meta" tone="muted" style={styles.columnLabel}>
-                            {FIELD_LABELS[field]}
-                        </ThemedText>
-                    ))}
-                    <View style={styles.trail} />
-                </View>
-
-                {sets.map((set, setIndex) => (
-                    // The ✕ stays beside the swipe: it is the control a mouse,
-                    // a keyboard and a first-time author can all find.
-                    <SwipeToDelete
-                        key={setIndex}
-                        enabled={Boolean(onRemoveSet) && sets.length > 1}
-                        onDelete={() => onRemoveSet?.(setIndex)}
-                        accessibilityLabel={`Set ${setIndex + 1}`}
-                        collapseGap={GRID_GAP}
-                    >
-                        <View style={[styles.row, { backgroundColor: theme.uiBackground }]}>
-                            <View style={styles.lead}>
-                                <ThemedText variant="meta" tone="muted" style={styles.setNumber}>
-                                    {setIndex + 1}
-                                </ThemedText>
-                            </View>
-
-                            {fields.map((field) => (
-                                <TextInput
-                                    key={field}
-                                    value={set[field] ?? ''}
-                                    onChangeText={(text) => onChangeSet(setIndex, field, text)}
-                                    keyboardType="numeric"
-                                    editable={editable}
-                                    selectTextOnFocus={true}
-                                    style={[
-                                        styles.box,
-                                        {
-                                            backgroundColor: theme.background,
-                                            borderColor: theme.line,
-                                            color: theme.title,
-                                        },
-                                    ]}
-                                />
-                            ))}
-
-                            {/* The last Set keeps no ✕: an Exercise down to zero Sets
-                                is removed as an Exercise. */}
-                            {onRemoveSet && sets.length > 1 ? (
-                                <Pressable
-                                    onPress={() => onRemoveSet(setIndex)}
-                                    hitSlop={8}
-                                    style={styles.trail}
-                                >
-                                    <ThemedText style={{ color: theme.danger }}>✕</ThemedText>
-                                </Pressable>
-                            ) : (
-                                <View style={styles.trail} />
-                            )}
-                        </View>
-                    </SwipeToDelete>
-                ))}
-            </View>
-
-            {onAddSet ? (
-                <Pressable onPress={onAddSet} hitSlop={8} style={styles.addSet}>
-                    <ThemedText style={[styles.addSetText, { color: theme.iconColorFocused }]}>
-                        + Add set
-                    </ThemedText>
-                </Pressable>
-            ) : null}
-        </ThemedCard>
-    )
-}
-
-export default ExerciseSetEditor
-
-/**
- * The live Session's own render path - see the module comment for why this is
- * a fork rather than a handful of conditionals threaded through one return.
- *
- * No outer card: Signal draws the whole stack as one scroll of exercises, each
- * a bare heading and its rows, so a card here would be a border around a
- * border once the screen wraps its own around the raised parts of the page.
- * Each Set row carries its own instead.
- */
-const LiveExercise = ({
-    theme,
-    name,
-    fields,
-    sets,
-    hint,
-    editable,
-    progress,
-    checked,
-    targets,
-    onToggleSet,
-    removeLabel,
-    onChangeSet,
-    onAddSet,
-    onRemoveSet,
-    onRemoveExercise,
-}: {
-    theme: (typeof Colors)['dark']
-    name: string
-    fields: SetField[]
-    sets: SetDraft[]
-    hint?: string
-    editable: boolean
-    progress?: { done: number; total: number }
-    checked: boolean[]
-    targets?: SetDraft[]
-    onToggleSet?: (setIndex: number) => void
-    removeLabel?: string
-    onChangeSet: (setIndex: number, field: SetField, value: string) => void
-    onAddSet?: () => void
-    onRemoveSet?: (setIndex: number) => void
-    onRemoveExercise?: () => void
-}) => {
-    const done = progress?.done ?? checked.filter(Boolean).length
-    const total = progress?.total ?? sets.length
-
-    return (
-        <View style={styles.liveExercise}>
-            <View style={styles.liveHeaderRow}>
-                <View style={styles.liveNameWrap}>
-                    <ThemedText variant="heading" tone="title" numberOfLines={2}>
-                        {name}
-                    </ThemedText>
-                    {hint ? (
-                        <ThemedText variant="small" tone="muted" style={styles.liveHint}>
-                            {hint}
-                        </ThemedText>
-                    ) : null}
-                </View>
-                <View style={styles.liveProgress}>
-                    <ThemedText variant="metric" tone={done > 0 ? 'accent' : 'muted'}>
-                        {done}
-                    </ThemedText>
-                    <ThemedText variant="small" tone="muted"> / {total}</ThemedText>
-                </View>
-            </View>
-
-            <View style={styles.liveColumnHeads}>
-                <View style={styles.liveLead} />
-                <View style={styles.liveFieldGrid}>
-                    {fields.map((field) => (
-                        <ThemedText key={field} variant="micro" tone="faint" style={styles.liveColumnHead}>
+                        <ThemedText key={field} variant="micro" tone="muted" style={styles.columnHead} numberOfLines={1}>
                             {FIELD_LABELS[field]}
                         </ThemedText>
                     ))}
                 </View>
-                <View style={styles.liveTrail} />
+                <View style={styles.trail} />
             </View>
 
-            <View style={styles.liveRows}>
+            <View style={styles.rows}>
                 {sets.map((set, setIndex) => {
-                    const isChecked = checked[setIndex] === true
-                    const targetSet = targets?.[setIndex]
-                    // Only a ticked row with an actual target to measure
-                    // against can have departed from one - an untouched row
-                    // isn't a claim yet, and a Set past the prescribed count
-                    // has nothing to compare to.
-                    const departedFields = isChecked && targetSet
-                        ? fields.filter((field) => departedField(set[field], targetSet[field]))
-                        : []
-                    const departed = departedFields.length > 0
-                    const edgeColor = departed ? theme.amber : theme.iconColorFocused
+                    const isChecked = checked?.[setIndex] === true
 
                     return (
-                        // Swiped away rather than given a ✕: a row per Set is
-                        // already full, and the last one stays - an Exercise
-                        // down to nothing is skipped with its own pill below.
+                        // Swipe stays as a shortcut; the ✕ (or, live, the Skip
+                        // button below) is the control anyone can find.
                         <SwipeToDelete
                             key={setIndex}
-                            enabled={Boolean(onRemoveSet) && editable && sets.length > 1}
+                            enabled={canRemoveSet}
                             onDelete={() => onRemoveSet?.(setIndex)}
                             accessibilityLabel={`Set ${setIndex + 1}`}
                             collapseGap={Space.sm}
                         >
                             <View
                                 style={[
-                                    styles.liveRow,
+                                    styles.row,
                                     isChecked
-                                        ? [
-                                              styles.liveRowTicked,
-                                              { backgroundColor: theme.uiBackground, borderLeftColor: edgeColor },
-                                          ]
-                                        : [
-                                              styles.liveRowUnticked,
-                                              { backgroundColor: theme.navBackground, borderColor: theme.lineSoft },
-                                          ],
+                                        ? [styles.rowTicked, { backgroundColor: theme.uiBackground, borderLeftColor: theme.iconColorFocused }]
+                                        : [styles.rowUnticked, { backgroundColor: theme.uiBackground, borderColor: theme.line }],
                                 ]}
                             >
-                                {/* TOKENS.md: Space Grotesk is "every heading,
-                                    every number" - the Set index is a number, so
-                                    it takes the heading family even at body size. */}
-                                <ThemedText
-                                    variant="small"
-                                    tone="faint"
-                                    style={[styles.liveLead, styles.tabular, styles.numeralFont]}
-                                >
+                                <ThemedText variant="small" tone="muted" style={[styles.lead, styles.tabular, styles.numeralFont]}>
                                     {setIndex + 1}
                                 </ThemedText>
 
-                                <View style={styles.liveFieldGrid}>
+                                <View style={styles.fieldGrid}>
                                     {fields.map((field) => {
-                                        const fieldDeparted = departedFields.includes(field)
-                                        const target = targetSet?.[field]
                                         return (
-                                            <View key={field} style={styles.liveValueCell}>
+                                            <View key={field} style={styles.valueCell}>
                                                 <TextInput
                                                     value={set[field] ?? ''}
-                                                    onChangeText={(text) => onChangeSet(setIndex, field, text)}
-                                                    keyboardType="numeric"
+                                                    onChangeText={(text) => onChangeSet(setIndex, field, cleanSetInput(field, text))}
+                                                    keyboardType={setInputKeyboard(field)}
+                                                    // Explicit for the web, and autofill off: iOS
+                                                    // was offering saved cards over a reps box.
+                                                    inputMode={setInputKeyboard(field) === 'decimal-pad' ? 'decimal' : 'numeric'}
+                                                    autoComplete="off"
+                                                    autoCorrect={false}
                                                     editable={editable}
                                                     selectTextOnFocus
-                                                    // Never "0": an unrecorded
-                                                    // measurement is absent, and a
-                                                    // dash says so without looking
+                                                    accessibilityLabel={`Set ${setIndex + 1}, ${FIELD_NAMES[field]}`}
+                                                    // Never "0": an unrecorded measurement is
+                                                    // absent, and a dash says so without looking
                                                     // like a value that was typed.
                                                     placeholder="—"
                                                     placeholderTextColor={theme.faint}
                                                     style={[
                                                         Type.metric,
-                                                        styles.liveValueInput,
+                                                        styles.valueInput,
                                                         {
-                                                            color: fieldDeparted
-                                                                ? theme.amber
-                                                                : isChecked
-                                                                  ? theme.title
-                                                                  : theme.iconColor,
+                                                            borderBottomColor: theme.lineSoft,
+                                                            // Unticked values are real, editable
+                                                            // numbers - body ink, not the mid-grey
+                                                            // that read as disabled.
+                                                            color: isChecked || !live ? theme.title : theme.text,
                                                         },
                                                     ]}
                                                 />
-                                                {fieldDeparted && target ? (
-                                                    <ThemedText
-                                                        variant="small"
-                                                        tone="muted"
-                                                        style={styles.liveTargetStrike}
-                                                    >
-                                                        {target}
-                                                    </ThemedText>
-                                                ) : null}
                                             </View>
                                         )
                                     })}
                                 </View>
 
-                                <Checkbox
-                                    value={isChecked}
-                                    onPress={() => onToggleSet?.(setIndex)}
-                                    disabled={!editable}
-                                    tone={departed ? 'amber' : 'accent'}
-                                />
+                                {live ? (
+                                    <Checkbox
+                                        value={isChecked}
+                                        onPress={() => onToggleSet?.(setIndex)}
+                                        disabled={!editable}
+                                        label={`Set ${setIndex + 1} done`}
+                                    />
+                                ) : canRemoveSet ? (
+                                    <Pressable
+                                        onPress={() => onRemoveSet?.(setIndex)}
+                                        accessibilityLabel={`Remove set ${setIndex + 1}`}
+                                        style={styles.removeSet}
+                                    >
+                                        <Ionicons name="close" size={20} color={theme.iconColor} />
+                                    </Pressable>
+                                ) : (
+                                    // The last Set keeps no ✕: an Exercise down to
+                                    // zero Sets is removed as an Exercise.
+                                    <View style={styles.trail} />
+                                )}
                             </View>
                         </SwipeToDelete>
                     )
                 })}
             </View>
 
+            <FieldError>{error}</FieldError>
+
+            {/* Add set is the everyday action and gets the pill. Dropping the
+                whole Exercise is a smaller text button set apart at the right,
+                not a twin pill beside it - grouped equals read as equally safe. */}
             {onAddSet || onRemoveExercise ? (
-                <View style={styles.livePillRow}>
+                <View style={styles.footer}>
                     {onAddSet ? (
                         <Pressable
                             onPress={onAddSet}
                             disabled={!editable}
-                            style={[styles.livePill, { backgroundColor: theme.uiBackground, borderColor: theme.line }]}
+                            style={[styles.addSet, { borderColor: theme.outline }]}
                         >
-                            <Ionicons name="add" size={13} color={theme.text} />
-                            <ThemedText variant="small" tone="body">Add set</ThemedText>
+                            <Ionicons name="add" size={16} color={theme.text} />
+                            <ThemedText variant="meta" tone="body">
+                                Add set
+                            </ThemedText>
                         </Pressable>
-                    ) : null}
+                    ) : (
+                        <View style={styles.spacer} />
+                    )}
                     {onRemoveExercise ? (
-                        <Pressable
-                            onPress={onRemoveExercise}
-                            disabled={!editable}
-                            style={[styles.livePill, { backgroundColor: theme.uiBackground, borderColor: theme.line }]}
-                        >
-                            <ThemedText variant="small" tone="body">{removeLabel ?? 'Skip exercise'}</ThemedText>
+                        <Pressable onPress={onRemoveExercise} disabled={!editable} style={styles.removeExercise}>
+                            <ThemedText variant="meta" tone="muted">
+                                {removeLabel ?? 'Remove exercise'}
+                            </ThemedText>
                         </Pressable>
                     ) : null}
                 </View>
@@ -490,168 +290,127 @@ const LiveExercise = ({
     )
 }
 
-const styles = StyleSheet.create({
-    headerRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-    },
-    nameWrap: {
-        flex: 1,
-    },
-    name: {
-        fontSize: 14,
-        fontWeight: '600',
-    },
-    hint: {
-        fontSize: 11,
-        marginTop: 1,
-    },
-    removeExercise: {
-        marginLeft: 2,
-    },
-    removeExerciseText: {
-        fontSize: 12,
-        fontWeight: '600',
-    },
-    grid: {
-        marginTop: 8,
-        gap: GRID_GAP,
-    },
-    row: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-    },
-    lead: {
-        width: 20,
-        alignItems: 'center',
-    },
-    trail: {
-        width: 18,
-        alignItems: 'center',
-    },
-    setNumber: {
-        fontSize: 11,
-    },
-    columnLabel: {
-        flex: 1,
-        fontSize: 10,
-        letterSpacing: 0.7,
-        textTransform: 'uppercase',
-    },
-    box: {
-        flex: 1,
-        borderWidth: 1,
-        borderRadius: 5,
-        paddingVertical: 6,
-        paddingHorizontal: 7,
-        fontSize: 13,
-        textAlign: 'center',
-        fontVariant: ['tabular-nums'],
-    },
-    addSet: {
-        marginTop: 9,
-    },
-    addSetText: {
-        fontSize: 12,
-        fontWeight: '600',
-    },
+export default ExerciseSetEditor
 
-    // Live Session rows.
-    liveExercise: {
+const styles = StyleSheet.create({
+    exercise: {
         gap: Space.md,
     },
-    liveHeaderRow: {
+    headerRow: {
         flexDirection: 'row',
-        alignItems: 'flex-end',
+        alignItems: 'flex-start',
         justifyContent: 'space-between',
         gap: Space.md,
     },
-    liveNameWrap: {
+    nameWrap: {
         flex: 1,
         gap: Space.xs,
     },
-    liveHint: {
-        marginTop: 0,
+    name: {
+        fontSize: 17,
     },
-    liveProgress: {
+    progress: {
         flexDirection: 'row',
         alignItems: 'baseline',
     },
-    liveColumnHeads: {
+    progressDone: {
+        lineHeight: 24,
+    },
+    columnHeads: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: Space.sm,
         paddingHorizontal: Space.md,
     },
-    // The Set-number column and the checkbox column, held to the same widths
-    // in the head row and every Set row below it so the headings line up
-    // above boxes that never move.
-    liveLead: {
+    // The Set-number column and the trailing column, held to the same widths
+    // in the head row and every Set row so headings line up above the boxes.
+    lead: {
         width: Space.xl,
     },
-    liveTrail: {
-        width: CHECKBOX_WIDTH,
+    trail: {
+        width: TRAIL_WIDTH,
     },
-    liveFieldGrid: {
+    fieldGrid: {
         flex: 1,
+        minWidth: 0,
         flexDirection: 'row',
         gap: Space.sm,
     },
-    liveColumnHead: {
+    columnHead: {
         flex: 1,
     },
-    liveRows: {
+    rows: {
         gap: Space.sm,
     },
-    liveRow: {
+    row: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: Space.sm,
-        padding: Space.md,
+        paddingLeft: Space.md,
+        paddingVertical: Space.xs,
     },
-    liveRowUnticked: {
+    rowUnticked: {
         borderWidth: 1,
         borderRadius: Radius.card,
     },
-    // Ticked, on target or departed: a flat left edge and a rounded right
-    // side, so the accent (or amber) reads as a rail rather than a border.
-    liveRowTicked: {
+    // Ticked: a flat left rail and a rounded right side, so the accent (or
+    // amber) reads as a rail rather than a border.
+    rowTicked: {
         borderLeftWidth: 2,
         borderTopRightRadius: Radius.card,
         borderBottomRightRadius: Radius.card,
     },
-    liveValueCell: {
+    valueCell: {
         flex: 1,
+        minWidth: 0,
+        flexDirection: 'row',
+        alignItems: 'baseline',
+        gap: Space.xs,
     },
-    liveValueInput: {
-        padding: 0,
+    // A quiet underline says "you can type here" on every row, ticked or not.
+    valueInput: {
+        flex: 1,
+        minWidth: 0,
+        paddingVertical: Space.xs,
+        paddingHorizontal: 0,
+        borderBottomWidth: 1,
         textAlign: 'left',
     },
-    liveTargetStrike: {
-        textDecorationLine: 'line-through',
-        marginTop: 1,
+    removeSet: {
+        width: TRAIL_WIDTH,
+        height: TRAIL_WIDTH,
+        borderRadius: Radius.pill,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    livePillRow: {
+    footer: {
         flexDirection: 'row',
-        gap: Space.sm,
+        alignItems: 'center',
+        gap: Space.lg,
     },
-    livePill: {
+    addSet: {
         flex: 1,
-        minHeight: 44,
+        minHeight: 48,
         borderWidth: 1,
         borderRadius: Radius.pill,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: Space.xs + 3,
+        gap: Space.xs,
+    },
+    spacer: {
+        flex: 1,
+    },
+    removeExercise: {
+        minHeight: 48,
+        paddingHorizontal: Space.md,
+        borderRadius: Radius.pill,
+        justifyContent: 'center',
     },
     tabular: {
         fontVariant: ['tabular-nums'],
     },
-    // Overrides a Plex-based variant's fontFamily back to Space Grotesk, for a
-    // number sitting at body size rather than one of the heading tokens.
+    // Space Grotesk is "every heading, every number" (TOKENS.md).
     numeralFont: {
         fontFamily: FontFamily.heading,
     },

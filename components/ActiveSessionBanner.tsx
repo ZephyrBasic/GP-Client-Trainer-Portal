@@ -38,10 +38,10 @@ const LEFT_OPEN_AFTER_SECONDS = 60 * 60
  * Client mid-workout that they forgot something is both wrong and alarming.
  *
  * The whole banner changes with it. In progress is drawn in the accent, which
- * says "fine" and is true; left open is amber - the same "worth a look" the
- * Modified verdict uses, and deliberately not `warning`, because nothing has
- * gone wrong and nothing is lost. There is just a decision waiting, and it is
- * blocking every other workout until it is made.
+ * says "fine" and is true; left open is neutral grey - not amber, which means
+ * Modified and nothing else (UI review, issue 14), and not red, because
+ * nothing has gone wrong and nothing is lost. There is just a decision
+ * waiting, and the heading says so.
  */
 const ActiveSessionBanner = ({ session, onResume, onDiscard, discarding }: Props) => {
     const colorScheme = useColorScheme()
@@ -52,8 +52,8 @@ const ActiveSessionBanner = ({ session, onResume, onDiscard, discarding }: Props
 
     const elapsed = elapsedSecondsBetween(session.startedAt?.toMillis?.())
     const stale = elapsed >= LEFT_OPEN_AFTER_SECONDS
-    const accent = stale ? theme.amber : theme.iconColorFocused
-    const tint = stale ? theme.amberTint : theme.accentTint
+    const accent = stale ? theme.iconColor : theme.iconColorFocused
+    const tint = stale ? theme.mutedTint : theme.accentTint
     // A Self-Directed Session has no Template name to give, so it says what it
     // is rather than borrowing a heading it never had.
     const name = session.templateName || 'Session without a plan'
@@ -77,10 +77,12 @@ const ActiveSessionBanner = ({ session, onResume, onDiscard, discarding }: Props
                             Resume
                         </ThemedText>
                     </ThemedButton>
+                    {/* Narrow and outlined, not Resume's twin: the two used to be
+                        equal halves of one row, which read as equally safe. */}
                     <ThemedButton
                         variant="danger"
                         onPress={() => setConfirming(true)}
-                        style={styles.action}
+                        style={styles.discard}
                     >
                         <ThemedText variant="small" style={[styles.label, { color: buttonTextColor('danger', theme) }]}>
                             Discard
@@ -149,6 +151,10 @@ const styles = StyleSheet.create({
     action: {
         flex: 1,
         padding: Space.sm,
+    },
+    discard: {
+        width: 'auto',
+        paddingHorizontal: Space.xl,
     },
     label: {
         fontWeight: '600',

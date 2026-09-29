@@ -1,4 +1,6 @@
-import { Pressable, StyleSheet, View, useColorScheme } from 'react-native'
+import { StyleSheet, View, useColorScheme } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import Pressable from './Touchable'
 
 import ThemedText from './ThemedText'
 import { Colors } from '../constants/Colors'
@@ -26,16 +28,26 @@ const PlanPill = ({
     const theme = Colors[colorScheme] ?? Colors.light
 
     return (
-        <Pressable onPress={onPress} disabled={disabled}>
+        // A choice chip: a pill like every other chip in the app (these were
+        // the one rounded rectangle), with a tick when chosen, so it reads as
+        // "pick one" rather than as a button.
+        <Pressable
+            onPress={onPress}
+            disabled={disabled}
+            accessibilityRole="radio"
+            accessibilityState={{ checked: selected, disabled }}
+            style={styles.pillHit}
+        >
             <View
                 style={[
                     styles.pill,
                     selected
                         ? { backgroundColor: theme.accentTint, borderColor: theme.iconColorFocused }
-                        : { backgroundColor: 'transparent', borderColor: theme.line },
+                        : { backgroundColor: 'transparent', borderColor: theme.outline },
                     disabled && styles.pillDisabled,
                 ]}
             >
+                {selected ? <Ionicons name="checkmark" size={14} color={theme.iconColorFocused} /> : null}
                 <ThemedText
                     style={[
                         styles.pillText,
@@ -130,7 +142,7 @@ const WorkoutPlanPicker = ({
 
     return (
         <View>
-            <ThemedText style={styles.label}>Which workout was this?</ThemedText>
+            <ThemedText style={styles.label}>Which workout template was this?</ThemedText>
             <View style={styles.pills}>
                 <PlanPill
                     label="No plan"
@@ -173,17 +185,23 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         gap: 8,
     },
+    pillHit: {
+        borderRadius: 999,
+    },
     pill: {
-        paddingHorizontal: 11,
-        paddingVertical: 6,
-        borderRadius: 6,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+        minHeight: 40,
+        paddingHorizontal: 14,
+        borderRadius: 999,
         borderWidth: 1,
     },
     pillDisabled: {
         opacity: 0.5,
     },
     pillText: {
-        fontSize: 12,
+        fontSize: 13,
         fontWeight: '600',
     },
 })

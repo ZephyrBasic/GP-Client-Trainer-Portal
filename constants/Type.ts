@@ -42,14 +42,20 @@ export const useSignalFonts = () =>
 // figures sit in a column (a heading, a date) takes tabular-nums at the call
 // site instead, since that need is about the layout, not the token.
 export const Type: Record<string, TextStyle> = {
-    display: { fontFamily: FontFamily.heading, fontSize: 33, letterSpacing: -0.99 },
-    title: { fontFamily: FontFamily.heading, fontSize: 26, letterSpacing: -0.52 },
-    heading: { fontFamily: FontFamily.heading, fontSize: 24, letterSpacing: -0.72 },
-    metric: { fontFamily: FontFamily.heading, fontSize: 21, fontVariant: ['tabular-nums'] },
+    // A notch under the artboards (33/26/24/21), for a slightly more compact
+    // screen - asked for after the UI review.
+    display: { fontFamily: FontFamily.heading, fontSize: 30, letterSpacing: -0.9 },
+    title: { fontFamily: FontFamily.heading, fontSize: 24, letterSpacing: -0.48 },
+    heading: { fontFamily: FontFamily.heading, fontSize: 22, letterSpacing: -0.66 },
+    metric: { fontFamily: FontFamily.heading, fontSize: 20, fontVariant: ['tabular-nums'] },
     cardTitle: { fontFamily: FontFamily.heading, fontSize: 16, letterSpacing: -0.24 },
     body: { fontFamily: FontFamily.body, fontSize: 13 },
     meta: { fontFamily: FontFamily.body, fontSize: 12 },
-    small: { fontFamily: FontFamily.body, fontSize: 11 },
-    label: { fontFamily: FontFamily.label, fontSize: 10, letterSpacing: 1.4, textTransform: 'uppercase' },
-    micro: { fontFamily: FontFamily.label, fontSize: 9, letterSpacing: 1.08, textTransform: 'uppercase' },
+    // 12, not the artboards' 11: this carries real data (history meta,
+    // performed Sets), and Material's floor for body text is 12.
+    small: { fontFamily: FontFamily.body, fontSize: 12 },
+    // Nothing below 11 (Material's label-small). The artboards' 10 and 9
+    // were unreadable in the faint grey these usually take.
+    label: { fontFamily: FontFamily.label, fontSize: 11, letterSpacing: 1.54, textTransform: 'uppercase' },
+    micro: { fontFamily: FontFamily.label, fontSize: 11, letterSpacing: 1.1, textTransform: 'uppercase' },
 }

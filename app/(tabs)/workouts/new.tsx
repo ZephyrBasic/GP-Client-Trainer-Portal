@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { ScrollView, StyleSheet, TextInput, View, useColorScheme } from 'react-native'
+import Pressable from '../../../components/Touchable'
 import { Ionicons } from '@expo/vector-icons'
 
 import ThemedView from '../../../components/ThemedView'
@@ -11,6 +12,8 @@ import ScreenEnter from '../../../components/ScreenEnter'
 import Spacer from '../../../components/Spacer'
 import SectionLabel from '../../../components/SectionLabel'
 import DateField from '../../../components/DateField'
+import FieldError from '../../../components/FieldError'
+import { showToast } from '../../../components/Toast'
 import ExercisePicker from '../../../components/ExercisePicker'
 import ExerciseSetEditor from '../../../components/ExerciseSetEditor'
 import WorkoutPlanPicker from '../../../components/WorkoutPlanPicker'
@@ -19,14 +22,16 @@ import { Radius, Space, SCREEN_PADDING } from '../../../constants/Layout'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useAssignment, useClientAssignments } from '../../../hooks/useAssignments'
 import { draftsFrom, useExerciseDraft } from '../../../hooks/useExerciseDraft'
+import { useConfirmLeave } from '../../../hooks/useConfirmLeave'
 import { useLeave } from '../../../hooks/useLeave'
 import { useOffline } from '../../../hooks/useOffline'
 import { createManualSession, useSessions } from '../../../hooks/useSessions'
 import { useTemplateVersion, useWorkoutTemplates } from '../../../hooks/useWorkoutTemplates'
-import { DATE_INPUT_FORMAT, toDateInput, parseDateInput } from '../../../utils/dateInput'
-import { minutesFromSeconds, parseDurationInput } from '../../../utils/elapsed'
+import { toDateInput, parseDateInput, sessionDateError } from '../../../utils/dateInput'
+import { durationError, maskDurationInput, minutesFromSeconds, parseDurationInput } from '../../../utils/elapsed'
 import { buildExerciseHistory, prefillSetsFor, previousSetSummary } from '../../../utils/exerciseHistory'
 import { targetSummary } from '../../../utils/formatSet'
+import AddButton from '../../../components/AddButton'
 import { compareSession, resolveTargets } from '../../../utils/prescription'
 import { emptySetDraft, hasMeasurement, setDraftFrom, storedSetFrom } from '../../../utils/setDraft'
 
@@ -111,8 +116,17 @@ const LogWorkout = () => {
     const [duration, setDuration] = useState('')
     const [notes, setNotes] = useState('')
     const [pickerOpen, setPickerOpen] = useState(false)
-    const [error, setError] = useState('')
+    // One slot per field, drawn under the box it is about (.claude/rules/ui.md).
+    const [errors, setErrors] = useState<{ form?: string; exercises?: string; duration?: string; date?: string }>({})
+    const clearError = (field: 'form' | 'exercises' | 'duration' | 'date') =>
+        setErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev))
     const [saving, setSaving] = useState(false)
+    const scrollRef = useRef<ScrollView>(null)
+    const durationRef = useRef<TextInput>(null)
+    const dateRef = useRef<TextInput>(null)
+    // Where the Exercises section starts, so a save refused for having none
+    // can bring it into view - there is no box there to focus.
+    const exercisesY = useRef(0)
 
     const { exercises, setExercises, pickExercise, updateSet, addSet, removeSet, removeExercise } =
         useExerciseDraft([], (exercise, fields) => {
@@ -163,7 +177,7 @@ const LogWorkout = () => {
     }, [targets, plan, filledFrom])
 
     const choosePlan = (template) => {
-        setError('')
+        clearError('exercises')
         // Changing the plan replaces the rows, because they were the previous
         // plan's targets rather than anything the Client typed - and the moment
         // to pick a workout is before filling one in.
@@ -180,14 +194,16 @@ const LogWorkout = () => {
         )
     }
 
+    const dirty = exercises.length > 0 || Boolean(notes.trim()) || Boolean(duration.trim())
+    const { allowLeave } = useConfirmLeave(dirty, 'Discard this session?', "What you've entered hasn't been saved.")
+
     const handlePickExercise = (exercise) => {
         setPickerOpen(false)
         pickExercise(exercise)
+        clearError('exercises')
     }
 
     const handleSave = async () => {
-        setError('')
-
         const cleanedExercises = exercises
             .map((ex) => ({
                 exerciseId: ex.exerciseId,
@@ -199,25 +215,21 @@ const LogWorkout = () => {
             }))
             .filter((ex) => ex.sets.length > 0)
 
-        if (cleanedExercises.length === 0) {
-            setError('Add at least one exercise with a completed set.')
-            return
+        // Every problem at once, in the order they sit on screen, and the
+        // first bad box focused. Blank duration is fine: it saves as
+        // unrecorded rather than as a workout that took no time.
+        const found = {
+            date: sessionDateError(date) ?? undefined,
+            duration: durationError(duration) ?? undefined,
+            exercises: cleanedExercises.length === 0 ? 'Add at least one exercise with a set filled in.' : undefined,
         }
+        setErrors(found)
+        if (found.date) return dateRef.current?.focus()
+        if (found.duration) return durationRef.current?.focus()
+        if (found.exercises) return scrollRef.current?.scrollTo({ y: Math.max(0, exercisesY.current - Space.lg), animated: true })
 
         const parsedDate = parseDateInput(date)
-        if (!parsedDate) {
-            setError(`Enter a valid date (${DATE_INPUT_FORMAT}).`)
-            return
-        }
-
-        // Held to the same standard as the date above it, rather than coerced:
-        // blank means the duration wasn't recorded, and anything else in the box
-        // has to be a real length of time.
         const parsedSeconds = parseDurationInput(duration)
-        if (parsedSeconds === undefined) {
-            setError('Enter a duration as minutes and seconds (4:30), or leave it blank.')
-            return
-        }
 
         setSaving(true)
         try {
@@ -244,9 +256,11 @@ const LogWorkout = () => {
                 // did not compare rather than compared and found nothing to say.
                 comparison: compareSession(cleanedExercises, targets),
             })
+            allowLeave()
             leave()
+            showToast('Session saved')
         } catch (err) {
-            setError(err.message || 'Failed to save workout.')
+            setErrors({ form: err.message || 'Failed to save this session.' })
             setSaving(false)
         }
     }
@@ -260,7 +274,7 @@ const LogWorkout = () => {
     return (
         <ThemedView style={styles.container}>
             <ScreenEnter play={fromToday}>
-                <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+                <ScrollView ref={scrollRef} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
                     <OfflineBanner visible={offline} onRetry={retry} />
 
                     {/* First, because it decides what the rest of the form is
@@ -276,25 +290,47 @@ const LogWorkout = () => {
                     {assignments.length > 0 || ownTemplates.length > 0 ? <Spacer height={Space.lg} /> : null}
 
                     <ThemedText variant="meta" tone="muted" style={styles.label}>Date</ThemedText>
-                    <DateField value={date} onChange={setDate} editable={!saving} />
+                    <DateField
+                        value={date}
+                        onChange={(text) => {
+                            setDate(text)
+                            clearError('date')
+                        }}
+                        editable={!saving}
+                        error={errors.date}
+                        inputRef={dateRef}
+                    />
 
                     <Spacer height={Space.lg} />
                     <ThemedText variant="meta" tone="muted" style={styles.label}>Duration</ThemedText>
                     {/* By hand, because no timer ran. Blank saves as unrecorded
                         rather than as a workout that took no time. */}
                     <ThemedTextInput
+                        ref={durationRef}
+                        accessibilityLabel="Duration"
                         value={duration}
-                        onChangeText={setDuration}
-                        placeholder="4:30"
-                        keyboardType="numbers-and-punctuation"
+                        onChangeText={(text) => {
+                            setDuration(maskDurationInput(text))
+                            clearError('duration')
+                        }}
+                        placeholder="mm:ss"
+                        keyboardType="number-pad"
+                        inputMode="numeric"
+                        autoComplete="off"
                         editable={!saving}
                     />
-                    <ThemedText variant="small" tone="muted" style={styles.hint}>
-                        Minutes and seconds, as 4:30. A plain number is read as minutes.
-                    </ThemedText>
+                    {errors.duration ? (
+                        <FieldError>{errors.duration}</FieldError>
+                    ) : (
+                        <ThemedText variant="small" tone="muted" style={styles.hint}>
+                            Minutes and seconds, as 45:00. A plain number is read as minutes.
+                        </ThemedText>
+                    )}
 
                     <Spacer height={Space.xl} />
-                    <SectionLabel>EXERCISES</SectionLabel>
+                    <View onLayout={(e) => (exercisesY.current = e.nativeEvent.layout.y)}>
+                        <SectionLabel>EXERCISES</SectionLabel>
+                    </View>
 
                     {planPending ? (
                         <>
@@ -329,7 +365,7 @@ const LogWorkout = () => {
 
                     {exercises.map((exercise, exIndex) => (
                         <View key={`${exercise.exerciseId}-${exIndex}`}>
-                            <Spacer height={Space.md} />
+                            <Spacer height={Space.xl} />
                             <ExerciseSetEditor
                                 name={exercise.name}
                                 fields={exercise.fields}
@@ -344,19 +380,13 @@ const LogWorkout = () => {
                         </View>
                     ))}
 
-                    <Spacer height={Space.md} />
+                    <Spacer height={Space.xl} />
                     {/* Styled like the live session's own "Add exercise" pill
                         (app/(tabs)/workouts/session/[sessionId].tsx) rather than a
                         bare link, so the one control both screens share for this
                         reads the same wherever a Client meets it. */}
-                    <Pressable
-                        onPress={() => setPickerOpen(true)}
-                        disabled={saving}
-                        style={[styles.addExercisePill, { backgroundColor: theme.uiBackground, borderColor: theme.line }]}
-                    >
-                        <Ionicons name="add" size={14} color={theme.text} />
-                        <ThemedText variant="small" tone="body">Add exercise</ThemedText>
-                    </Pressable>
+                    <AddButton label="Add exercise" onPress={() => setPickerOpen(true)} disabled={saving} />
+                    <FieldError>{errors.exercises}</FieldError>
 
                     <Spacer height={Space.xl} />
                     <ThemedText variant="meta" tone="muted" style={styles.label}>Notes</ThemedText>
@@ -370,17 +400,12 @@ const LogWorkout = () => {
                         editable={!saving}
                     />
 
-                    {error ? (
-                        <>
-                            <Spacer height={Space.lg} />
-                            <ThemedText variant="body" tone="danger">{error}</ThemedText>
-                        </>
-                    ) : null}
+                    <FieldError>{errors.form}</FieldError>
 
                     <Spacer height={Space.xl} />
                     <ThemedButton onPress={handleSave} disabled={saving}>
-                        <ThemedText variant="label" tone="onPrimary">
-                            {saving ? 'SAVING' : 'SAVE WORKOUT'}
+                        <ThemedText variant="cardTitle" tone="onPrimary">
+                            {saving ? 'Saving...' : 'Save session'}
                         </ThemedText>
                     </ThemedButton>
                     <Spacer height={Space.xl} />

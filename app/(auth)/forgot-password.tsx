@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { StyleSheet } from 'react-native'
+import { useRef, useState } from 'react'
+import { StyleSheet, TextInput } from 'react-native'
 import { Link } from 'expo-router'
 
 // themed components
@@ -12,6 +12,8 @@ import Spacer from '../../components/Spacer'
 import { Space } from '../../constants/Layout'
 import { useAuth } from '../../contexts/AuthContext'
 import { getAuthErrorMessage } from '../../utils/firebaseErrors'
+import { looksLikeEmail } from '../../utils/email'
+import FieldLabel from '../../components/FieldLabel'
 
 /**
  * The way back in for someone who mistyped a password once.
@@ -31,12 +33,14 @@ const ForgotPassword = () => {
     const [error, setError] = useState('')
     const [sent, setSent] = useState(false)
     const [submitting, setSubmitting] = useState(false)
+    const emailRef = useRef<TextInput>(null)
 
     const handleSend = async () => {
         setError('')
 
-        if (!email.trim()) {
-            setError('Please enter your email address.')
+        if (!email.trim() || !looksLikeEmail(email)) {
+            setError(email.trim() ? "That isn't an email address." : 'Enter your email.')
+            emailRef.current?.focus()
             return
         }
 
@@ -52,8 +56,7 @@ const ForgotPassword = () => {
 
     return (
         <ThemedView style={styles.container}>
-            <Spacer />
-            <ThemedText variant="title" tone="title" style={styles.title}>
+            <ThemedText variant="title" tone="title" role="heading">
                 Reset your password
             </ThemedText>
 
@@ -85,25 +88,24 @@ const ForgotPassword = () => {
                     </ThemedText>
 
                     <Spacer height={Space.lg} />
-                    <ThemedText variant="label" tone="muted" style={styles.label}>
-                        Email
-                    </ThemedText>
+                    <FieldLabel error={error}>Email</FieldLabel>
                     <ThemedTextInput
+                        ref={emailRef}
+                        accessibilityLabel="Email"
                         value={email}
-                        onChangeText={setEmail}
+                        onChangeText={(text) => {
+                            setEmail(text)
+                            setError('')
+                        }}
                         keyboardType="email-address"
+                        inputMode="email"
+                        autoComplete="email"
                         autoCapitalize="none"
+                        returnKeyType="send"
+                        onSubmitEditing={handleSend}
+                        invalid={Boolean(error)}
                         editable={!submitting}
                     />
-
-                    {error ? (
-                        <>
-                            <Spacer height={Space.lg} />
-                            <ThemedText variant="body" tone="danger">
-                                {error}
-                            </ThemedText>
-                        </>
-                    ) : null}
 
                     <Spacer height={Space.xl} />
                     <ThemedButton onPress={handleSend} disabled={submitting}>
@@ -117,7 +119,7 @@ const ForgotPassword = () => {
             <Spacer height={Space.xl} />
             <Link href="/login" style={styles.link}>
                 <ThemedText variant="body" tone="accent">
-                    Back to login
+                    Back to log in
                 </ThemedText>
             </Link>
         </ThemedView>
@@ -127,19 +129,16 @@ const ForgotPassword = () => {
 export default ForgotPassword
 
 const styles = StyleSheet.create({
+    // Top- and left-aligned, like the rest of the app.
     container: {
         flex: 1,
-        justifyContent: 'center',
-        paddingHorizontal: Space.xl,
-    },
-    title: {
-        textAlign: 'center',
-        marginBottom: Space.sm,
+        paddingHorizontal: Space.lg,
+        paddingTop: 80,
     },
     label: {
         marginBottom: Space.sm,
     },
     link: {
-        textAlign: 'center',
+        paddingVertical: Space.md,
     },
 })

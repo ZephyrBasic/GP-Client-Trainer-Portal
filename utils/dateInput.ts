@@ -35,7 +35,14 @@ export const toDateInput = (date: Date): string =>
  * that already shows them. It is the read-back that catches a typo.
  */
 export const longDateLabel = (date: Date): string =>
-    date.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' })
+    date.toLocaleDateString('en-AU', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        // The year only when it isn't this one. "Tuesday 1 January" under a box
+        // holding 01-01-2030 hid the one part of the typo worth catching.
+        ...(date.getFullYear() === new Date().getFullYear() ? null : { year: 'numeric' }),
+    })
 
 /**
  * "29 Aug" - the Signal history row's date, read in the device's own calendar
@@ -44,8 +51,14 @@ export const longDateLabel = (date: Date): string =>
  * recognisable at a glance; the numeric `8/29/2026` this replaces reads as one
  * more count on a row that already has two.
  */
-export const shortDateLabel = (date: Date): string =>
-    date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })
+export const shortDateLabel = (date: Date): string => `${date.getDate()} ${SHORT_MONTHS[date.getMonth()]}`
+
+/**
+ * Three letters, always. Spelled out here rather than asked of the locale:
+ * en-US puts the month first ("Sep 25"), and newer en-AU data says "Sept",
+ * so the app wrote one date three ways depending on the screen.
+ */
+export const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 /**
  * The inverse: local midnight on that day, or null if the box doesn't hold one.
@@ -73,4 +86,35 @@ export const parseDateInput = (value: string): Date | null => {
     return parsed.getDate() === day && parsed.getMonth() === month - 1 && parsed.getFullYear() === year
         ? parsed
         : null
+}
+
+/**
+ * What is wrong with a Session's date box, or null when it holds a day a
+ * Session can count for.
+ *
+ * A future day is refused: a Session is a record of training that happened,
+ * and one dated next week would count towards a week nobody has trained yet.
+ * Shared by the finish card and manual entry so the two refuse the same things
+ * in the same words.
+ */
+export const sessionDateError = (value: string): string | null => {
+    const parsed = parseDateInput(value)
+    if (!parsed) return `Enter the date as ${DATE_INPUT_FORMAT}.`
+    const endOfToday = new Date()
+    endOfToday.setHours(23, 59, 59, 999)
+    return parsed > endOfToday ? "That date hasn't happened yet." : null
+}
+
+/**
+ * What the date box keeps of a keystroke: up to eight digits, with the dashes
+ * put in for you - 25092026 reads back as 25-09-2026.
+ *
+ * So the box can open the phone's number pad, which has no dash key. It used
+ * to open the full keyboard (letters, emoji and all) just to reach one.
+ */
+export const maskDateInput = (text: string): string => {
+    const digits = text.replace(/\D/g, '').slice(0, 8)
+    if (digits.length <= 2) return digits
+    if (digits.length <= 4) return `${digits.slice(0, 2)}-${digits.slice(2)}`
+    return `${digits.slice(0, 2)}-${digits.slice(2, 4)}-${digits.slice(4)}`
 }

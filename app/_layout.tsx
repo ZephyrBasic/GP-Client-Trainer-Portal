@@ -1,12 +1,16 @@
 import { useEffect } from 'react'
 import { Redirect, Stack } from 'expo-router'
-import { ActivityIndicator, Platform, StyleSheet, useColorScheme } from 'react-native'
+import { Platform, StyleSheet, View } from 'react-native'
 import * as ScreenOrientation from 'expo-screen-orientation'
-import { Colors } from '../constants/Colors'
+import { SCREEN_PADDING } from '../constants/Layout'
 import { useSignalFonts } from '../constants/Type'
 import { AuthProvider, useAuth } from '../contexts/AuthContext'
 import { useProtectedRoute } from '../hooks/useProtectedRoute'
 import ErrorBoundary from '../components/ErrorBoundary'
+import { PlaceholderBar, PlaceholderRows } from '../components/Placeholder'
+import Toast from '../components/Toast'
+import { useHeaderOptions } from '../hooks/useHeaderOptions'
+import '../utils/webFocus'
 import ThemedView from '../components/ThemedView'
 import { initCrashReporting } from '../utils/crashReporting'
 
@@ -17,16 +21,20 @@ import { initCrashReporting } from '../utils/crashReporting'
 initCrashReporting()
 
 const RootLayoutNav = () => {
-    const colorScheme = useColorScheme()
-    const theme = Colors[colorScheme] ?? Colors.light
+    const headerOptions = useHeaderOptions()
     const { loading } = useAuth()
 
     const redirectTo = useProtectedRoute()
 
     if (loading) {
         return (
+            // The outline of a screen rather than a bare spinner
+            // (.claude/rules/ui.md): signing in lands on a list, so a list's
+            // shape is what fills the wait.
             <ThemedView style={styles.loading}>
-                <ActivityIndicator size="large" color={theme.primary} />
+                <PlaceholderBar width={140} height={28} />
+                <View style={styles.loadingGap} />
+                <PlaceholderRows count={4} />
             </ThemedView>
         )
     }
@@ -36,13 +44,13 @@ const RootLayoutNav = () => {
     }
 
     return (
-        <Stack screenOptions={{
-            headerStyle: { backgroundColor: theme.navBackground },
-            headerTintColor: theme.title,
-        }}>
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
+        <>
+            <Stack screenOptions={headerOptions}>
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            </Stack>
+            <Toast />
+        </>
     )
 }
 
@@ -88,7 +96,10 @@ export default RootLayout
 const styles = StyleSheet.create({
     loading: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    }
+        paddingHorizontal: SCREEN_PADDING,
+        paddingTop: 72,
+    },
+    loadingGap: {
+        height: 24,
+    },
 })

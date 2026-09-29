@@ -37,12 +37,19 @@ export const Colors = {
         // takes off the page background, or the row dividers would read
         // louder than the card's own edge.
         lineSoft: '#282D29',
+        // The edge of a *control* - an input, an outlined button, a chip -
+        // where `line` is the edge of a surface. Controls need 3:1 against
+        // what they sit on (WCAG 1.4.11); `line` sits near 1.4:1 by design,
+        // which left every input and ghost button a faint shape.
+        outline: '#727B75',
         title: '#ECF4EE',
         text: '#B3BEB6',
         iconColor: '#828C85',
         // Quieter again than iconColor: column heads and set numbers, which
-        // have to sit under body text without competing with it.
-        faint: '#5D6660',
+        // have to sit under body text without competing with it. Raised in
+        // the UI review from ~2.5:1 to ~3.7:1 - it was unreadable - and still
+        // never for data a Client needs to read; use `text` for that.
+        faint: '#737C76',
         iconColorFocused: '#51B67A',
         // oklch(0.70 0.130 155). The old accent was #3DDC84 = oklch(0.79 0.180
         // 154) - near the sRGB ceiling for its lightness, and carrying half
@@ -88,10 +95,11 @@ export const Colors = {
         // theme goes.
         line: '#CFDAD3',
         lineSoft: '#E0E9E3',
+        outline: '#7A857D',
         title: '#19251D',
         text: '#4D5950',
         iconColor: '#68736B',
-        faint: '#9DA8A0',
+        faint: '#78837B',
         iconColorFocused: '#1E7546',
         primary: '#1E7546',
         onPrimary: '#FFFFFF',

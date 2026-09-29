@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet, useColorScheme, View } from 'react-native'
+import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, useColorScheme, View } from 'react-native'
+import Pressable from './Touchable'
 import { collection, doc, serverTimestamp, setDoc, writeBatch } from 'firebase/firestore'
 
 import ThemedText from './ThemedText'

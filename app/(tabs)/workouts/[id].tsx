@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
+import { ScrollView, StyleSheet, View, useColorScheme } from 'react-native'
+import Pressable from '../../../components/Touchable'
 import { useLocalSearchParams } from 'expo-router'
 import { deleteDoc, doc, onSnapshot } from 'firebase/firestore'
 
@@ -181,14 +182,14 @@ const WorkoutDetail = () => {
                                 <>
                                     <SessionDiff diff={workout.diff} />
                                     <Spacer height={Space.md} />
-                                    <Pressable onPress={() => setShowDiff(false)}>
+                                    <Pressable onPress={() => setShowDiff(false)} style={styles.toggleHit}>
                                         <ThemedText variant="small" tone="accent" style={styles.diffToggle}>
                                             Hide comparison
                                         </ThemedText>
                                     </Pressable>
                                 </>
                             ) : (
-                                <Pressable onPress={() => setShowDiff(true)}>
+                                <Pressable onPress={() => setShowDiff(true)} style={styles.toggleHit}>
                                     <ThemedText variant="small" tone="accent" style={styles.diffToggle}>
                                         {changes.length > 0
                                             ? `Show what changed · ${changes.length} exercise${changes.length === 1 ? '' : 's'}`
@@ -210,7 +211,10 @@ const WorkoutDetail = () => {
                             </ThemedText>
                             <Spacer height={Space.sm} />
                             {(exercise.sets ?? []).map((set, setIndex) => (
-                                <ThemedText key={setIndex} variant="small" tone="faint" style={styles.setLine}>
+                                // Body ink: this is the record itself. It was
+                                // `faint` at 2.5:1, the least readable text on
+                                // the screen for the most important data on it.
+                                <ThemedText key={setIndex} variant="meta" tone="body" style={styles.setLine}>
                                     Set {setIndex + 1}: {formatSet(set)}
                                 </ThemedText>
                             ))}
@@ -246,17 +250,17 @@ const WorkoutDetail = () => {
                         ) : !naming ? (
                             <ThemedButton variant="ghost" onPress={startNaming}>
                                 <ThemedText variant="body" tone="body">
-                                    Create template from this workout
+                                    Save as a template
                                 </ThemedText>
                             </ThemedButton>
                         ) : (
                             <ThemedCard>
-                                <ThemedText variant="label" tone="muted">TEMPLATE NAME</ThemedText>
+                                <ThemedText variant="meta" tone="muted">Template name</ThemedText>
                                 <Spacer height={Space.sm} />
                                 <ThemedTextInput
                                     value={templateName}
                                     onChangeText={setTemplateName}
-                                    placeholder="Name this workout"
+                                    placeholder="Name this template"
                                     autoCapitalize="words"
                                     editable={!savingTemplate}
                                 />
@@ -300,16 +304,19 @@ const WorkoutDetail = () => {
                     </>
                 ) : null}
 
+                {/* The owning Client only - the rules refuse anyone else, and a
+                    Trainer reads this same screen from their Client's history. */}
+                {workout.clientId !== profile?.uid ? null : <>
                 <Spacer height={Space.xxl} />
                 {!confirmingDelete ? (
                     <ThemedButton variant="danger" onPress={() => setConfirmingDelete(true)}>
                         <ThemedText style={{ color: buttonTextColor('danger', theme), fontWeight: '600' }}>
-                            Delete Workout
+                            Delete session
                         </ThemedText>
                     </ThemedButton>
                 ) : (
                     <View>
-                        <ThemedText variant="body" tone="body">Delete this workout? This cannot be undone.</ThemedText>
+                        <ThemedText variant="body" tone="body">Delete this session? This cannot be undone.</ThemedText>
                         <Spacer height={Space.md} />
                         <View style={styles.confirmRow}>
                             <ThemedButton
@@ -327,12 +334,13 @@ const WorkoutDetail = () => {
                                 disabled={deleting}
                             >
                                 <ThemedText style={{ color: buttonTextColor('destructive', theme), fontWeight: '600' }}>
-                                    {deleting ? 'Deleting...' : 'Confirm Delete'}
+                                    {deleting ? 'Deleting...' : 'Yes, delete'}
                                 </ThemedText>
                             </ThemedButton>
                         </View>
                     </View>
                 )}
+                </>}
             </ScrollView>
         </ThemedView>
     )
@@ -365,7 +373,12 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     setLine: {
-        marginBottom: 2,
+        marginBottom: Space.xs,
+    },
+    toggleHit: {
+        minHeight: 44,
+        justifyContent: 'center',
+        alignSelf: 'flex-start',
     },
     confirmRow: {
         flexDirection: 'row',

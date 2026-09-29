@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { FlatList, Pressable, StyleSheet, View, useColorScheme } from 'react-native'
+import { FlatList, StyleSheet, View, useColorScheme } from 'react-native'
+import Pressable from '../../../../../components/Touchable'
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
 
 import ThemedView from '../../../../../components/ThemedView'
@@ -234,17 +235,32 @@ const AssignTemplate = () => {
                                         than starts over. */}
                                     {assigned ? null : (
                                         <ThemedText variant="meta" tone="muted">
-                                            {assignment ? 'Unassigned - past sessions kept' : 'Not assigned'}
+                                            {assignment ? 'Unassigned — past sessions kept' : 'Not assigned'}
                                         </ThemedText>
                                     )}
                                 </View>
 
-                                {assigned ? (
+                                {assigned ? null : (
+                                    <Pressable onPress={() => handleAssign(item.uid)} disabled={busy} style={styles.linkHit}>
+                                        <ThemedText
+                                            tone="accent"
+                                            style={[styles.actionLink, busy && styles.stepDisabled]}
+                                        >
+                                            Assign
+                                        </ThemedText>
+                                    </Pressable>
+                                )}
+                            </View>
+
+                            {/* Its own line: sharing one with the name, the
+                                chip and this, a phone cut the name short. */}
+                            {assigned ? (
                                     <View style={styles.stepper}>
                                         <Pressable
                                             onPress={() => handleFrequency(item.uid, timesPerWeek - 1)}
                                             disabled={busy || timesPerWeek <= MIN_TIMES_PER_WEEK}
-                                            hitSlop={8}
+                                            accessibilityLabel="Fewer times a week"
+                                            style={[styles.stepHit, { borderColor: theme.outline }]}
                                         >
                                             <ThemedText
                                                 tone="accent"
@@ -263,7 +279,8 @@ const AssignTemplate = () => {
                                         <Pressable
                                             onPress={() => handleFrequency(item.uid, timesPerWeek + 1)}
                                             disabled={busy || timesPerWeek >= MAX_TIMES_PER_WEEK}
-                                            hitSlop={8}
+                                            accessibilityLabel="More times a week"
+                                            style={[styles.stepHit, { borderColor: theme.outline }]}
                                         >
                                             <ThemedText
                                                 tone="accent"
@@ -277,17 +294,7 @@ const AssignTemplate = () => {
                                             </ThemedText>
                                         </Pressable>
                                     </View>
-                                ) : (
-                                    <Pressable onPress={() => handleAssign(item.uid)} disabled={busy} hitSlop={8}>
-                                        <ThemedText
-                                            tone="accent"
-                                            style={[styles.actionLink, busy && styles.stepDisabled]}
-                                        >
-                                            Assign
-                                        </ThemedText>
-                                    </Pressable>
-                                )}
-                            </View>
+                            ) : null}
 
                             {/* Only once assigned: target loads belong to an
                                 Assignment, so there is nowhere to put them until
@@ -295,7 +302,6 @@ const AssignTemplate = () => {
                                 control above, because it leaves this screen. */}
                             {assigned ? (
                                 <>
-                                    <Spacer height={Space.sm + 2} />
                                     <View style={styles.actionRow}>
                                         <Pressable
                                             onPress={() =>
@@ -304,7 +310,7 @@ const AssignTemplate = () => {
                                                 )
                                             }
                                             disabled={busy}
-                                            hitSlop={8}
+                                            style={styles.linkHit}
                                         >
                                             <ThemedText
                                                 tone="accent"
@@ -316,14 +322,17 @@ const AssignTemplate = () => {
                                             </ThemedText>
                                         </Pressable>
                                         {confirming ? null : (
+                                            // Quieter than the link beside it, and at
+                                            // the far end: the same size and weight
+                                            // read as equally everyday.
                                             <Pressable
                                                 onPress={() => setConfirmingClientId(item.uid)}
                                                 disabled={busy}
-                                                hitSlop={8}
+                                                style={styles.linkHit}
                                             >
                                                 <ThemedText
-                                                    tone="danger"
-                                                    style={[styles.actionLink, busy && styles.stepDisabled]}
+                                                    tone="muted"
+                                                    style={[styles.quietLink, busy && styles.stepDisabled]}
                                                 >
                                                     Unassign
                                                 </ThemedText>
@@ -414,13 +423,30 @@ const styles = StyleSheet.create({
     stepper: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: Space.sm + 2,
+        gap: Space.sm,
+        marginTop: Space.sm,
+    },
+    // 44, not the 22px glyphs these were.
+    stepHit: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        borderWidth: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     step: {
         fontFamily: FontFamily.heading,
         fontSize: 20,
-        width: 22,
         textAlign: 'center',
+    },
+    linkHit: {
+        minHeight: 44,
+        justifyContent: 'center',
+    },
+    quietLink: {
+        fontFamily: FontFamily.body,
+        fontSize: 13,
     },
     stepDisabled: {
         opacity: 0.4,
@@ -440,7 +466,7 @@ const styles = StyleSheet.create({
     // one weight rather than each row inventing its own.
     actionLink: {
         fontFamily: FontFamily.label,
-        fontSize: 12,
+        fontSize: 13,
     },
     footerNote: {
         textAlign: 'center',

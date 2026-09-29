@@ -160,3 +160,31 @@ export const formatAgo = (seconds: number): string => {
     const days = Math.floor(hours / 24)
     return days === 1 ? 'yesterday' : `${days} days ago`
 }
+
+// Longer than any workout, with room for a phone left running through lunch.
+// Past this, the figure is a typo (999999) rather than a long day.
+const MAX_SESSION_SECONDS = 12 * 3600
+
+/**
+ * What is wrong with a Session's duration box, or null when it can be saved -
+ * blank included, which records the duration as unknown.
+ */
+export const durationError = (value: string): string | null => {
+    const seconds = parseDurationInput(value)
+    if (seconds === undefined) return 'Enter minutes and seconds, as 45:00, or leave it blank.'
+    if (seconds != null && seconds > MAX_SESSION_SECONDS) return 'That is over 12 hours. Check the duration, or leave it blank.'
+    return null
+}
+
+/**
+ * What the duration box keeps of a keystroke: digits, with the colons put in
+ * for you from the right - 4530 is 45:30, 13000 is 1:30:00, and two digits
+ * or fewer stay a plain number of minutes, as `parseDurationInput` reads them.
+ * Lets the box use the number pad, which has no colon.
+ */
+export const maskDurationInput = (text: string): string => {
+    const digits = text.replace(/\D/g, '').replace(/^0+(?=\d{3})/, '').slice(0, 6)
+    if (digits.length <= 2) return digits
+    if (digits.length <= 4) return `${digits.slice(0, -2)}:${digits.slice(-2)}`
+    return `${digits.slice(0, -4)}:${digits.slice(-4, -2)}:${digits.slice(-2)}`
+}

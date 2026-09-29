@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { FlatList, Pressable, StyleSheet, View } from 'react-native'
+import { FlatList, StyleSheet, View, useColorScheme } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import Pressable from '../../../components/Touchable'
 import { Redirect, useRouter } from 'expo-router'
 
 import ThemedView from '../../../components/ThemedView'
@@ -11,6 +13,7 @@ import ScreenSubtitle from '../../../components/ScreenSubtitle'
 import Spacer from '../../../components/Spacer'
 import FadeIn from '../../../components/FadeIn'
 import { PlaceholderRows } from '../../../components/Placeholder'
+import { Colors } from '../../../constants/Colors'
 import { Space, SCREEN_PADDING } from '../../../constants/Layout'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useClients } from '../../../hooks/useClients'
@@ -39,12 +42,14 @@ const RosterFigure = ({ completion }: { completion: WeeklyCompletion }) => {
         )
     }
 
-    const behind = completed < expected
+    // Plain until met, then the accent. Never amber, which means Modified
+    // and nothing else (UI review, issue 14) - mid-week is not a warning.
+    const met = completed >= expected
 
     return (
         <View style={styles.figure}>
-            <ThemedText variant="small" tone={behind ? 'amber' : 'body'}>
-                <ThemedText variant="cardTitle" tone={behind ? 'amber' : 'title'} style={styles.tabular}>
+            <ThemedText variant="small" tone={met ? 'accent' : 'muted'}>
+                <ThemedText variant="cardTitle" tone={met ? 'accent' : 'title'} style={styles.tabular}>
                     {completed}
                 </ThemedText>{' '}
                 of {expected}
@@ -94,6 +99,8 @@ const ClientRosterRow = ({
 }) => {
     const { sessions, loading, offline } = useSessions(client.uid)
     const completion = weeklyCompletion(sessions, assignments)
+    const colorScheme = useColorScheme()
+    const theme = Colors[colorScheme] ?? Colors.light
 
     useEffect(() => {
         onReport(client.uid, { completion, loading, offline })
@@ -119,6 +126,9 @@ const ClientRosterRow = ({
                         </ThemedText>
                     </View>
                     <RosterFigure completion={completion} />
+                    {/* Says the row opens something, like every other
+                        tappable row that leads to another screen. */}
+                    <Ionicons name="chevron-forward" size={18} color={theme.iconColor} />
                 </ThemedCard>
             </Pressable>
         </FadeIn>

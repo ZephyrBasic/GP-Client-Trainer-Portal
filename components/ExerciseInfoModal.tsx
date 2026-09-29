@@ -1,8 +1,9 @@
-import { Modal, Pressable, ScrollView, StyleSheet, useColorScheme, View } from 'react-native'
+import { Modal, ScrollView, StyleSheet, useColorScheme, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 
 import ThemedText from './ThemedText'
+import BackPill from './BackPill'
 import SectionLabel from './SectionLabel'
 import VideoEmbed from './VideoEmbed'
 import { Colors } from '../constants/Colors'
@@ -69,17 +70,10 @@ const ExerciseInfoModal = ({ exercise, onClose }) => {
                     styles.header,
                     { paddingTop: insets.top + 8, borderBottomColor: theme.line },
                 ]}>
-                    <Pressable
-                        onPress={onClose}
-                        // 44pt is the smallest reliable one-thumb target; the icon is
-                        // smaller than that, so the padding does the work.
-                        style={({ pressed }) => [styles.backBtn, pressed && { opacity: 0.5 }]}
-                        accessibilityRole="button"
-                        accessibilityLabel="Back to exercise list"
-                    >
-                        <Ionicons name="chevron-back" size={24} color={theme.iconColorFocused} />
-                        <ThemedText variant="body" tone="accent" style={styles.backText}>Back</ThemedText>
-                    </Pressable>
+                    {/* The app's one back control (components/BackPill); this was
+                        a green "‹ Back" text link that screen readers could not
+                        find at all. */}
+                    <BackPill onPress={onClose} label="Back to exercise list" />
                 </View>
 
                 <ScrollView
@@ -141,19 +135,8 @@ const styles = StyleSheet.create({
         paddingBottom: 8,
         borderBottomWidth: 1,
     },
-    backBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        alignSelf: 'flex-start',
-        minHeight: 44,
-        paddingRight: 16,
-        gap: 2,
-    },
-    backText: {
-        fontWeight: '600',
-    },
     body: {
-        paddingHorizontal: Space.xl,
+        paddingHorizontal: Space.lg,
         paddingTop: Space.xl,
     },
     roleRow: {

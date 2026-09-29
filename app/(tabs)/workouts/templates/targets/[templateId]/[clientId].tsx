@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native'
+import { ScrollView, StyleSheet, View } from 'react-native'
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
 
 import ThemedView from '../../../../../../components/ThemedView'
@@ -11,8 +11,9 @@ import { PlaceholderRows } from '../../../../../../components/Placeholder'
 import ScreenSubtitle from '../../../../../../components/ScreenSubtitle'
 import Spacer from '../../../../../../components/Spacer'
 import ExerciseSetEditor from '../../../../../../components/ExerciseSetEditor'
+import FieldError from '../../../../../../components/FieldError'
+import { showToast } from '../../../../../../components/Toast'
 import { Space, SCREEN_PADDING } from '../../../../../../constants/Layout'
-import { FontFamily } from '../../../../../../constants/Type'
 import { useAuth } from '../../../../../../contexts/AuthContext'
 import { useClients } from '../../../../../../hooks/useClients'
 import { draftsFrom, useExerciseDraft } from '../../../../../../hooks/useExerciseDraft'
@@ -28,7 +29,10 @@ import { storedSetFrom } from '../../../../../../utils/setDraft'
  * gets. Said out loud when it asks for nothing, because a Trainer looking at an
  * empty box needs to know whether that is this Client's doing or the plan's.
  */
-const templateSummary = (sets) => `Template: ${summariseSets(sets) ?? 'no targets set'}`
+const templateSummary = (sets) => {
+    const summary = summariseSets(sets)
+    return summary ? `Template target ${summary}` : 'The template sets no target'
+}
 
 /**
  * One Client's own target loads on one Workout Template.
@@ -106,9 +110,17 @@ const ClientTargets = () => {
     // Back to the shared plan in one tap. Typing the Template's numbers back in
     // by hand reaches the same place - utils/prescription stores no override for
     // an Exercise that matches - but nobody should have to.
+    //
+    // Undoable, because it overwrites every box on the screen in one tap and
+    // sat as a small link beside Save: the toast offers the numbers back.
     const resetToTemplate = () => {
         setError('')
+        const before = exercises
         setExercises(draftsFrom(version?.exercises))
+        showToast("Reset to the template's targets. Not saved yet.", {
+            label: 'Undo',
+            onPress: () => setExercises(before),
+        })
     }
 
     const handleSave = async () => {
@@ -134,6 +146,7 @@ const ClientTargets = () => {
                 targetOverrides: targetOverridesFrom(version, targets),
             })
             router.back()
+            showToast(`${client?.name ? `${client.name}'s` : 'Their'} targets saved`)
         } catch (err) {
             setError(err.message || 'Could not save these targets. Try again.')
             setSaving(false)
@@ -165,11 +178,10 @@ const ClientTargets = () => {
             <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
                 <OfflineBanner visible={offline} onRetry={retry} />
 
-                <ThemedText variant="heading" tone="title">
-                    {client?.name ?? 'This client'}
-                </ThemedText>
+                {/* One title - the header's - with who and what under it. A
+                    second, larger heading here read as a second screen title. */}
                 <ScreenSubtitle style={styles.subtitle}>
-                    {template?.name} · version {template?.currentVersionNumber ?? 1}
+                    For {client?.name ?? 'this client'} · {template?.name} v{template?.currentVersionNumber ?? 1}
                 </ScreenSubtitle>
 
                 <Spacer height={Space.lg} />
@@ -185,7 +197,7 @@ const ClientTargets = () => {
 
                 {exercises.map((exercise, exIndex) => (
                     <View key={`${exercise.exerciseId}-${exIndex}`}>
-                        <Spacer height={Space.md} />
+                        <Spacer height={Space.xl} />
                         {/* The hint is matched to the Version by position, which
                             is safe here and only here: these rows were seeded
                             straight from resolveTargets, which walks the
@@ -202,21 +214,12 @@ const ClientTargets = () => {
                     </View>
                 ))}
 
-                <Spacer height={Space.md} />
-                <Pressable onPress={resetToTemplate} disabled={saving}>
-                    <ThemedText tone="accent" style={styles.resetLink}>
-                        Use the template&apos;s targets
-                    </ThemedText>
-                </Pressable>
+                <Spacer height={Space.xl} />
+                <ThemedButton variant="ghost" onPress={resetToTemplate} disabled={saving}>
+                    <ThemedText variant="body">Reset to the template&apos;s targets</ThemedText>
+                </ThemedButton>
 
-                {error ? (
-                    <>
-                        <Spacer height={Space.lg} />
-                        <ThemedText variant="body" tone="danger">
-                            {error}
-                        </ThemedText>
-                    </>
-                ) : null}
+                <FieldError>{error}</FieldError>
 
                 <Spacer height={Space.xxl} />
                 <ThemedButton onPress={handleSave} disabled={saving}>
@@ -247,8 +250,5 @@ const styles = StyleSheet.create({
     note: {
         padding: Space.md,
     },
-    resetLink: {
-        fontFamily: FontFamily.label,
-        fontSize: 12,
-    },
+
 })

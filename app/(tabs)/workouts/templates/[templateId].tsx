@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { ScrollView, StyleSheet, TextInput, View } from 'react-native'
+import Pressable from '../../../../components/Touchable'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 
 import ThemedView from '../../../../components/ThemedView'
@@ -14,6 +15,9 @@ import Spacer from '../../../../components/Spacer'
 import SectionLabel from '../../../../components/SectionLabel'
 import ExercisePicker from '../../../../components/ExercisePicker'
 import ExerciseSetEditor from '../../../../components/ExerciseSetEditor'
+import AddButton from '../../../../components/AddButton'
+import FieldError from '../../../../components/FieldError'
+import { showToast } from '../../../../components/Toast'
 import { Space, SCREEN_PADDING } from '../../../../constants/Layout'
 import { FontFamily } from '../../../../constants/Type'
 import { useAuth } from '../../../../contexts/AuthContext'
@@ -26,7 +30,7 @@ import {
     useTemplateVersion,
     useWorkoutTemplate,
 } from '../../../../hooks/useWorkoutTemplates'
-import { storedSetFrom } from '../../../../utils/setDraft'
+import { blankTargetError, storedSetFrom } from '../../../../utils/setDraft'
 
 /**
  * Editing a Workout Template.
@@ -79,8 +83,11 @@ const EditWorkoutTemplate = () => {
 
     const [name, setName] = useState('')
     const [pickerOpen, setPickerOpen] = useState(false)
-    const [error, setError] = useState('')
+    // Each drawn under what it is about, all at once (.claude/rules/ui.md).
+    const [errors, setErrors] = useState<{ name?: string; exercises?: string; form?: string; sets?: Record<number, string> }>({})
     const [saving, setSaving] = useState(false)
+    const nameRef = useRef<TextInput>(null)
+    const scrollRef = useRef<ScrollView>(null)
 
     // Starts empty and is filled from the stored Version by the effect below;
     // an Exercise added afterwards gets the hook's default single blank row.
@@ -106,35 +113,51 @@ const EditWorkoutTemplate = () => {
     const handlePickExercise = (exercise) => {
         setPickerOpen(false)
         pickExercise(exercise)
+        setErrors((prev) => ({ ...prev, exercises: undefined }))
     }
+
+    const targetExercises = exercises.map((ex) => ({
+        exerciseId: ex.exerciseId,
+        name: ex.name,
+        fields: ex.fields,
+        // Blank boxes stand, exactly as when the Template was authored: the
+        // number of target Sets is part of the prescription. storedSetFrom is
+        // the one place a measurement becomes a number, and it stores an empty
+        // box as null rather than 0.
+        sets: ex.sets.map((set) => storedSetFrom(set, ex.fields)),
+    }))
+
+    // Publishing an unchanged draft would mint a Version identical to the one
+    // it replaces, and every Client's history would then cite two numbers for
+    // one workout. Compared as stored, so "50" retyped as "50.0" is no change.
+    const unchanged = useMemo(() => {
+        if (!version) return false
+        const stored = (list) => JSON.stringify(list.map((ex) => [ex.exerciseId, ex.sets]))
+        const loaded = draftsFrom(version.exercises).map((ex) => ({
+            exerciseId: ex.exerciseId,
+            sets: ex.sets.map((set) => storedSetFrom(set, ex.fields)),
+        }))
+        return name.trim() === (template?.name ?? '') && stored(targetExercises) === stored(loaded)
+    }, [version, template, name, targetExercises])
 
     const currentVersion = template?.currentVersionNumber ?? 1
     const publishingVersion = nextVersionNumber(template?.currentVersionNumber)
 
     const handlePublish = async () => {
-        setError('')
-
         const trimmedName = name.trim()
-        if (!trimmedName) {
-            setError('Give the template a name.')
-            return
+        const sets = Object.fromEntries(
+            exercises
+                .map((ex, i) => [i, blankTargetError(ex.sets, ex.fields)])
+                .filter(([, message]) => message)
+        )
+        const found = {
+            name: trimmedName ? undefined : 'Name the template.',
+            exercises: exercises.length === 0 ? 'Add at least one exercise.' : undefined,
+            sets,
         }
-        if (exercises.length === 0) {
-            setError('Add at least one exercise.')
-            return
-        }
-
-        const targetExercises = exercises.map((ex) => ({
-            exerciseId: ex.exerciseId,
-            name: ex.name,
-            fields: ex.fields,
-            // Blank rows stand, exactly as when the Template was authored: the
-            // number of target Sets is part of the prescription, so dropping an
-            // empty row would quietly prescribe less work. storedSetFrom is the
-            // one place a measurement becomes a number, and it stores an empty
-            // box as null rather than 0.
-            sets: ex.sets.map((set) => storedSetFrom(set, ex.fields)),
-        }))
+        setErrors(found)
+        if (found.name) return nameRef.current?.focus()
+        if (found.exercises || Object.keys(sets).length) return scrollRef.current?.scrollToEnd({ animated: true })
 
         setSaving(true)
         try {
@@ -145,8 +168,9 @@ const EditWorkoutTemplate = () => {
                 currentVersionNumber: template?.currentVersionNumber,
             })
             leave()
+            showToast(`Version ${publishingVersion} published`)
         } catch (err) {
-            setError(err.message || 'Failed to publish new version.')
+            setErrors({ form: err.message || 'Failed to publish the new version.' })
             setSaving(false)
         }
     }
@@ -198,7 +222,7 @@ const EditWorkoutTemplate = () => {
     return (
         <ThemedView style={styles.container}>
             <ScreenEnter play={fromToday}>
-                <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+                <ScrollView ref={scrollRef} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
                     <OfflineBanner visible={offline} onRetry={retry} />
 
                     {/* Which Version is live right now, and therefore what anyone
@@ -224,7 +248,10 @@ const EditWorkoutTemplate = () => {
                         prescribed. */}
                     {profile?.role === 'trainer' ? (
                         <>
-                            <Pressable onPress={() => router.push(`/workouts/templates/assign/${templateId}`)}>
+                            <Pressable
+                                onPress={() => router.push(`/workouts/templates/assign/${templateId}`)}
+                                style={styles.link}
+                            >
                                 <ThemedText tone="accent" style={styles.addLink}>
                                     Assign to clients →
                                 </ThemedText>
@@ -237,12 +264,19 @@ const EditWorkoutTemplate = () => {
                         Name
                     </ThemedText>
                     <ThemedTextInput
+                        ref={nameRef}
+                        accessibilityLabel="Name"
                         value={name}
-                        onChangeText={setName}
-                        placeholder="Upper Body A"
+                        onChangeText={(text) => {
+                            setName(text)
+                            setErrors((prev) => ({ ...prev, name: undefined }))
+                        }}
+                        placeholder="Name this template"
                         autoCapitalize="words"
                         editable={!saving}
+                        invalid={Boolean(errors.name)}
                     />
+                    <FieldError>{errors.name}</FieldError>
 
                     <Spacer height={Space.xl} />
                     <SectionLabel>EXERCISES</SectionLabel>
@@ -258,14 +292,18 @@ const EditWorkoutTemplate = () => {
 
                     {exercises.map((exercise, exIndex) => (
                         <View key={`${exercise.exerciseId}-${exIndex}`}>
-                            <Spacer height={Space.md} />
+                            <Spacer height={Space.xl} />
                             <ExerciseSetEditor
                                 name={exercise.name}
                                 fields={exercise.fields}
                                 sets={exercise.sets}
-                                hint="Targets - blank where a measurement doesn't apply"
+                                hint="Targets. Leave a box blank if it doesn't apply."
                                 editable={!saving}
-                                onChangeSet={(setIndex, field, value) => updateSet(exIndex, setIndex, field, value)}
+                                error={errors.sets?.[exIndex]}
+                                onChangeSet={(setIndex, field, value) => {
+                                    updateSet(exIndex, setIndex, field, value)
+                                    if (errors.sets?.[exIndex]) setErrors((prev) => ({ ...prev, sets: { ...prev.sets, [exIndex]: undefined } }))
+                                }}
                                 onAddSet={() => addSet(exIndex)}
                                 onRemoveSet={(setIndex) => removeSet(exIndex, setIndex)}
                                 onRemoveExercise={() => removeExercise(exIndex)}
@@ -273,21 +311,10 @@ const EditWorkoutTemplate = () => {
                         </View>
                     ))}
 
-                    <Spacer height={Space.md} />
-                    <Pressable onPress={() => setPickerOpen(true)} disabled={saving}>
-                        <ThemedText tone="accent" style={styles.addLink}>
-                            + Add Exercise
-                        </ThemedText>
-                    </Pressable>
-
-                    {error ? (
-                        <>
-                            <Spacer height={Space.lg} />
-                            <ThemedText variant="body" tone="danger">
-                                {error}
-                            </ThemedText>
-                        </>
-                    ) : null}
+                    <Spacer height={Space.xl} />
+                    <AddButton label="Add exercise" onPress={() => setPickerOpen(true)} disabled={saving} />
+                    <FieldError>{errors.exercises}</FieldError>
+                    <FieldError>{errors.form}</FieldError>
 
                     <Spacer height={Space.xxl} />
                     {/* Spelled out, not implied. Progressing a workout and correcting
@@ -305,9 +332,9 @@ const EditWorkoutTemplate = () => {
                     </ThemedText>
 
                     <Spacer height={Space.sm + 2} />
-                    <ThemedButton onPress={handlePublish} disabled={saving}>
+                    <ThemedButton onPress={handlePublish} disabled={saving || unchanged}>
                         <ThemedText variant="cardTitle" tone="onPrimary">
-                            {saving ? 'Publishing...' : 'Publish new version'}
+                            {saving ? 'Publishing...' : unchanged ? 'No changes to publish' : 'Publish new version'}
                         </ThemedText>
                     </ThemedButton>
                     <Spacer height={Space.xl} />
@@ -338,7 +365,12 @@ const styles = StyleSheet.create({
     },
     addLink: {
         fontFamily: FontFamily.label,
-        fontSize: 12,
+        fontSize: 13,
+    },
+    link: {
+        minHeight: 44,
+        justifyContent: 'center',
+        alignSelf: 'flex-start',
     },
     publishNote: {
         textAlign: 'center',

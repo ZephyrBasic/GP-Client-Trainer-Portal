@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { FlatList, Pressable, StyleSheet, View, useColorScheme } from 'react-native'
+import { FlatList, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { doc } from 'firebase/firestore'
@@ -10,13 +10,10 @@ import BackPill from '../../../../components/BackPill'
 import ThemedButton from '../../../../components/ThemedButton'
 import WeeklyCompletionCard from '../../../../components/WeeklyCompletionCard'
 import WorkoutListItem from '../../../../components/WorkoutListItem'
-import SessionDiff from '../../../../components/SessionDiff'
 import OfflineBanner from '../../../../components/OfflineBanner'
 import SectionLabel from '../../../../components/SectionLabel'
 import Spacer from '../../../../components/Spacer'
-import { Colors } from '../../../../constants/Colors'
 import { Space, SCREEN_PADDING } from '../../../../constants/Layout'
-import { FontFamily } from '../../../../constants/Type'
 import { db } from '../../../../firebase/config'
 import { useAuth } from '../../../../contexts/AuthContext'
 import { useSessions } from '../../../../hooks/useSessions'
@@ -25,7 +22,6 @@ import { useWorkoutTemplates } from '../../../../hooks/useWorkoutTemplates'
 import { useFirestoreDoc } from '../../../../hooks/useFirestoreSnapshot'
 import { useLeave } from '../../../../hooks/useLeave'
 import { useOffline } from '../../../../hooks/useOffline'
-import { deviations } from '../../../../utils/prescription'
 import { weeklyCompletion } from '../../../../utils/weeklyCompletion'
 import { sessionsThisWeek } from '../../../../utils/workoutStats'
 
@@ -64,17 +60,11 @@ const ClientDetail = () => {
     const router = useRouter()
     // Back to the Roster even when nothing is under this screen - a direct
     // link or a refresh - where back() had nowhere to go and did nothing.
-    const { leave } = useLeave({ home: '/clients', homeLabel: 'Roster' })
+    const { leave } = useLeave({ home: '/clients', homeLabel: 'Clients' })
     const { profile } = useAuth()
-    const colorScheme = useColorScheme()
-    const theme = Colors[colorScheme] ?? Colors.light
     const insets = useSafeAreaInsets()
 
     const { sessions, loading, offline: sessionsOffline, retry: retrySessions } = useSessions(clientId)
-    // Which Session's diff is open. Only a Modified Session has one to open -
-    // see `expandable` below - so there is nothing to reconcile against a
-    // Session whose row carries no such control.
-    const [expandedId, setExpandedId] = useState(null)
 
     const {
         data: clientProfile,
@@ -135,13 +125,13 @@ const ClientDetail = () => {
     return (
         <ThemedView style={styles.container}>
             <View style={[styles.header, { paddingTop: insets.top + Space.md }]}>
-                <BackPill onPress={leave} label="Back to the Roster" />
+                <BackPill onPress={leave} label="Back to Clients" />
                 <View style={styles.headerText}>
                     <ThemedText variant="title" tone="title" numberOfLines={1}>
                         {clientProfile?.name ?? 'Client'}
                     </ThemedText>
                     <ThemedText variant="small" tone="muted">
-                        {activeAssignments.length} workout{activeAssignments.length === 1 ? '' : 's'} prescribed
+                        {activeAssignments.length} workout template{activeAssignments.length === 1 ? '' : 's'} prescribed
                     </ThemedText>
                 </View>
             </View>
@@ -157,7 +147,7 @@ const ClientDetail = () => {
                             <>
                                 <ThemedButton onPress={() => router.push(`/clients/${clientId}/progress`)}>
                                     <ThemedText variant="body" tone="onPrimary">
-                                        View Progress Photos/Videos
+                                        View progress photos and videos
                                     </ThemedText>
                                 </ThemedButton>
                                 <Spacer height={Space.lg} />
@@ -174,40 +164,18 @@ const ClientDetail = () => {
                 ListEmptyComponent={
                     !loading && (
                         <ThemedText variant="body" tone="muted" style={styles.empty}>
-                            This client hasn&apos;t logged any workouts yet.
+                            This client hasn&apos;t logged any sessions yet.
                         </ThemedText>
                     )
                 }
-                renderItem={({ item }) => {
-                    // Only a Modified Session has anything under it: SessionDiff
-                    // itemises deviations and renders nothing for one that
-                    // matched its plan exactly, so a row with no deviations gets
-                    // no expand affordance rather than one that opens onto
-                    // nothing (an As Prescribed Session already says so with its
-                    // verdict alone, and a Self-Directed one has no plan to
-                    // compare against at all).
-                    const changes = deviations(item.diff)
-                    const expandable = changes.length > 0
-                    const expanded = expandable && expandedId === item.id
-
-                    return (
-                        <WorkoutListItem
-                            workout={item}
-                            onPress={expandable ? () => setExpandedId(expanded ? null : item.id) : undefined}
-                        >
-                            {expanded ? (
-                                <View style={[styles.diffWrap, { borderTopColor: theme.lineSoft }]}>
-                                    <SessionDiff diff={item.diff} />
-                                    <Pressable onPress={() => setExpandedId(null)} hitSlop={8}>
-                                        <ThemedText tone="accent" style={styles.hideComparison}>
-                                            Hide comparison
-                                        </ThemedText>
-                                    </Pressable>
-                                </View>
-                            ) : null}
-                        </WorkoutListItem>
-                    )
-                }}
+                renderItem={({ item }) => (
+                    // Opens the whole Session - every Set and the Client's notes
+                    // - rather than expanding the row into only its differences.
+                    <WorkoutListItem
+                        workout={item}
+                        onPress={() => router.push(`/clients/${clientId}/session/${item.id}`)}
+                    />
+                )}
             />
         </ThemedView>
     )
@@ -238,14 +206,5 @@ const styles = StyleSheet.create({
     },
     empty: {
         marginTop: Space.sm,
-    },
-    diffWrap: {
-        borderTopWidth: 1,
-        paddingTop: Space.md,
-        gap: Space.md,
-    },
-    hideComparison: {
-        fontFamily: FontFamily.label,
-        fontSize: 12,
     },
 })

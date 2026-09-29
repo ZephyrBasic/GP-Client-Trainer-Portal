@@ -1,4 +1,5 @@
-import { FlatList, Pressable, StyleSheet, View } from 'react-native'
+import { FlatList, StyleSheet, View } from 'react-native'
+import Pressable from '../../../../components/Touchable'
 import { useRouter } from 'expo-router'
 
 import ThemedView from '../../../../components/ThemedView'
@@ -119,14 +120,14 @@ const WorkoutTemplates = () => {
                     // than through a read-only detail screen it would only have
                     // to offer an "Edit" button on.
                     <Pressable onPress={() => router.push(`/workouts/templates/${item.id}`)}>
-                        {/* Drawn flat when nobody is on it: a Template exists
-                            either way, but one nobody has been assigned is not
-                            in anyone's hands. */}
-                        <ThemedCard muted={!assignedCount[item.id]}>
+                        {/* Drawn like every other: an unassigned Template was
+                            greyed out and read as disabled, when it is fully
+                            editable. The line under the name says who has it. */}
+                        <ThemedCard>
                             <View style={styles.titleRow}>
                                 <ThemedText
                                     variant="cardTitle"
-                                    tone={assignedCount[item.id] ? 'title' : 'muted'}
+                                    tone="title"
                                     style={styles.name}
                                     numberOfLines={1}
                                 >
