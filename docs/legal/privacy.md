@@ -12,7 +12,7 @@ data inventory.
 
 # GreenPulse Privacy Policy
 
-**Last updated: 15 September 2026**
+**Last updated: 1 October 2026**
 
 GreenPulse is a workout tracker for personal trainers and the people they coach. A trainer writes
 workouts, assigns them to clients, and reviews the sessions those clients perform.
@@ -67,13 +67,10 @@ trainer you are linked to. If you are a trainer, your invite code. The date you 
 whether you have verified your email address. Your password is never stored by us in a readable
 form; it is held as a salted hash by Google Firebase.
 
-**Any other signed-in GreenPulse user is technically able to read the name, email address, role,
-trainer link and trainer invite code of every account.** We are telling you this because it is true
-rather than because it is comfortable. Registration works by looking a trainer up by their invite
-code, and the database's permission rules currently grant that lookup by opening this information to
-every signed-in account. The app itself never shows anyone a list of other users, and nothing about
-anyone's training is exposed this way. We intend to narrow it, and will update this section when we
-have.
+Your profile can be seen by you and by the people you train with: a client's by their trainer, and a
+trainer's by their own clients. No one else can read it. A trainer's invite code is stored on its own
+so that someone joining can find their trainer by typing the code, without being able to look up
+anyone else.
 
 ### Your training
 Every session you record — the exercises, the sets, the weights, reps, distances and durations, how

@@ -9,15 +9,12 @@ import {
     signOut as firebaseSignOut,
 } from 'firebase/auth'
 import {
-    collection,
     deleteDoc,
     doc,
-    getDocs,
+    getDoc,
     onSnapshot,
-    query,
     serverTimestamp,
     setDoc,
-    where,
 } from 'firebase/firestore'
 import { auth, db } from '../firebase/config'
 import { RECONNECT_GRACE_MS, SNAPSHOT_TIMEOUT_MS } from '../hooks/useFirestoreSnapshot'
@@ -147,13 +144,15 @@ export const AuthProvider = ({ children }) => {
     }, [user])
 
     const createAccount = async (email, password, { name, role, inviteCode, trainerCode }) => {
-        // Firestore security rules only allow reading `users` docs to signed-in
+        // Firestore security rules only allow reading inviteCodes/ to signed-in
         // accounts, so the auth account must exist before we can look up a
         // trainer's invite code. If that lookup fails, roll back the auth
         // account we just created rather than leaving an orphaned login with
         // no profile doc.
         const credential = await createUserWithEmailAndPassword(auth, email, password)
         const signupProof = doc(db, 'users', credential.user.uid, 'private', 'signup')
+
+        let profileWritten = false
 
         try {
             let trainerId = null
@@ -163,22 +162,22 @@ export const AuthProvider = ({ children }) => {
                 if (!inviteCode) {
                     throw new Error('An invite code from your trainer is required to register as a client.')
                 }
-                const trainerMatches = await getDocs(
-                    query(collection(db, 'users'), where('inviteCode', '==', inviteCode.trim().toUpperCase()))
-                )
-                if (trainerMatches.empty) {
+                // One document fetched by the code itself, never a query over
+                // `users`: profiles are closed to strangers, and inviteCodes/
+                // allows a get but not a list, so knowing a code is the only way
+                // to learn whose it is.
+                const match = await getDoc(doc(db, 'inviteCodes', inviteCode.trim().toUpperCase()))
+                if (!match.exists()) {
                     throw new Error("That invite code doesn't match any trainer. Double-check it and try again.")
                 }
-                trainerId = trainerMatches.docs[0].id
+                trainerId = match.data().trainerId
             } else if (role === 'trainer') {
                 // The shared trainer signup code is checked by firestore.rules,
                 // never here, and that is the whole design rather than a
-                // preference. `users` is readable by any signed-in account - the
-                // invite-code lookup three lines up is why - so a code this app
-                // could compare against would be a code the first curious tester
-                // could read out of Firestore and use to hand out trainer
-                // accounts. Rules' get(), though, reads documents the client
-                // cannot: the code lives at config/trainerSignup, which denies
+                // preference. A code this app could compare against would be a
+                // code anyone could read out of the bundle or Firestore and use
+                // to hand out trainer accounts. Rules' get(), though, reads
+                // documents the client cannot: the code lives at config/trainerSignup, which denies
                 // read and write to everyone, and what the applicant typed goes
                 // here, to a subcollection that is equally unreadable. The users
                 // create rule compares the two, and neither value is ever
@@ -204,6 +203,16 @@ export const AuthProvider = ({ children }) => {
                 inviteCode: role === 'trainer' ? ownInviteCode : null,
                 createdAt: serverTimestamp(),
             })
+            profileWritten = true
+
+            // After the profile, not batched with it: the inviteCodes create rule
+            // reads this profile to check the role and that the code is the one
+            // it was issued, and rules cannot see a sibling write in a batch.
+            // A collision with an existing code is denied, rolls the whole
+            // registration back, and the next attempt draws a fresh code.
+            if (role === 'trainer') {
+                await setDoc(doc(db, 'inviteCodes', ownInviteCode), { trainerId: credential.user.uid })
+            }
 
             // The proof has done its job; keep no copy of a shared secret a user
             // typed. Best-effort - failing to tidy up must not fail a
@@ -219,6 +228,11 @@ export const AuthProvider = ({ children }) => {
             })
         } catch (error) {
             await deleteDoc(signupProof).catch(() => {})
+            // Only a failure after the profile leaves one behind, and deleting
+            // the auth account would orphan it unreachable.
+            if (profileWritten) {
+                await deleteDoc(doc(db, 'users', credential.user.uid)).catch(() => {})
+            }
             await deleteUser(credential.user).catch(() => {})
 
             // On the trainer path the only clause of the users create rule that

@@ -12,7 +12,7 @@
  * Exits non-zero if any expectation fails, so it can gate a commit.
  * Reads EXPO_PUBLIC_FIREBASE_* from .env by hand, like the other scripts.
  *
- * A full pass is currently **45 passed, 0 failed**. Any other number means a
+ * A full pass is currently **59 passed, 0 failed**. Any other number means a
  * rule moved or an assertion was added without updating this line and the
  * matching one in CLAUDE.md.
  */
@@ -225,6 +225,40 @@ const main = async () => {
     await expect('client edits a Template she is assigned', 'deny', () =>
         updateDoc(doc(db, 'workoutTemplates', T.lowerA), { name: 'Hijacked' }))
 
+    // === Who can see whom ================================================
+    //
+    // `users` used to be readable by every signed-in account, which put every
+    // email address and every Trainer's invite code one query away from anyone
+    // who registered. It is now yourself, your Trainer and your Clients.
+    await expect('client reads her own profile', 'allow', () =>
+        getDoc(doc(db, 'users', uid.maya)))
+
+    await expect('client reads her own Trainer\'s profile', 'allow', () =>
+        getDoc(doc(db, 'users', uid.zephyr)))
+
+    await expect('client reads another client\'s profile', 'deny', () =>
+        getDoc(doc(db, 'users', uid.tom)))
+
+    await expect('client reads another Trainer\'s profile', 'deny', () =>
+        getDoc(doc(db, 'users', uid.patrick)))
+
+    // The leak itself: the query registration used to make.
+    await expect('client looks a Trainer up in users by invite code', 'deny', () =>
+        getDocs(query(collection(db, 'users'), where('inviteCode', '==', 'PATRK2'))))
+
+    // Its replacement. A get by the exact code is the whole of what a new
+    // Client needs; a list would hand out every code at once.
+    await expect('signed-in user fetches a Trainer by invite code', 'allow', () =>
+        getDoc(doc(db, 'inviteCodes', 'ZEPHYR')).then((s) => {
+            if (s.data()?.trainerId !== uid.zephyr) throw new Error('lookup missing or wrong - run backfill-invite-codes.js')
+        }))
+
+    await expect('signed-in user lists every invite code', 'deny', () =>
+        getDocs(collection(db, 'inviteCodes')))
+
+    await expect('client claims an invite code for herself', 'deny', () =>
+        setDoc(doc(db, 'inviteCodes', 'MAYA22'), { trainerId: uid.maya }))
+
     // === The trainer signup gate ==========================================
     //
     // The gate's whole security argument is an asymmetry: rules' get() can read
@@ -249,9 +283,9 @@ const main = async () => {
         await expect('client writes her own signup proof', 'allow', () =>
             setDoc(doc(db, 'users', uid.maya, 'private', 'signup'), { trainerCode: 'not-the-code' }))
 
-        // The one that matters most. `users` is world-readable to signed-in
-        // accounts, and this subcollection is only private because rules v2 does
-        // not extend a document match to the paths beneath it. A rules_version
+        // The one that matters most. Her own profile is readable to her, and
+        // this subcollection is only private because rules v2 does not extend a
+        // document match to the paths beneath it. A rules_version
         // downgrade, or a stray `match /users/{uid}/{doc=**}`, would quietly undo
         // that and put the applicant's own answer - and by extension the shared
         // code - back within reach.
@@ -316,6 +350,28 @@ const main = async () => {
 
     await expect('trainer lists Assignments he owns', 'allow', () =>
         getDocs(query(collection(db, 'assignments'), where('trainerId', '==', uid.zephyr))))
+
+    await expect('trainer reads his client\'s profile', 'allow', () =>
+        getDoc(doc(db, 'users', uid.maya)))
+
+    await expect('trainer reads another trainer\'s client\'s profile', 'deny', () =>
+        getDoc(doc(db, 'users', uid.tom)))
+
+    // inviteCodes/ trusts the profile's code when one is claimed, so the
+    // profile must not be able to change it.
+    await expect('trainer rewrites the invite code on his profile', 'deny', () =>
+        updateDoc(doc(db, 'users', uid.zephyr), { inviteCode: 'NEWONE' }))
+
+    await expect('trainer claims a code his profile does not carry', 'deny', () =>
+        setDoc(doc(db, 'inviteCodes', 'NEWONE'), { trainerId: uid.zephyr }))
+
+    // Create-only: re-pointing an issued code would sign another Trainer's
+    // future Clients up to this one.
+    await expect('trainer re-points another trainer\'s invite code', 'deny', () =>
+        setDoc(doc(db, 'inviteCodes', 'PATRK2'), { trainerId: uid.zephyr }))
+
+    await expect('trainer deletes another trainer\'s invite code', 'deny', () =>
+        deleteDoc(doc(db, 'inviteCodes', 'PATRK2')))
 
     await expect('trainer reads his client\'s Sessions', 'allow', () =>
         getDocs(query(collection(db, 'sessions'), where('clientId', '==', uid.maya))))

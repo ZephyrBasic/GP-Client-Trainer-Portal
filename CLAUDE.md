@@ -66,7 +66,7 @@ scripts/      plain .js under bare node (not in tsconfig); one Python harvester
 
 ## Live project: Zephyr runs these, not you
 
-`firebase deploy`, `scripts/seed-test-data.js`, `scripts/smoke-test-rules.js` (expect 45 passed),
+`firebase deploy`, `scripts/seed-test-data.js`, `scripts/smoke-test-rules.js` (expect 59 passed),
 migrations, and anything using `secrets/service-account.json`. Give the exact command and what to
 expect. Non-interactive ones can go through `!`; interactive scripts need a real terminal.
 
