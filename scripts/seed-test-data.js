@@ -549,6 +549,9 @@ const main = async () => {
                 await db.doc(`workoutTemplates/${templateId(t)}/versions/${VERSION_ID}`).delete()
                 await db.doc(`workoutTemplates/${templateId(t)}`).delete()
             }
+            for (const t of COHORT.trainers) {
+                await db.doc(`inviteCodes/${t.inviteCode}`).delete()
+            }
             for (const p of [...COHORT.trainers, ...COHORT.clients]) {
                 if (!uids[p.key]) continue
                 await db.doc(`users/${uids[p.key]}`).delete()
@@ -569,6 +572,9 @@ const main = async () => {
             trainerId: null, inviteCode: t.inviteCode,
             createdAt: FieldValue.serverTimestamp(),
         }, { merge: true })
+        // The lookup Client registration actually reads (see firestore.rules,
+        // inviteCodes/). Without it the code on the profile is decoration.
+        await db.doc(`inviteCodes/${t.inviteCode}`).set({ trainerId: uids[t.key] })
     }
     for (const c of COHORT.clients) {
         console.log(`  ${dry ? 'would write' : 'wrote     '} users/${uids[c.key]}  ${c.name} (client of ${c.trainer})`)

@@ -1,5 +1,5 @@
 import { EmailAuthProvider, deleteUser, reauthenticateWithCredential } from 'firebase/auth'
-import { collection, deleteDoc, doc, getDocs, getDocsFromServer, query, where } from 'firebase/firestore'
+import { collection, deleteDoc, doc, getDoc, getDocs, getDocsFromServer, query, where } from 'firebase/firestore'
 import { deleteObject, ref } from 'firebase/storage'
 import { db, storage } from '../firebase/config'
 
@@ -164,6 +164,17 @@ export const deleteOwnAccount = async ({
     // the one document under this user that nobody - including them - can read
     // to check.
     await deleteDoc(doc(db, 'users', uid, 'private', 'signup')).catch(() => {})
+
+    // Before the profile, which is where the code is read from. Left behind, it
+    // would sign the next Client who types it up to a Trainer who no longer
+    // exists. A Client has no code, so there is nothing to delete. Swallowed
+    // because the rule reads the document's trainerId, so a code that was never
+    // written fails as a denial - and the only code this user could fail to
+    // delete is one that does not exist.
+    const ownInviteCode = (await getDoc(doc(db, 'users', uid))).data()?.inviteCode
+    if (ownInviteCode) {
+        await deleteDoc(doc(db, 'inviteCodes', ownInviteCode)).catch(() => {})
+    }
 
     await deleteDoc(doc(db, 'users', uid))
 

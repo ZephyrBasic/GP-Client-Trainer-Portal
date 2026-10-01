@@ -81,15 +81,18 @@ authenticated GreenPulse user.
 ### `users/{uid}` — account profile
 - `name`, `email`, `role` (`trainer` | `client`), `trainerId` (a Client's Trainer), `inviteCode` (a
   Trainer's shareable code), `createdAt`.
-- **Readable by any signed-in user, including by listing the whole collection.** The rule is
-  `allow read: if isSignedIn()`, and in Firestore `read` grants `list` as well as `get`. So any
-  signed-in account can fetch every user's `name`, `email`, `role`, `trainerId` and a Trainer's
-  `inviteCode` in one query. It exists because registration looks a Trainer up by invite code.
-  Nothing about anyone's *training* is exposed by it, and the policy states it plainly. It is also
-  the weakest point against APP 11 (reasonable security steps) once strangers can sign up — see
-  §10.
-- Writable and deletable only by the person it describes. `role` and `trainerId` are frozen after
-  registration.
+- **Readable by the person it describes, their Trainer, and their Clients.** A Trainer can list
+  profiles whose `trainerId` is them (their roster); a Client can get their own Trainer's profile.
+  Nobody can list the collection beyond that. Until 2026-10 any signed-in account could list every
+  profile, because registration found a Trainer by querying `users` on `inviteCode`.
+- Writable and deletable only by the person it describes. `role`, `trainerId` and `inviteCode` are
+  frozen after registration.
+
+### `inviteCodes/{code}` — invite code lookup
+- `trainerId` only. Written by the Trainer at registration, deleted with their account.
+- Any signed-in user can **get** one by its exact code (that is how a new Client finds their
+  Trainer). Nobody can **list** the collection, so knowing a code is the only way to learn whose it
+  is, and the uid it reveals opens nothing on its own.
 
 ### `users/{uid}/private/signup` — signup gate scratch
 - `trainerCode`: the shared trainer signup code as typed by the applicant.
@@ -225,10 +228,9 @@ These cannot be answered from the repo, and the documents have gaps until they a
    training records stay in Australia and lists what still goes overseas: Firebase Auth records,
    Sentry crash reports, Cloudflare logs, YouTube. One loose end: the Storage bucket's location, which
    only matters once progress media is switched back on (§7).
-3. **Open `users` reads.** Any signed-in account can list every user's email and every Trainer's
-   invite code (§4). Disclosed honestly, but weak against APP 11 once the beta is public. The fix is a
-   separate `inviteCodes/{code}` lookup document, so `users` can close down to self and linked
-   Trainer/Clients. That is a rules and signup change, not a documentation one.
+3. **Open `users` reads — fixed.** Closed to self, Trainer and Clients, with registration moved to
+   an `inviteCodes/{code}` lookup (§4). Only true once the rules are deployed and
+   `scripts/backfill-invite-codes.js` has run.
 4. **Firebase data processing terms.** Accept Google's Cloud Data Processing Addendum in the console
    (Firebase Console → Project settings → Privacy & Security). It is also what backs "providers that
    protect information to a comparable standard" in the policy.
