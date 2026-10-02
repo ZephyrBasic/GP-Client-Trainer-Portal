@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { ScrollView, StyleSheet, TextInput, View } from 'react-native'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Platform, ScrollView, StyleSheet, TextInput, View } from 'react-native'
 import Pressable from '../../../../components/Touchable'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
 
 import ThemedView from '../../../../components/ThemedView'
 import ThemedText from '../../../../components/ThemedText'
@@ -17,6 +17,7 @@ import ExercisePicker from '../../../../components/ExercisePicker'
 import ExerciseSetEditor from '../../../../components/ExerciseSetEditor'
 import AddButton from '../../../../components/AddButton'
 import FieldError from '../../../../components/FieldError'
+import UnsavedChangesSheet from '../../../../components/UnsavedChangesSheet'
 import { showToast } from '../../../../components/Toast'
 import { Space, SCREEN_PADDING } from '../../../../constants/Layout'
 import { FontFamily } from '../../../../constants/Type'
@@ -25,7 +26,6 @@ import { draftsFrom, useExerciseDraft } from '../../../../hooks/useExerciseDraft
 import { useLeave } from '../../../../hooks/useLeave'
 import { useOffline } from '../../../../hooks/useOffline'
 import {
-    nextVersionNumber,
     publishTemplateVersion,
     useTemplateVersion,
     useWorkoutTemplate,
@@ -39,8 +39,8 @@ import { blankTargetError, storedSetFrom } from '../../../../utils/setDraft'
  * it points at holds the contents. Saving does not write back to that Version -
  * it publishes a new one (ADR 0002), because Sessions cite the exact Version
  * they ran and rewriting it would silently change what a Client appears to have
- * been asked to do. The screen says so rather than leaving the Trainer to infer
- * it from a version number ticking over after the fact.
+ * been asked to do. The screen only ever says "save", though: Versions are how
+ * history stays honest, not something an author should have to think about.
  *
  * Serves either author. A Workout Template is one kind of thing whoever wrote it,
  * so a Client editing their own saved routine gets this same screen and the same
@@ -52,13 +52,55 @@ const EditWorkoutTemplate = () => {
     const { templateId } = useLocalSearchParams<{ templateId: string }>()
     const router = useRouter()
     const { profile } = useAuth()
+    const navigation = useNavigation()
+
+    // The way off the screen the author was asked about, held while the
+    // unsaved-changes sheet is up and run once they've answered it.
+    const [pendingLeave, setPendingLeave] = useState<(() => void) | null>(null)
+    // Set just before leaving on purpose - after a save, or a discard - so the
+    // guards below let that one departure through.
+    const leaving = useRef(false)
+    // Read by the guards through a ref so they don't resubscribe on every keystroke.
+    const dirtyRef = useRef(false)
+
+    const guard = useCallback((go: () => void) => {
+        if (dirtyRef.current && !leaving.current) setPendingLeave(() => go)
+        else go()
+    }, [])
+
     // As in templates/new: a Client only ever edits their own from Today, so
-    // their back and publish go there; a Trainer's go down the Library.
+    // their back and save go there; a Trainer's go down the Library.
     const { leave, fromToday } = useLeave({
         home: '/workouts/templates',
         homeLabel: 'Library',
         toToday: profile?.role !== 'trainer',
+        guard,
     })
+
+    // Every other way off: the header's back arrow, a swipe, a replace.
+    // useLeave's guard covers the back controls it draws itself.
+    useEffect(
+        () =>
+            navigation.addListener('beforeRemove', (e: any) => {
+                if (!dirtyRef.current || leaving.current) return
+                e.preventDefault()
+                setPendingLeave(() => () => navigation.dispatch(e.data.action))
+            }),
+        [navigation]
+    )
+
+    // A web tab closed or refreshed. The browser draws its own prompt and
+    // ignores any text offered, so this only switches it on.
+    useEffect(() => {
+        if (Platform.OS !== 'web') return
+        const onUnload = (e: BeforeUnloadEvent) => {
+            if (!dirtyRef.current || leaving.current) return
+            e.preventDefault()
+            e.returnValue = ''
+        }
+        window.addEventListener('beforeunload', onUnload)
+        return () => window.removeEventListener('beforeunload', onUnload)
+    }, [])
 
     const {
         template,
@@ -127,8 +169,8 @@ const EditWorkoutTemplate = () => {
         sets: ex.sets.map((set) => storedSetFrom(set, ex.fields)),
     }))
 
-    // Publishing an unchanged draft would mint a Version identical to the one
-    // it replaces, and every Client's history would then cite two numbers for
+    // Saving an unchanged draft would mint a Version identical to the one it
+    // replaces, and every Client's history would then cite two Versions for
     // one workout. Compared as stored, so "50" retyped as "50.0" is no change.
     const unchanged = useMemo(() => {
         if (!version) return false
@@ -140,10 +182,12 @@ const EditWorkoutTemplate = () => {
         return name.trim() === (template?.name ?? '') && stored(targetExercises) === stored(loaded)
     }, [version, template, name, targetExercises])
 
-    const currentVersion = template?.currentVersionNumber ?? 1
-    const publishingVersion = nextVersionNumber(template?.currentVersionNumber)
+    // Nothing to lose until the form has been filled from the stored Version.
+    dirtyRef.current = Boolean(loadedVersionId) && !unchanged
 
-    const handlePublish = async () => {
+    // `then` is where to go once saved: the departure the sheet was asked
+    // about, or by default the same way back as the back button.
+    const handleSave = async (then: () => void = leave) => {
         const trimmedName = name.trim()
         const sets = Object.fromEntries(
             exercises
@@ -156,6 +200,9 @@ const EditWorkoutTemplate = () => {
             sets,
         }
         setErrors(found)
+        // Invalid edits can't be saved, so the sheet steps aside for the
+        // errors rather than leaving without them.
+        if (found.name || found.exercises || Object.keys(sets).length) setPendingLeave(null)
         if (found.name) return nameRef.current?.focus()
         if (found.exercises || Object.keys(sets).length) return scrollRef.current?.scrollToEnd({ animated: true })
 
@@ -167,12 +214,22 @@ const EditWorkoutTemplate = () => {
                 exercises: targetExercises,
                 currentVersionNumber: template?.currentVersionNumber,
             })
-            leave()
-            showToast(`Version ${publishingVersion} published`)
+            leaving.current = true
+            setPendingLeave(null)
+            then()
+            showToast('Changes saved')
         } catch (err) {
-            setErrors({ form: err.message || 'Failed to publish the new version.' })
+            setErrors({ form: err.message || 'Failed to save your changes.' })
+            setPendingLeave(null)
             setSaving(false)
         }
+    }
+
+    const handleDiscard = () => {
+        const go = pendingLeave
+        leaving.current = true
+        setPendingLeave(null)
+        go?.()
     }
 
     // Only the author edits, and this is the affordance rather than the
@@ -225,16 +282,7 @@ const EditWorkoutTemplate = () => {
                 <ScrollView ref={scrollRef} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
                     <OfflineBanner visible={offline} onRetry={retry} />
 
-                    {/* Which Version is live right now, and therefore what anyone
-                        starting this workout gets. Worded for either author: a
-                        Client editing their own routine has no clients to speak of,
-                        and telling them otherwise would be nonsense. */}
-                    <ScreenSubtitle>
-                        Editing · currently v{currentVersion} —{' '}
-                        {profile?.role === 'trainer'
-                            ? 'the version your clients see now'
-                            : 'the version you start now'}
-                    </ScreenSubtitle>
+                    <ScreenSubtitle>Editing</ScreenSubtitle>
 
                     {/* Assigning is reached from the Template, because "who is doing
                         this workout?" is a question about this Template and nothing
@@ -317,24 +365,9 @@ const EditWorkoutTemplate = () => {
                     <FieldError>{errors.form}</FieldError>
 
                     <Spacer height={Space.xxl} />
-                    {/* Spelled out, not implied. Progressing a workout and correcting
-                        a typo take the same keystrokes here, and only one of them is
-                        what the Trainer means - so the screen names the version being
-                        published and promises the old one is untouched, which is the
-                        promise a Client's history rests on. */}
-                    <ThemedText variant="meta" tone="muted" style={styles.publishNote}>
-                        Saving publishes version{' '}
-                        <ThemedText tone="title" style={styles.publishVersion}>
-                            {publishingVersion}
-                        </ThemedText>
-                        . Version {currentVersion} stays exactly as it is, so sessions already performed against it keep
-                        their meaning.
-                    </ThemedText>
-
-                    <Spacer height={Space.sm + 2} />
-                    <ThemedButton onPress={handlePublish} disabled={saving || unchanged}>
+                    <ThemedButton onPress={() => handleSave()} disabled={saving || unchanged}>
                         <ThemedText variant="cardTitle" tone="onPrimary">
-                            {saving ? 'Publishing...' : unchanged ? 'No changes to publish' : 'Publish new version'}
+                            {saving ? 'Saving...' : unchanged ? 'No changes to save' : 'Save changes'}
                         </ThemedText>
                     </ThemedButton>
                     <Spacer height={Space.xl} />
@@ -345,6 +378,12 @@ const EditWorkoutTemplate = () => {
                 visible={pickerOpen}
                 onSelect={handlePickExercise}
                 onClose={() => setPickerOpen(false)}
+            />
+            <UnsavedChangesSheet
+                visible={Boolean(pendingLeave) && !saving}
+                onClose={() => setPendingLeave(null)}
+                onSave={() => handleSave(pendingLeave ?? leave)}
+                onDiscard={handleDiscard}
             />
         </ThemedView>
     )
@@ -371,13 +410,5 @@ const styles = StyleSheet.create({
         minHeight: 44,
         justifyContent: 'center',
         alignSelf: 'flex-start',
-    },
-    publishNote: {
-        textAlign: 'center',
-        lineHeight: 18,
-    },
-    publishVersion: {
-        fontFamily: FontFamily.label,
-        fontSize: 12,
     },
 })

@@ -159,12 +159,8 @@ const AssignTemplate = () => {
                             here rather than as a second heading, since it is the
                             scope of everything below. */}
                         <ScreenSubtitle>
-                            {template.name} · v{template.currentVersionNumber ?? 1} · {assignedCount} of{' '}
-                            {clients.length} assigned
+                            {template.name} · {assignedCount} of {clients.length} assigned
                         </ScreenSubtitle>
-                        <ThemedText variant="meta" tone="muted">
-                            Everyone you assign sees version {template.currentVersionNumber ?? 1}.
-                        </ThemedText>
                         {error ? (
                             <>
                                 <Spacer height={Space.md} />

@@ -40,6 +40,14 @@ type Options = {
     homeLabel: string
     /** Always leave to Today, whatever the params say - the live Session. */
     toToday?: boolean
+    /**
+     * Called with `leave` instead of leaving, by the back controls this hook
+     * draws, so a screen with unsaved work can ask first. Needed because
+     * `beforeRemove` can't see the detour back to Today: that switches tabs
+     * before the reset removes this route, so refusing the reset would strand
+     * the screen behind Today rather than keep it on screen.
+     */
+    guard?: (leave: () => void) => void
 }
 
 /**
@@ -57,7 +65,7 @@ type Options = {
  * same as every other back arrow in the app - and takes Android's back button
  * too. Screens that draw their own header call `leave` from their own button.
  */
-export const useLeave = ({ home, homeLabel, toToday }: Options) => {
+export const useLeave = ({ home, homeLabel, toToday, guard }: Options) => {
     const router = useRouter()
     const navigation = useNavigation<Nav>()
     const params = useLocalSearchParams()
@@ -86,13 +94,14 @@ export const useLeave = ({ home, homeLabel, toToday }: Options) => {
     }, [fromToday, home, navigation, router])
 
     const label = fromToday ? 'Today' : homeLabel
+    const back = useCallback(() => (guard ? guard(leave) : leave()), [guard, leave])
 
     useLayoutEffect(() => {
         if (!ownBack) return
         navigation.setOptions({
-            headerLeft: () => <BackPill onPress={leave} label={`Back to ${label}`} style={{ marginLeft: -8 }} />,
+            headerLeft: () => <BackPill onPress={back} label={`Back to ${label}`} style={{ marginLeft: -8 }} />,
         })
-    }, [ownBack, label, leave, navigation])
+    }, [ownBack, label, back, navigation])
 
     // Focus-gated, since a screen left mounted in another tab would otherwise
     // answer the back button for whatever is on screen now.
@@ -100,11 +109,11 @@ export const useLeave = ({ home, homeLabel, toToday }: Options) => {
         useCallback(() => {
             if (!ownBack) return
             const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-                leave()
+                back()
                 return true
             })
             return () => sub.remove()
-        }, [ownBack, leave])
+        }, [ownBack, back])
     )
 
     return { leave, fromToday }

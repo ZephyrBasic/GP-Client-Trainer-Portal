@@ -8,7 +8,7 @@ import { Radius } from '../constants/Layout'
  * What a chip is saying about the thing it sits on.
  *
  *   accent  a good state, or a plain fact about the current thing - As
- *           Prescribed, and the version a Template is on
+ *           Prescribed
  *   amber   worth a look, not wrong - Modified
  *   muted   a state with no charge either way - Self-directed
  *
@@ -27,9 +27,8 @@ export type ChipTone = 'accent' | 'amber' | 'muted'
  * shout in a way this design does not.
  *
  * Uppercase micro-type, because a chip is a label and not a sentence - it has to
- * read as a marker at a glance beside a name set three sizes larger. The one
- * exception is a version chip, which is already a token ("v7") and looks wrong
- * spaced out; it passes `uppercase={false}`.
+ * read as a marker at a glance beside a name set three sizes larger. A label
+ * that is already a token and looks wrong spaced out can pass `uppercase={false}`.
  */
 const ThemedChip = ({
     label,
