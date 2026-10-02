@@ -12,7 +12,7 @@
  * Exits non-zero if any expectation fails, so it can gate a commit.
  * Reads EXPO_PUBLIC_FIREBASE_* from .env by hand, like the other scripts.
  *
- * A full pass is currently **59 passed, 0 failed**. Any other number means a
+ * A full pass is currently **70 passed, 0 failed**. Any other number means a
  * rule moved or an assertion was added without updating this line and the
  * matching one in CLAUDE.md.
  */
@@ -423,10 +423,56 @@ const main = async () => {
         await restoreFixture()
     }
 
-    await expect('trainer writes a Session for his client', 'deny', () =>
+    // A Trainer may run a live Session for their own Client (the beta demo) and
+    // nothing wider: never a finished record, never in someone else's name, and
+    // once it is finished it is the Client's and read-only to him again.
+    await expect('trainer writes a finished Session for his client', 'deny', () =>
         setDoc(doc(db, 'sessions', 'forged-by-trainer'), {
             clientId: uid.maya, status: 'completed', exercises: [],
         }))
+
+    await expect('trainer writes a finished Session naming himself as starter', 'deny', () =>
+        setDoc(doc(db, 'sessions', 'forged-by-trainer'), {
+            clientId: uid.maya, status: 'completed', startedBy: uid.zephyr, exercises: [],
+        }))
+
+    await expect('trainer starts a Session naming another trainer as starter', 'deny', () =>
+        setDoc(doc(db, 'sessions', 'forged-by-trainer'), {
+            clientId: uid.maya, status: 'active', startedBy: uid.patrick, exercises: [],
+        }))
+
+    await expect("trainer starts a Session for another trainer's client", 'deny', () =>
+        setDoc(doc(db, 'sessions', 'forged-by-trainer'), {
+            clientId: uid.tom, status: 'active', startedBy: uid.zephyr, exercises: [],
+        }))
+
+    const runId = `trainer-led-${Date.now()}`
+    const discardId = `${runId}-discarded`
+
+    await expect('trainer starts a live Session for his client', 'allow', () =>
+        setDoc(doc(db, 'sessions', runId), {
+            clientId: uid.maya, status: 'active', startedBy: uid.zephyr, exercises: [],
+        }))
+
+    await expect('trainer hands his live Session to another client', 'deny', () =>
+        updateDoc(doc(db, 'sessions', runId), { clientId: uid.tom }))
+
+    await expect('trainer finishes the Session he started', 'allow', () =>
+        updateDoc(doc(db, 'sessions', runId), { status: 'completed', durationMinutes: 30 }))
+
+    await expect('trainer edits that Session once it is finished', 'deny', () =>
+        updateDoc(doc(db, 'sessions', runId), { durationMinutes: 5 }))
+
+    await expect('trainer deletes that Session once it is finished', 'deny', () =>
+        deleteDoc(doc(db, 'sessions', runId)))
+
+    await expect('trainer starts a second live Session for his client', 'allow', () =>
+        setDoc(doc(db, 'sessions', discardId), {
+            clientId: uid.maya, status: 'active', startedBy: uid.zephyr, exercises: [],
+        }))
+
+    await expect('trainer discards a live Session he started', 'allow', () =>
+        deleteDoc(doc(db, 'sessions', discardId)))
 
     // ADR 0002: a Version is immutable. A write to an existing document is an
     // update, never a create, so the author's create permission cannot be used
@@ -464,6 +510,12 @@ const main = async () => {
 
     await expect('trainer reads another trainer\'s client\'s Sessions', 'deny', () =>
         getDocs(query(collection(db, 'sessions'), where('clientId', '==', uid.tom))))
+
+    // The finished trainer-led Session is Maya's now, which is both the
+    // guarantee and the cleanup.
+    await as('maya')
+    await expect('client deletes a Session her trainer ran for her', 'allow', () =>
+        deleteDoc(doc(db, 'sessions', runId)))
 
     // === Patrick: the other trainer ======================================
     await as('patrick')

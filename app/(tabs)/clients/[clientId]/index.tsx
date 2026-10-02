@@ -8,6 +8,9 @@ import ThemedView from '../../../../components/ThemedView'
 import ThemedText from '../../../../components/ThemedText'
 import BackPill from '../../../../components/BackPill'
 import ThemedButton from '../../../../components/ThemedButton'
+import ThemedCard from '../../../../components/ThemedCard'
+import ActiveSessionBanner from '../../../../components/ActiveSessionBanner'
+import PrescribedWorkoutList from '../../../../components/PrescribedWorkoutList'
 import WeeklyCompletionCard from '../../../../components/WeeklyCompletionCard'
 import WorkoutListItem from '../../../../components/WorkoutListItem'
 import OfflineBanner from '../../../../components/OfflineBanner'
@@ -16,12 +19,13 @@ import Spacer from '../../../../components/Spacer'
 import { Space, SCREEN_PADDING } from '../../../../constants/Layout'
 import { db } from '../../../../firebase/config'
 import { useAuth } from '../../../../contexts/AuthContext'
-import { useSessions } from '../../../../hooks/useSessions'
+import { discardSession, startSession, useSessions } from '../../../../hooks/useSessions'
 import { useTrainerAssignments } from '../../../../hooks/useAssignments'
 import { useWorkoutTemplates } from '../../../../hooks/useWorkoutTemplates'
 import { useFirestoreDoc } from '../../../../hooks/useFirestoreSnapshot'
 import { useLeave } from '../../../../hooks/useLeave'
 import { useOffline } from '../../../../hooks/useOffline'
+import { clearLiveSessionDraft } from '../../../../utils/liveSessionDraft'
 import { weeklyCompletion } from '../../../../utils/weeklyCompletion'
 import { sessionsThisWeek } from '../../../../utils/workoutStats'
 
@@ -43,12 +47,17 @@ const PROGRESS_MEDIA_ENABLED: boolean = false
  * Session says which workout it ran and how it went, and a Modified one opens
  * in place to the itemisation that justifies the verdict.
  *
- * Everything on it is a **read**. Sessions belong to the Client who performed
- * them - the rules grant a linked Trainer read-only access and nothing more -
- * so there is no control here that writes to one, and a Trainer who disagrees
+ * The history on it is a **read**. Sessions belong to the Client who performed
+ * them, so there is no control here that edits one, and a Trainer who disagrees
  * with a record talks to their Client rather than editing it. That is not a
  * limitation to work around: a history a Trainer can quietly rewrite is not a
  * record.
+ *
+ * The one write is starting a Session *for* the Client - the Trainer running
+ * the workout on their own phone, to show a new Client how the app works. It
+ * lands in the Client's history like any other, and the rules let the Trainer
+ * finish or discard it only while it is live and only if they started it.
+ * After that it is the Client's record.
  *
  * The verdict and the diff are both read straight off the Session, never
  * recomputed (ADR 0002). Recomputing would need the Version and the Assignment,
@@ -64,7 +73,16 @@ const ClientDetail = () => {
     const { profile } = useAuth()
     const insets = useSafeAreaInsets()
 
-    const { sessions, loading, offline: sessionsOffline, retry: retrySessions } = useSessions(clientId)
+    const {
+        sessions,
+        activeSession,
+        loading,
+        offline: sessionsOffline,
+        retry: retrySessions,
+    } = useSessions(clientId)
+    const [starting, setStarting] = useState(false)
+    const [discarding, setDiscarding] = useState(false)
+    const [startError, setStartError] = useState('')
 
     const {
         data: clientProfile,
@@ -114,6 +132,43 @@ const ClientDetail = () => {
               }))
             : undefined
 
+    // One open Session per Client still holds (ADR 0003), whoever starts it.
+    // A Session the Trainer started can be resumed or discarded from here; one
+    // the Client started is theirs to finish, so it only blocks.
+    const ownOpen = activeSession && activeSession.startedBy === profile?.uid ? activeSession : null
+    const blocked = Boolean(activeSession) || starting
+
+    // Same call Today makes, plus `startedBy`, which is what the rules check.
+    // The Version is captured now and travels with the Session (ADR 0002).
+    const start = async (template?: any) => {
+        setStartError('')
+        setStarting(true)
+        try {
+            const sessionId = await startSession({
+                clientId,
+                startedBy: profile.uid,
+                ...(template
+                    ? { templateId: template.id, versionId: template.currentVersionId, templateName: template.name }
+                    : {}),
+            })
+            router.push(`/clients/${clientId}/live/${sessionId}`)
+        } catch (err) {
+            setStartError(err.message || 'Could not start this session.')
+        }
+        setStarting(false)
+    }
+
+    const discard = async () => {
+        setDiscarding(true)
+        try {
+            clearLiveSessionDraft(ownOpen.id)
+            await discardSession(ownOpen.id)
+        } catch (err) {
+            setStartError(err.message || 'Could not discard this session.')
+        }
+        setDiscarding(false)
+    }
+
     const offline = useOffline(sessionsOffline, profileOffline, assignmentsOffline, templatesOffline)
     const retry = () => {
         retrySessions()
@@ -155,6 +210,56 @@ const ClientDetail = () => {
                         ) : null}
                         <WeeklyCompletionCard completion={completion} breakdown={breakdown} />
                         <Spacer height={Space.lg} />
+
+                        {ownOpen ? (
+                            <>
+                                <ActiveSessionBanner
+                                    session={ownOpen}
+                                    onResume={() => router.push(`/clients/${clientId}/live/${ownOpen.id}`)}
+                                    onDiscard={discard}
+                                    discarding={discarding}
+                                />
+                                <Spacer height={Space.lg} />
+                            </>
+                        ) : activeSession ? (
+                            <>
+                                <ThemedCard muted>
+                                    <ThemedText variant="meta" tone="muted">
+                                        {clientProfile?.name ?? 'This client'} has a session open on their own
+                                        phone. It needs finishing or discarding there before you start another.
+                                    </ThemedText>
+                                </ThemedCard>
+                                <Spacer height={Space.lg} />
+                            </>
+                        ) : null}
+
+                        {activeAssignments.length > 0 ? (
+                            <PrescribedWorkoutList
+                                label="WORKOUTS"
+                                assignments={activeAssignments}
+                                onStart={start}
+                                doneThisWeek={doneThisWeekByTemplate}
+                                disabled={blocked}
+                            />
+                        ) : (
+                            <>
+                                <SectionLabel>WORKOUTS</SectionLabel>
+                                <Spacer height={Space.sm} />
+                                <ThemedText variant="meta" tone="muted">
+                                    Nothing assigned yet. Assign a workout from its template in your Library.
+                                </ThemedText>
+                            </>
+                        )}
+                        <Spacer height={Space.sm} />
+                        <ThemedButton variant="ghost" onPress={() => start()} disabled={blocked}>
+                            <ThemedText tone={blocked ? 'muted' : 'body'}>Start without a plan</ThemedText>
+                        </ThemedButton>
+                        {startError ? (
+                            <ThemedText variant="meta" tone="danger" style={styles.startError}>
+                                {startError}
+                            </ThemedText>
+                        ) : null}
+                        <Spacer height={Space.xl} />
                         {!loading && sessions.length > 0 && (
                             <SectionLabel style={styles.historyLabel}>HISTORY</SectionLabel>
                         )}
@@ -205,6 +310,9 @@ const styles = StyleSheet.create({
         marginBottom: Space.xs,
     },
     empty: {
+        marginTop: Space.sm,
+    },
+    startError: {
         marginTop: Space.sm,
     },
 })

@@ -125,6 +125,7 @@ const PrescribedWorkoutRow = ({
 const PrescribedWorkoutList = ({
     assignments,
     onStart,
+    label = 'FROM YOUR TRAINER',
     /** Sessions performed this week, counted per Template id. */
     doneThisWeek,
     /** True while a Session is already open, or one is being started. */
@@ -132,10 +133,12 @@ const PrescribedWorkoutList = ({
 }: {
     assignments: any[]
     onStart: (template: any) => void
+    /** The section heading. A Trainer reading their Client's list calls it something else. */
+    label?: string
     doneThisWeek?: Record<string, number>
     disabled?: boolean
 }) => (
-    <WorkoutSection label="FROM YOUR TRAINER">
+    <WorkoutSection label={label}>
         {assignments.map((assignment) => (
             <PrescribedWorkoutRow
                 key={assignment.id}
