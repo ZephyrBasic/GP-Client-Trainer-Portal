@@ -158,8 +158,8 @@ service cloud.firestore {
           && get(/databases/$(database)/documents/users/$(clientId)).data.trainerId == request.auth.uid;
       }
 
-      // Owning client has full control; their linked trainer gets read-only
-      // access (sessions are logged by clients, viewed by trainers).
+      // Owning client has full control; their linked trainer gets read access,
+      // plus the narrow trainer-led case below.
       //
       // A session in flight is the same document in the same collection: it is
       // created when the client taps start, updated once when they finish, and
@@ -176,8 +176,34 @@ service cloud.firestore {
       // session is not frozen against later update: the owning client may edit
       // their own record, which is what makes a duration or a date correctable.
       allow read: if isOwner(resource.data.clientId) || isLinkedTrainer(resource.data.clientId);
-      allow create: if isOwner(request.resource.data.clientId);
-      allow update, delete: if isOwner(resource.data.clientId);
+      allow create: if isOwner(request.resource.data.clientId) || trainerStarts();
+      allow update: if isOwner(resource.data.clientId) || trainerFinishes();
+      allow delete: if isOwner(resource.data.clientId) || trainerRunsLive();
+
+      // The one write a Trainer has here: running a Session *for* their Client,
+      // on the Trainer's phone - the beta demo. It is still the Client's
+      // Session, in their history, but it carries `startedBy`, and that is what
+      // bounds the Trainer. They may start one only as live and only naming
+      // themselves; they may finish or discard only one they started, and only
+      // while it is live. Once finished it is the Client's record and the
+      // Trainer is read-only again, so a Trainer still cannot rewrite history.
+      function trainerStarts() {
+        return isLinkedTrainer(request.resource.data.clientId)
+          && request.resource.data.startedBy == request.auth.uid
+          && request.resource.data.status == 'active';
+      }
+      function trainerRunsLive() {
+        return isLinkedTrainer(resource.data.clientId)
+          && resource.data.get('startedBy', null) == request.auth.uid
+          && resource.data.status == 'active';
+      }
+      // Whose it is, and who started it, are fixed - otherwise finishing could
+      // hand the Session to another Client or disown it.
+      function trainerFinishes() {
+        return trainerRunsLive()
+          && request.resource.data.clientId == resource.data.clientId
+          && request.resource.data.startedBy == resource.data.startedBy;
+      }
     }
 
     match /workoutTemplates/{templateId} {

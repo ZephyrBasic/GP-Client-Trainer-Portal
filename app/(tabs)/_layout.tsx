@@ -19,7 +19,10 @@ const TabsLayout = () => {
     // half-finished workout at worst. Detected from the route rather than a
     // screen-owned flag, since a flag would need plumbing through a navigator
     // that does not otherwise know what its screens are doing.
-    const inLiveSession = segments[1] === 'workouts' && segments[2] === 'session'
+    // Both live routes: a Client's own, and a Trainer's run from the Client's page.
+    const inLiveSession =
+        (segments[1] === 'workouts' && segments[2] === 'session') ||
+        (segments[1] === 'clients' && (segments as string[])[3] === 'live')
     //
     // Only there. It was also hidden on the screens Today opens in the
     // Workouts tab, keyed off a `from=today` search param - which outlived

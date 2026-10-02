@@ -182,8 +182,15 @@ export const startSession = async ({
     templateId,
     versionId,
     templateName,
+    startedBy,
 }: {
     clientId: string
+    /**
+     * The Trainer running it for their Client, when it is one. The rules key off
+     * it: a Trainer may finish or discard only a Session they started, and only
+     * while it is live. Absent when the Client starts their own.
+     */
+    startedBy?: string | null
     /** All three together, or none of them - see below. */
     templateId?: string | null
     versionId?: string | null
@@ -212,6 +219,7 @@ export const startSession = async ({
         durationMinutes: null,
         notes: '',
         ...prescribedFields(templateId, versionId, templateName),
+        ...(startedBy ? { startedBy } : {}),
         createdAt: serverTimestamp(),
     }).catch((err) => console.warn('[session] start was not accepted:', err))
 
