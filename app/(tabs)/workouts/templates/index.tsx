@@ -5,7 +5,6 @@ import { useRouter } from 'expo-router'
 import ThemedView from '../../../../components/ThemedView'
 import ThemedText from '../../../../components/ThemedText'
 import ThemedCard from '../../../../components/ThemedCard'
-import ThemedChip from '../../../../components/ThemedChip'
 import ThemedButton from '../../../../components/ThemedButton'
 import OfflineBanner from '../../../../components/OfflineBanner'
 import ScreenSubtitle from '../../../../components/ScreenSubtitle'
@@ -133,17 +132,6 @@ const WorkoutTemplates = () => {
                                 >
                                     {item.name}
                                 </ThemedText>
-                                {/* On the title row, not under it. "Which version
-                                    are my clients on right now?" is what this
-                                    list is for, so it belongs beside the name
-                                    rather than as a line of prose below it.
-                                    Read off the Template rather than by opening
-                                    the Version, so the list still renders from
-                                    one query on bad signal. */}
-                                <ThemedChip
-                                    label={`v${item.currentVersionNumber ?? 1}`}
-                                    uppercase={false}
-                                />
                             </View>
                             <ThemedText variant="small" tone="muted" style={styles.version}>
                                 {[

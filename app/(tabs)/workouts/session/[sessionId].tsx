@@ -522,16 +522,9 @@ const LiveSession = () => {
         return <Redirect href="/workouts" />
     }
 
-    // The eyebrow says what this Session is, in place of the separate title +
-    // "Version N · in progress" subtitle the native header used to draw - this
-    // screen has no native header any more (see workouts/_layout.tsx) to
-    // repeat it under.
-    const eyebrow = [
-        (session.templateName || 'Session without a plan').toUpperCase(),
-        version?.versionNumber ? `V${version.versionNumber}` : null,
-    ]
-        .filter(Boolean)
-        .join(' · ')
+    // The eyebrow says what this Session is - this screen has no native header
+    // (see workouts/_layout.tsx) to say it instead.
+    const eyebrow = (session.templateName || 'Session without a plan').toUpperCase()
 
     return (
         <ThemedView style={styles.container}>

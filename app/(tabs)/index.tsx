@@ -10,7 +10,6 @@ import ThemedView from '../../components/ThemedView'
 import ThemedText from '../../components/ThemedText'
 import ThemedCard from '../../components/ThemedCard'
 import ThemedButton from '../../components/ThemedButton'
-import ThemedChip from '../../components/ThemedChip'
 import ProgressSegments from '../../components/ProgressSegments'
 import SectionLabel from '../../components/SectionLabel'
 import OfflineBanner from '../../components/OfflineBanner'
@@ -112,7 +111,6 @@ const HeroCard = ({
                     <ThemedText variant="label" tone="accent">
                         UP NEXT
                     </ThemedText>
-                    <ThemedChip label={`v${template.currentVersionNumber ?? 1}`} uppercase={false} />
                 </View>
                 <ThemedText variant="display" tone="title" numberOfLines={2}>
                     {template.name}

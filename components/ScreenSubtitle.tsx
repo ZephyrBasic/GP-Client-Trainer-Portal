@@ -6,8 +6,7 @@ import { Space } from '../constants/Layout'
 /**
  * One line under the native header saying what this screen is looking at.
  *
- * "3 templates · 4 clients", "2 prescribed · 1 of your own", "Version 7 · in
- * progress". Titles come from `Stack.Screen options` and name the *kind* of
+ * "3 templates · 4 clients", "2 prescribed · 1 of your own". Titles come from `Stack.Screen options` and name the *kind* of
  * screen; this names the particular one you are on, which is the thing a title
  * cannot do without becoming a sentence.
  *

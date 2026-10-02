@@ -181,7 +181,7 @@ const ClientTargets = () => {
                 {/* One title - the header's - with who and what under it. A
                     second, larger heading here read as a second screen title. */}
                 <ScreenSubtitle style={styles.subtitle}>
-                    For {client?.name ?? 'this client'} · {template?.name} v{template?.currentVersionNumber ?? 1}
+                    For {client?.name ?? 'this client'} · {template?.name}
                 </ScreenSubtitle>
 
                 <Spacer height={Space.lg} />
