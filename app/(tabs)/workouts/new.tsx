@@ -16,6 +16,8 @@ import FieldError from '../../../components/FieldError'
 import { showToast } from '../../../components/Toast'
 import ExercisePicker from '../../../components/ExercisePicker'
 import ExerciseSetEditor from '../../../components/ExerciseSetEditor'
+import ExerciseReorderList, { reorderItemsFrom } from '../../../components/ExerciseReorderList'
+import ReorderButton from '../../../components/ReorderButton'
 import WorkoutPlanPicker from '../../../components/WorkoutPlanPicker'
 import { Colors } from '../../../constants/Colors'
 import { Radius, Space, SCREEN_PADDING } from '../../../constants/Layout'
@@ -116,6 +118,10 @@ const LogWorkout = () => {
     const [duration, setDuration] = useState('')
     const [notes, setNotes] = useState('')
     const [pickerOpen, setPickerOpen] = useState(false)
+    // The Exercises as compact draggable rows instead of their Set editors
+    // (components/ExerciseReorderList), and whether one is held right now.
+    const [reordering, setReordering] = useState(false)
+    const [dragging, setDragging] = useState(false)
     // One slot per field, drawn under the box it is about (.claude/rules/ui.md).
     const [errors, setErrors] = useState<{ form?: string; exercises?: string; duration?: string; date?: string }>({})
     const clearError = (field: 'form' | 'exercises' | 'duration' | 'date') =>
@@ -128,7 +134,7 @@ const LogWorkout = () => {
     // can bring it into view - there is no box there to focus.
     const exercisesY = useRef(0)
 
-    const { exercises, setExercises, pickExercise, updateSet, addSet, removeSet, removeExercise } =
+    const { exercises, setExercises, pickExercise, updateSet, addSet, removeSet, removeExercise, moveExercise } =
         useExerciseDraft([], (exercise, fields) => {
             // Empty on a first attempt, otherwise seeded with what they did last
             // time. This is for Exercises added by hand, and stays right even
@@ -274,7 +280,12 @@ const LogWorkout = () => {
     return (
         <ThemedView style={styles.container}>
             <ScreenEnter play={fromToday}>
-                <ScrollView ref={scrollRef} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+                <ScrollView
+                    ref={scrollRef}
+                    contentContainerStyle={styles.scrollContent}
+                    keyboardShouldPersistTaps="handled"
+                    scrollEnabled={!dragging}
+                >
                     <OfflineBanner visible={offline} onRetry={retry} />
 
                     {/* First, because it decides what the rest of the form is
@@ -329,7 +340,12 @@ const LogWorkout = () => {
 
                     <Spacer height={Space.xl} />
                     <View onLayout={(e) => (exercisesY.current = e.nativeEvent.layout.y)}>
+                        <View style={styles.sectionHead}>
                         <SectionLabel>EXERCISES</SectionLabel>
+                        {exercises.length > 1 || reordering ? (
+                            <ReorderButton reordering={reordering} onPress={() => setReordering(!reordering)} disabled={saving} />
+                        ) : null}
+                    </View>
                     </View>
 
                     {planPending ? (
@@ -363,7 +379,16 @@ const LogWorkout = () => {
                         </>
                     ) : null}
 
-                    {exercises.map((exercise, exIndex) => (
+                    {reordering ? (
+                        <>
+                            <Spacer height={Space.md} />
+                            <ExerciseReorderList
+                                items={reorderItemsFrom(exercises)}
+                                onMove={moveExercise}
+                                onDragChange={setDragging}
+                            />
+                        </>
+                    ) : exercises.map((exercise, exIndex) => (
                         <View key={`${exercise.exerciseId}-${exIndex}`}>
                             <Spacer height={Space.xl} />
                             <ExerciseSetEditor
@@ -385,7 +410,11 @@ const LogWorkout = () => {
                         (app/(tabs)/workouts/session/[sessionId].tsx) rather than a
                         bare link, so the one control both screens share for this
                         reads the same wherever a Client meets it. */}
-                    <AddButton label="Add exercise" onPress={() => setPickerOpen(true)} disabled={saving} />
+                    {/* Hidden while reordering, so "Done" is the one way back
+                        to the Sets and nothing lands in a list being sorted. */}
+                    {reordering ? null : (
+                        <AddButton label="Add exercise" onPress={() => setPickerOpen(true)} disabled={saving} />
+                    )}
                     <FieldError>{errors.exercises}</FieldError>
 
                     <Spacer height={Space.xl} />
@@ -430,6 +459,11 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         paddingBottom: Space.xl,
+    },
+    sectionHead: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
     },
     label: {
         marginBottom: Space.sm - 2,

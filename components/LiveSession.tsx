@@ -22,6 +22,8 @@ import ProgressBar from './ProgressBar'
 import Spacer from './Spacer'
 import ExercisePicker from './ExercisePicker'
 import ExerciseSetEditor from './ExerciseSetEditor'
+import ExerciseReorderList, { reorderItemsFrom } from './ExerciseReorderList'
+import ReorderButton from './ReorderButton'
 import { Colors } from '../constants/Colors'
 import { Radius, Space, SCREEN_PADDING } from '../constants/Layout'
 import { STAGGER_MAX_MS, STAGGER_MS } from '../constants/Motion'
@@ -205,6 +207,7 @@ const LiveSession = ({
         // Session is simply recorded without it. Nothing has been written yet,
         // so there is nothing to undo.
         removeExercise: skipExercise,
+        moveExercise,
     } = useExerciseDraft([], () => ({
         // One empty, unticked row. An Exercise added mid-Session was never
         // prescribed, so there is no target to prefill and nothing to compare it
@@ -219,6 +222,10 @@ const LiveSession = ({
     // is what lets the targets arrive late without arriving twice.
     const [planApplied, setPlanApplied] = useState(false)
     const [pickerOpen, setPickerOpen] = useState(false)
+    // The Exercises as compact draggable rows instead of their Sets, for doing
+    // them in a different order than planned (components/ExerciseReorderList).
+    const [reordering, setReordering] = useState(false)
+    const [dragging, setDragging] = useState(false)
     const [finishing, setFinishing] = useState(false)
     const [duration, setDuration] = useState('')
     const [date, setDate] = useState('')
@@ -415,6 +422,7 @@ const LiveSession = ({
 
     const openFinish = () => {
         setErrors({})
+        setReordering(false)
         setDuration(formatDurationInput(elapsedSeconds))
         // The day it started, not the day it ends. A Session begun at 23:50 was
         // Tuesday's training however long it ran.
@@ -602,6 +610,7 @@ const LiveSession = ({
                     { paddingBottom: insets.bottom + Space.xxl * 2 },
                 ]}
                 keyboardShouldPersistTaps="handled"
+                scrollEnabled={!dragging}
             >
                 <OfflineBanner visible={offline} onRetry={retry} />
 
@@ -638,7 +647,22 @@ const LiveSession = ({
                     kinds of row here: skipping is something only a prescribed
                     Exercise can be, so one the Client added mid-Session offers
                     to delete itself instead. */}
-                {exercises.map((exercise, exIndex) => (
+                {exercises.length > 1 || reordering ? (
+                    <View style={styles.reorderRow}>
+                        <ReorderButton reordering={reordering} onPress={() => setReordering(!reordering)} disabled={saving} />
+                    </View>
+                ) : null}
+
+                {reordering ? (
+                    <>
+                        <Spacer height={Space.md} />
+                        <ExerciseReorderList
+                            items={reorderItemsFrom(exercises)}
+                            onMove={moveExercise}
+                            onDragChange={setDragging}
+                        />
+                    </>
+                ) : exercises.map((exercise, exIndex) => (
                     <FadeIn
                         key={`${exercise.exerciseId}-${exIndex}`}
                         delay={Math.min(exIndex * STAGGER_MS, STAGGER_MAX_MS)}
@@ -668,7 +692,11 @@ const LiveSession = ({
                     start), so it keeps a place here, styled the same as the
                     pills under each Exercise. */}
                 <Spacer height={Space.lg} />
-                <AddButton label="Add exercise" onPress={() => setPickerOpen(true)} disabled={saving} />
+                {/* Hidden while reordering, so "Done" is the one way back to
+                    the Sets and nothing lands in a list being sorted. */}
+                {reordering ? null : (
+                    <AddButton label="Add exercise" onPress={() => setPickerOpen(true)} disabled={saving} />
+                )}
 
                 {finishing ? (
                     <>
@@ -866,6 +894,10 @@ export default LiveSession
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    reorderRow: {
+        alignItems: 'flex-end',
+        marginTop: Space.md,
     },
     header: {
         borderBottomWidth: 1,
