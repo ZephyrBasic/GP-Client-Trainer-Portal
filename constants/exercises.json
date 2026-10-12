@@ -1680,6 +1680,22 @@
     ]
   },
   {
+    "id": "l-sit",
+    "name": "L-Sit",
+    "fields": [
+      "durationSeconds"
+    ],
+    "tags": [
+      "muscle:abs",
+      "muscle:hip-flexors",
+      "muscle:triceps",
+      "pattern:anti-extension",
+      "modality:isometric",
+      "role:core",
+      "equipment:bodyweight"
+    ]
+  },
+  {
     "id": "piriformis-stretch",
     "name": "Piriformis Stretch",
     "fields": [
@@ -3487,8 +3503,23 @@
     "durationSeconds": 16
   },
   {
+    "id": "straddle-leg-raise",
+    "name": "Straddle Leg Raise",
+    "fields": [
+      "reps"
+    ],
+    "tags": [
+      "muscle:hip-flexors",
+      "muscle:adductors",
+      "muscle:abs",
+      "modality:mobility",
+      "role:accessory",
+      "equipment:bodyweight"
+    ]
+  },
+  {
     "id": "straight-arm-pulldown",
-    "name": "Straight-Arm Pulldown",
+    "name": "Straight-Arm Row",
     "fields": [
       "weightKg",
       "reps"
