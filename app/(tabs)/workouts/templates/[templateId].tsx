@@ -15,6 +15,8 @@ import Spacer from '../../../../components/Spacer'
 import SectionLabel from '../../../../components/SectionLabel'
 import ExercisePicker from '../../../../components/ExercisePicker'
 import ExerciseSetEditor from '../../../../components/ExerciseSetEditor'
+import ExerciseReorderList, { reorderItemsFrom } from '../../../../components/ExerciseReorderList'
+import ReorderButton from '../../../../components/ReorderButton'
 import AddButton from '../../../../components/AddButton'
 import FieldError from '../../../../components/FieldError'
 import UnsavedChangesSheet from '../../../../components/UnsavedChangesSheet'
@@ -125,6 +127,10 @@ const EditWorkoutTemplate = () => {
 
     const [name, setName] = useState('')
     const [pickerOpen, setPickerOpen] = useState(false)
+    // The Exercises as compact draggable rows instead of their Set editors
+    // (components/ExerciseReorderList), and whether one is held right now.
+    const [reordering, setReordering] = useState(false)
+    const [dragging, setDragging] = useState(false)
     // Each drawn under what it is about, all at once (.claude/rules/ui.md).
     const [errors, setErrors] = useState<{ name?: string; exercises?: string; form?: string; sets?: Record<number, string> }>({})
     const [saving, setSaving] = useState(false)
@@ -133,7 +139,7 @@ const EditWorkoutTemplate = () => {
 
     // Starts empty and is filled from the stored Version by the effect below;
     // an Exercise added afterwards gets the hook's default single blank row.
-    const { exercises, setExercises, pickExercise, updateSet, addSet, removeSet, removeExercise } =
+    const { exercises, setExercises, pickExercise, updateSet, addSet, removeSet, removeExercise, moveExercise } =
         useExerciseDraft()
 
     // Which Version the form on screen was filled from. The snapshot helper
@@ -279,7 +285,12 @@ const EditWorkoutTemplate = () => {
     return (
         <ThemedView style={styles.container}>
             <ScreenEnter play={fromToday}>
-                <ScrollView ref={scrollRef} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+                <ScrollView
+                    ref={scrollRef}
+                    contentContainerStyle={styles.scrollContent}
+                    keyboardShouldPersistTaps="handled"
+                    scrollEnabled={!dragging}
+                >
                     <OfflineBanner visible={offline} onRetry={retry} />
 
                     <ScreenSubtitle>Editing</ScreenSubtitle>
@@ -327,7 +338,12 @@ const EditWorkoutTemplate = () => {
                     <FieldError>{errors.name}</FieldError>
 
                     <Spacer height={Space.xl} />
-                    <SectionLabel>EXERCISES</SectionLabel>
+                    <View style={styles.sectionHead}>
+                        <SectionLabel>EXERCISES</SectionLabel>
+                        {exercises.length > 1 || reordering ? (
+                            <ReorderButton reordering={reordering} onPress={() => setReordering(!reordering)} disabled={saving} />
+                        ) : null}
+                    </View>
 
                     {exercises.length === 0 ? (
                         <>
@@ -338,7 +354,20 @@ const EditWorkoutTemplate = () => {
                         </>
                     ) : null}
 
-                    {exercises.map((exercise, exIndex) => (
+                    {reordering ? (
+                        <>
+                            <Spacer height={Space.md} />
+                            <ExerciseReorderList
+                                items={reorderItemsFrom(exercises)}
+                                onMove={(from, to) => {
+                                    moveExercise(from, to)
+                                    // Set errors are keyed by position, which just changed.
+                                    setErrors((prev) => ({ ...prev, sets: undefined }))
+                                }}
+                                onDragChange={setDragging}
+                            />
+                        </>
+                    ) : exercises.map((exercise, exIndex) => (
                         <View key={`${exercise.exerciseId}-${exIndex}`}>
                             <Spacer height={Space.xl} />
                             <ExerciseSetEditor
@@ -360,7 +389,11 @@ const EditWorkoutTemplate = () => {
                     ))}
 
                     <Spacer height={Space.xl} />
-                    <AddButton label="Add exercise" onPress={() => setPickerOpen(true)} disabled={saving} />
+                    {/* Hidden while reordering, so "Done" is the one way back
+                        to the Sets and nothing lands in a list being sorted. */}
+                    {reordering ? null : (
+                        <AddButton label="Add exercise" onPress={() => setPickerOpen(true)} disabled={saving} />
+                    )}
                     <FieldError>{errors.exercises}</FieldError>
                     <FieldError>{errors.form}</FieldError>
 
@@ -401,6 +434,11 @@ const styles = StyleSheet.create({
     },
     label: {
         marginBottom: Space.xs + 2,
+    },
+    sectionHead: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
     },
     addLink: {
         fontFamily: FontFamily.label,

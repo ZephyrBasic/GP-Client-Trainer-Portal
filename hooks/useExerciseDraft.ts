@@ -72,7 +72,7 @@ export const draftsFrom = (exercises: ExerciseWithSets[] | null | undefined): Ex
 type NewRow = (exercise: AnyExerciseRecord, fields: SetField[]) => Partial<ExerciseDraft>
 
 /**
- * The list of Exercises a screen is editing, and the five ways it changes.
+ * The list of Exercises a screen is editing, and the ways it changes.
  *
  * Four screens author the same block of state - manual entry, authoring a
  * Workout Template, editing one, and performing a Session - and every one of
@@ -160,5 +160,18 @@ export const useExerciseDraft = (initial: ExerciseDraft[] = [], newRow?: NewRow)
 
     const removeExercise = (exIndex: number) => setExercises((prev) => prev.filter((_, i) => i !== exIndex))
 
-    return { exercises, setExercises, pickExercise, updateSet, addSet, removeSet, removeExercise }
+    // The whole row moves, so whatever parallel arrays a screen hangs off it -
+    // the live Session's `checked` and `targetSets` - travel with it. Order is
+    // the Template's to decide and a Session's to ignore: compareSession pairs
+    // by exerciseId, so training in a different order is not a deviation.
+    const moveExercise = (from: number, to: number) =>
+        setExercises((prev) => {
+            if (from === to || !prev[from] || to < 0 || to >= prev.length) return prev
+            const next = [...prev]
+            const [moved] = next.splice(from, 1)
+            next.splice(to, 0, moved)
+            return next
+        })
+
+    return { exercises, setExercises, pickExercise, updateSet, addSet, removeSet, removeExercise, moveExercise }
 }
