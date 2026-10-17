@@ -94,6 +94,28 @@
       body {
         height: 100%;
       }
+      /* Not part of the reset. Installed to the iOS home screen, with
+         black-translucent + viewport-fit=cover, WebKit resolves 100% to the
+         screen height *minus* the status bar, so #root stops that far short
+         of the bottom edge. Two halves: the height adds the missing inset
+         back (standalone only - in a Safari tab the inset is 0 anyway), and
+         the background paints the canvas the app's colour so that, if some
+         iOS version still leaves a sliver, it is not the white default. */
+      @media (display-mode: standalone) {
+        html {
+          height: calc(100% + env(safe-area-inset-top));
+        }
+      }
+      html,
+      body {
+        background-color: #E8EFEA;
+      }
+      @media (prefers-color-scheme: dark) {
+        html,
+        body {
+          background-color: #080B09;
+        }
+      }
       /* These styles disable body scrolling if you are using <ScrollView> */
       body {
         overflow: hidden;
