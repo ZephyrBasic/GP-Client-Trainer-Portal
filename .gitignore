@@ -66,3 +66,7 @@ Next Steps List.txt
 # harvester output, not a constant: find-exercise-videos.py writes it and
 # promote-videos.js reads it. 1.4 MB of intermediate, regenerated on demand.
 constants/videoCandidates.json
+
+# Workflow notes between Zephyr and Claude. The repo is public and these name clients.
+.claude/IDEAS.md
+.claude/KNOWN-ISSUES.md
